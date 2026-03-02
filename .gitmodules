@@ -1,0 +1,6 @@
+[submodule "third_party/md4c"]
+	path = third_party/md4c
+	url = https://github.com/mity/md4c
+[submodule "third_party/freetype"]
+	path = third_party/freetype
+	url = https://github.com/freetype/freetype
