@@ -20,4 +20,8 @@ private:
   GLint uResolution_;
   GLint uMouse_;
   GLint uFrame_;
+  GLint uProjection_;
+  GLint uView_;
+  GLint uCameraPos_;
+  GLint uZoom_;
 };

@@ -7,6 +7,7 @@ class SceneManager
 {
 public:
   void set(std::unique_ptr<Scene> scene);
+  auto current() -> Scene*;
 
   void update(float time);
   void render(Renderer& renderer);

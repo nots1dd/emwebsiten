@@ -2,18 +2,39 @@ precision mediump float;
 
 uniform float uTime;
 uniform float uDelta;
+
 uniform vec2  uResolution;
 uniform vec2  uMouse;
+
 uniform int   uFrame;
+
+uniform mat4  uProjection;
+uniform mat4  uView;
+uniform vec3  uCameraPos;
+uniform float uZoom;
 
 out vec4 FragColor;
 
 void main() {
 
-    vec2 uv = gl_FragCoord.xy / uResolution;
+    // normalized screen coordinates (-1..1)
+    vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution) / uResolution.y;
 
-    // center coordinates
-    vec2 p = uv - 0.5;
+    // apply zoom
+    uv *= uZoom;
+
+    // camera ray origin
+    vec3 ro = uCameraPos;
+
+    // camera ray direction (simple perspective)
+    vec3 rd = normalize((uView * vec4(uv, -1.0, 0.0)).xyz);
+
+    // project ray onto a plane at z = 0
+    float t = -ro.z / rd.z;
+    vec3 hit = ro + rd * t;
+
+    // use hit position instead of raw screen UV
+    vec2 p = hit.xy * 0.2;
 
     // mouse influence
     vec2 m = uMouse / uResolution - 0.5;

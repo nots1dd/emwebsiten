@@ -19,5 +19,7 @@ void CRTScene::render(Renderer& renderer)
 
   frame.frame = 0;
 
+  frame.camera = &camera_;
+
   renderer.render(frame);
 }

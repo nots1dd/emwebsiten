@@ -4,7 +4,7 @@
 
 void PlasmaScene::render(Renderer& renderer)
 {
-  auto& program = AssetManager::instance().shaders().program("plasm");
+  auto& program = AssetManager::instance().shaders().program("plasma");
 
   FrameUniforms frame{};
 
@@ -18,6 +18,8 @@ void PlasmaScene::render(Renderer& renderer)
   frame.mouseY = 0.0f;
 
   frame.frame = 0;
+
+  frame.camera = &camera_;
 
   renderer.render(frame);
 }

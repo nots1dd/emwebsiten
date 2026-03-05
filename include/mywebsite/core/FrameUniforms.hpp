@@ -1,8 +1,9 @@
 #pragma once
 
+#include <mywebsite/core/camera/Camera.hpp>
+
 struct FrameUniforms
 {
-
   float time  = 0.0f;
   float delta = 0.0f;
 
@@ -11,6 +12,8 @@ struct FrameUniforms
 
   float mouseX = 0.0f;
   float mouseY = 0.0f;
+
+  const Camera* camera = nullptr;
 
   int frame = 0;
 };

@@ -6,6 +6,8 @@ void SceneManager::set(std::unique_ptr<Scene> scene)
   current_->init();
 }
 
+auto SceneManager::current() -> Scene* { return current_.get(); }
+
 void SceneManager::update(float t)
 {
   if (current_)
