@@ -1,19 +1,37 @@
-#include <mywebsite/core/Renderer.hpp>
 #include <GLES3/gl3.h>
+#include <mywebsite/core/Renderer.hpp>
 
-Renderer::Renderer(Program& program)
-    : program_(program) {
+Renderer::Renderer(Program& program) : program_(program)
+{
 
-    uTime_ = program_.uniform("uTime");
-    uResolution_ = program_.uniform("uResolution");
+  uTime_       = program_.uniform("uTime");
+  uDelta_      = program_.uniform("uDelta");
+  uResolution_ = program_.uniform("uResolution");
+  uMouse_      = program_.uniform("uMouse");
+  uFrame_      = program_.uniform("uFrame");
 }
 
-void Renderer::render(float time, float w, float h) {
-    glClear(GL_COLOR_BUFFER_BIT);
+void Renderer::render(const FrameUniforms& frame)
+{
 
-    program_.use();
-    glUniform1f(uTime_, time);
-    glUniform2f(uResolution_, w, h);
+  glClear(GL_COLOR_BUFFER_BIT);
 
-    triangle_.draw();
+  program_.use();
+
+  if (uTime_ >= 0)
+    glUniform1f(uTime_, frame.time);
+
+  if (uDelta_ >= 0)
+    glUniform1f(uDelta_, frame.delta);
+
+  if (uResolution_ >= 0)
+    glUniform2f(uResolution_, frame.width, frame.height);
+
+  if (uMouse_ >= 0)
+    glUniform2f(uMouse_, frame.mouseX, frame.mouseY);
+
+  if (uFrame_ >= 0)
+    glUniform1i(uFrame_, frame.frame);
+
+  triangle_.draw();
 }

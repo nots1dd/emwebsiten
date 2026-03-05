@@ -1,43 +1,20 @@
 #include <emscripten/emscripten.h>
+#include <mywebsite/core/Engine.hpp>
 #include <mywebsite/core/GLContext.hpp>
-#include <mywebsite/core/Renderer.hpp>
-#include <mywebsite/gl/Shader.hpp>
-#include <mywebsite/core/GLSLLoader.hpp>
-#include <print>
-#include <string>
 
-static Renderer* renderer = nullptr;
+static Engine engine;
 
-void frame() {
-    float t = emscripten_get_now() * 0.001f;
-    renderer->render(t, 800.0f, 600.0f);
-}
+void frame() { engine.frame(); }
 
-auto main() -> int {
-    GLContext ctx("#canvas");
-    ctx.make_current();
+auto main() -> int
+{
 
-    std::println("GL_VERSION = {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+  GLContext ctx("#canvas");
+  ctx.make_current();
 
-    glClearColor(0.05f, 0.05f, 0.08f, 1.0f);
+  engine.init();
 
-    const std::string vs_src =
-        GLSLLoader::load("/assets/shaders/fullscreen.vert");
-    const std::string fs_src =
-        GLSLLoader::load("/assets/shaders/crt.frag");
+  emscripten_set_main_loop(frame, 0, true);
 
-    if (vs_src.empty() || fs_src.empty()) {
-        printf("Failed to load shaders\n");
-        return 1;
-    }
-
-    Shader vs(GL_VERTEX_SHADER, vs_src);
-    Shader fs(GL_FRAGMENT_SHADER, fs_src);
-
-    Program program(vs, fs);
-    static Renderer r(program);
-    renderer = &r;
-
-    emscripten_set_main_loop(frame, 0, true);
-    return 0;
+  return EXIT_SUCCESS;
 }

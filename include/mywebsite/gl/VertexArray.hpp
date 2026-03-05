@@ -2,13 +2,14 @@
 
 #include <GLES3/gl3.h>
 
-class VertexArray {
+class VertexArray
+{
 public:
-    VertexArray();
-    ~VertexArray();
+  VertexArray();
+  ~VertexArray();
 
-    void bind() const;
+  void bind() const;
 
 private:
-    GLuint id_;
+  GLuint id_;
 };

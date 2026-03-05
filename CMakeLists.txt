@@ -47,16 +47,30 @@ target_include_directories(stb INTERFACE ${STB_DIR})
 # -----------------------------------------------------------
 # Sources
 # -----------------------------------------------------------
+
+file(GLOB_RECURSE RETRO_CORE_SOURCES
+    CONFIGURE_DEPENDS
+    ${CMAKE_SOURCE_DIR}/src/core/*.cc
+    ${CMAKE_SOURCE_DIR}/src/core/*.cpp
+)
+
+file(GLOB_RECURSE RETRO_GL_SOURCES
+    CONFIGURE_DEPENDS
+    ${CMAKE_SOURCE_DIR}/src/gl/*.cc
+    ${CMAKE_SOURCE_DIR}/src/gl/*.cpp
+)
+
+file(GLOB_RECURSE RETRO_SCENE_SOURCES
+    CONFIGURE_DEPENDS
+    ${CMAKE_SOURCE_DIR}/src/scene/*.cc
+    ${CMAKE_SOURCE_DIR}/src/scene/*.cpp
+)
+
 set(RETRO_SITE_SOURCES
     src/main.cpp
-
-    src/core/GLContext.cc
-    src/core/Renderer.cc
-    src/core/GLSLLoader.cc
-    src/scene/TriangleFullScreen.cc
-    src/gl/Program.cc
-    src/gl/VertexArray.cc
-    src/gl/Shader.cc
+    ${RETRO_CORE_SOURCES}
+    ${RETRO_GL_SOURCES}
+    ${RETRO_SCENE_SOURCES}
 )
 
 add_executable(${PROJECT_NAME} ${RETRO_SITE_SOURCES})

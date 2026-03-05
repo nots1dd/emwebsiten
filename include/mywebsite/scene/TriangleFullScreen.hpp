@@ -2,11 +2,12 @@
 
 #include <mywebsite/gl/VertexArray.hpp>
 
-class FullscreenTriangle {
+class FullscreenTriangle
+{
 public:
-    FullscreenTriangle();
-    void draw() const;
+  FullscreenTriangle();
+  void draw() const;
 
 private:
-    VertexArray vao_;
+  VertexArray vao_;
 };
