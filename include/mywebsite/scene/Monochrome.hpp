@@ -2,7 +2,7 @@
 
 #include <mywebsite/scene/Scene.hpp>
 
-class PlasmaScene : public Scene
+class MonochromeScene : public Scene
 {
 public:
   void render(Renderer& renderer) override;

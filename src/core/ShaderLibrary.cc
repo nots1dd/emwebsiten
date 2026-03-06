@@ -9,20 +9,55 @@ auto ShaderLibrary::instance() -> ShaderLibrary&
   return lib;
 }
 
-void ShaderLibrary::load_program(const std::string& name, const std::string& vs_path,
-                                 const std::string& fs_path)
+void ShaderLibrary::load_all()
 {
-  std::string vs_src = GLSLLoader::load(vs_path);
-  std::string fs_src = GLSLLoader::load(fs_path);
+  for (size_t i = 0; i < shader_registry.size(); ++i)
+  {
+    const auto& desc = shader_registry[i];
+
+    std::string vs_src = GLSLLoader::load(desc.vert);
+    std::string fs_src = GLSLLoader::load(desc.frag);
+
+    Shader vs(GL_VERTEX_SHADER, vs_src);
+    Shader fs(GL_FRAGMENT_SHADER, fs_src);
+
+    programs_[i] = std::make_unique<Program>(vs, fs);
+
+    std::println("Loaded shader '{}'", desc.name);
+  }
+}
+
+void ShaderLibrary::reload_all()
+{
+    std::println("[ShaderLibrary] Reloading all shaders...");
+
+    for (size_t i = 0; i < shader_registry.size(); ++i)
+    {
+        const auto& desc = shader_registry.at(i);
+
+        std::string vs_src = GLSLLoader::load(desc.vert);
+        std::string fs_src = GLSLLoader::load(desc.frag);
+
+        Shader vs(GL_VERTEX_SHADER, vs_src);
+        Shader fs(GL_FRAGMENT_SHADER, fs_src);
+
+        programs_[i] = std::make_unique<Program>(vs, fs);
+
+        std::println("[ShaderLibrary] Reloaded '{}'", desc.name);
+    }
+}
+
+void ShaderLibrary::reload(ShaderID id)
+{
+  const auto& desc = shader_registry[static_cast<size_t>(id)];
+
+  std::string vs_src = GLSLLoader::load(desc.vert);
+  std::string fs_src = GLSLLoader::load(desc.frag);
 
   Shader vs(GL_VERTEX_SHADER, vs_src);
   Shader fs(GL_FRAGMENT_SHADER, fs_src);
 
-  auto program = std::make_unique<Program>(vs, fs);
+  programs_[static_cast<size_t>(id)] = std::make_unique<Program>(vs, fs);
 
-  programs_[name] = std::move(program);
-
-  std::println("Loaded shader program '{}'", name);
+  std::println("Reloaded shader '{}'", desc.name);
 }
-
-auto ShaderLibrary::program(const std::string& name) -> Program& { return *programs_.at(name); }

@@ -1,10 +1,10 @@
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Renderer.hpp>
-#include <mywebsite/scene/CRT.hpp>
+#include <mywebsite/scene/Monochrome.hpp>
 
-void CRTScene::render(Renderer& renderer)
+void MonochromeScene::render(Renderer& renderer)
 {
-  auto& program = AssetManager::instance().shaders().program<ShaderID::crt>();
+  auto& program = AssetManager::instance().shaders().program<ShaderID::monochrome>();
 
   FrameUniforms frame{};
 

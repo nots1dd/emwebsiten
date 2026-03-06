@@ -1,20 +1,26 @@
 #pragma once
 
+#include "ShaderRegistry.hpp"
+#include <array>
 #include <memory>
 #include <mywebsite/gl/Program.hpp>
-#include <string>
-#include <unordered_map>
 
 class ShaderLibrary
 {
 public:
   static auto instance() -> ShaderLibrary&;
 
-  void load_program(const std::string& name, const std::string& vs_path,
-                    const std::string& fs_path);
+  template <ShaderID ID>
+  auto program() -> Program&
+  {
+    return *programs_[static_cast<size_t>(ID)];
+  }
 
-  auto program(const std::string& name) -> Program&;
+  void load_all();
+  void reload_all();
+
+  void reload(ShaderID id); // for hot reload
 
 private:
-  std::unordered_map<std::string, std::unique_ptr<Program>> programs_;
+  std::array<std::unique_ptr<Program>, static_cast<size_t>(ShaderID::COUNT)> programs_;
 };

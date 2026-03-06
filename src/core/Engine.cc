@@ -1,9 +1,13 @@
-#include "mywebsite/scene/CRT.hpp"
 #include <algorithm>
+#include <print>
+
 #include <emscripten/html5.h>
+
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Engine.hpp>
+#include <mywebsite/scene/Monochrome.hpp>
 #include <mywebsite/scene/Plasma.hpp>
+#include <mywebsite/scene/transitions/ShaderTransition.hpp>
 
 static double lastTime = 0.0;
 
@@ -17,9 +21,7 @@ void Engine::set_input_enabled(bool v)
   input_enabled = v;
 
   if (!v)
-  {
     key_w = key_a = key_s = key_d = false;
-  }
 }
 
 void Engine::mouse_move(float dx, float dy)
@@ -45,6 +47,18 @@ EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
     key_s = true;
   if (k == 'd')
     key_d = true;
+
+  if (k == '1')
+    engine->transition_to_plasma();
+
+  if (k == 'r')
+  {
+    std::println("[Engine] Reloading shaders");
+
+    AssetManager::instance()
+        .shaders()
+        .reload_all();
+  }
 
   return EM_TRUE;
 }
@@ -77,34 +91,51 @@ EM_BOOL wheel_callback(int, const EmscriptenWheelEvent* e, void* userData)
   if (!engine->input_enabled)
     return EM_FALSE;
 
-  Scene* scene = engine->scenes_.current();
+  auto* node = engine->graph_.current();
+  if (!node)
+    return EM_FALSE;
 
-  float zoom = scene->camera().zoom();
+  Camera& cam = node->camera();
+
+  float zoom = cam.zoom();
 
   zoom += e->deltaY * 0.001f;
   zoom = std::clamp(zoom, 0.2f, 5.0f);
 
-  scene->camera().set_zoom(zoom);
+  cam.set_zoom(zoom);
 
   return EM_TRUE;
+}
+
+void Engine::transition_to_plasma()
+{
+  std::println("[Engine] Transition requested: Monochrome -> Plasma");
+
+  auto& fade = AssetManager::instance().shaders().program<ShaderID::fade_transition>();
+
+  auto transition = std::make_unique<ShaderTransition>(fade, 1.0f);
+
+  graph_.transition(std::make_unique<PlasmaScene>(), std::move(transition));
 }
 
 void Engine::init()
 {
   AssetManager::instance().initialize();
 
-  auto& program = AssetManager::instance().shaders().program("plasma");
+  auto& program = AssetManager::instance().shaders().program<ShaderID::monochrome>();
 
-  static Renderer renderer(program);
-
+  static Renderer renderer;
   renderer_ = &renderer;
 
-  scenes_.set(std::make_unique<PlasmaScene>());
+  /* Query canvas size from Emscripten */
+  int w, h;
+  emscripten_get_canvas_element_size("#canvas", &w, &h);
 
-  Scene* activeScene = scenes_.current(); // get scene pointer
+  renderer_->init(w, h);
 
-  emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, activeScene, true,
-                                wheel_callback);
+  graph_.set(std::make_unique<MonochromeScene>());
+
+  emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, true, wheel_callback);
 
   emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, true, keydown_callback);
 
@@ -118,32 +149,36 @@ void Engine::frame()
   double delta = now - lastTime;
   lastTime     = now;
 
-  Scene* scene = scenes_.current();
+  auto* node = graph_.current();
 
-  scene->update(now);
-
-  Camera& cam = scene->camera();
-
-  float speed = 2.5f * delta;
-
-  if (key_w)
-    cam.move_forward(speed);
-  if (key_s)
-    cam.move_backward(speed);
-  if (key_a)
-    cam.move_left(speed);
-  if (key_d)
-    cam.move_right(speed);
-
-  if (input_enabled)
+  if (node)
   {
-    float sensitivity = 0.002f;
+    node->update(now);
 
-    cam.rotate(mouse_dx * sensitivity, mouse_dy * sensitivity);
+    Camera& cam = node->camera();
 
-    mouse_dx = 0;
-    mouse_dy = 0;
+    float speed = 2.5f * delta;
+
+    if (key_w)
+      cam.move_forward(speed);
+    if (key_s)
+      cam.move_backward(speed);
+    if (key_a)
+      cam.move_left(speed);
+    if (key_d)
+      cam.move_right(speed);
+
+    if (input_enabled)
+    {
+      float sensitivity = 0.002f;
+
+      cam.rotate(mouse_dx * sensitivity, mouse_dy * sensitivity);
+
+      mouse_dx = 0;
+      mouse_dy = 0;
+    }
   }
 
-  scene->render(*renderer_);
+  graph_.update(delta);
+  graph_.render(*renderer_);
 }

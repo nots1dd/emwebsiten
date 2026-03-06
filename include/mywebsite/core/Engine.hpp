@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mywebsite/core/Renderer.hpp>
-#include <mywebsite/core/SceneManager.hpp>
+#include <mywebsite/scene/SceneGraphNode.hpp>
 
 class Engine
 {
@@ -11,8 +11,10 @@ public:
   void set_input_enabled(bool v);
   void mouse_move(float dx, float dy);
 
-  bool         input_enabled = false;
-  SceneManager scenes_;
+  bool       input_enabled = false;
+  SceneGraph graph_;
+
+  void transition_to_plasma();
 
 private:
   Renderer* renderer_ = nullptr;

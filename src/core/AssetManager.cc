@@ -9,6 +9,6 @@ auto AssetManager::instance() -> AssetManager&
 
 AssetManager::AssetManager() : shaders_(ShaderLibrary::instance()) {}
 
-void AssetManager::initialize() { load_shaders(); }
+void AssetManager::initialize() { shaders_.load_all(); }
 
 auto AssetManager::shaders() -> ShaderLibrary& { return shaders_; }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mywebsite/core/Scene.hpp>
+#include <mywebsite/scene/Scene.hpp>
 
 class CRTScene : public Scene
 {

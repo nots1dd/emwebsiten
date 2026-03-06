@@ -1,8 +1,9 @@
 #pragma once
 
-#include <emscripten/emscripten.h>
-#include <mywebsite/core/Renderer.hpp>
+#include <emscripten/emscripten.h> // NOLINT
 #include <mywebsite/core/camera/Camera.hpp>
+
+class Renderer;
 
 class Scene
 {

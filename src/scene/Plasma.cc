@@ -4,7 +4,7 @@
 
 void PlasmaScene::render(Renderer& renderer)
 {
-  auto& program = AssetManager::instance().shaders().program("plasma");
+  auto& program = AssetManager::instance().shaders().program<ShaderID::plasma>();
 
   FrameUniforms frame{};
 
@@ -21,5 +21,5 @@ void PlasmaScene::render(Renderer& renderer)
 
   frame.camera = &camera_;
 
-  renderer.render(frame);
+  renderer.render(program, frame);
 }

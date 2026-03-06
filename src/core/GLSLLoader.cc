@@ -3,9 +3,9 @@
 #include <print>
 #include <sstream>
 
-auto GLSLLoader::load_file(const std::string& path) -> std::string
+auto GLSLLoader::load_file(const std::string_view& path) -> std::string
 {
-  std::ifstream file(path);
+  std::ifstream file(path.data());
   if (!file)
   {
     std::println("GLSLLoader: failed to open {}", path);
@@ -17,10 +17,10 @@ auto GLSLLoader::load_file(const std::string& path) -> std::string
   return ss.str();
 }
 
-auto GLSLLoader::preprocess(const std::string& source, const std::string& base_dir,
+auto GLSLLoader::preprocess(const std::string_view& source, const std::string_view& base_dir,
                             std::unordered_set<std::string>& include_guard) -> std::string
 {
-  std::stringstream input(source);
+  std::stringstream input(source.data());
   std::stringstream output;
   std::string       line;
 
@@ -37,7 +37,7 @@ auto GLSLLoader::preprocess(const std::string& source, const std::string& base_d
       }
 
       std::string include_file = line.substr(start + 1, end - start - 1);
-      std::string full_path    = base_dir + "/" + include_file;
+      std::string full_path    = std::string(base_dir) + "/" + include_file;
 
       if (include_guard.count(full_path))
       {
@@ -58,7 +58,7 @@ auto GLSLLoader::preprocess(const std::string& source, const std::string& base_d
   return output.str();
 }
 
-auto GLSLLoader::load(const std::string& path, const std::string& version,
+auto GLSLLoader::load(const std::string_view& path, const std::string& version,
                       const std::string& precision) -> std::string
 {
   std::string source = load_file(path);
@@ -82,7 +82,7 @@ auto GLSLLoader::load(const std::string& path, const std::string& version,
 
   // Preprocess includes
   std::unordered_set<std::string> include_guard;
-  std::string                     base_dir = path.substr(0, path.find_last_of('/'));
+  std::string                     base_dir = std::string(path.substr(0, path.find_last_of('/')));
   source                                   = preprocess(source, base_dir, include_guard);
 
   // Inject version & precision
