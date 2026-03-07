@@ -1,9 +1,8 @@
 #pragma once
 
-#include "mywebsite/gl/Program.hpp"
-#include "mywebsite/scene/TriangleFullScreen.hpp"
-#include <GLES3/gl3.h>
 #include <mywebsite/core/FrameUniforms.hpp>
+#include <mywebsite/gl/Program.hpp>
+#include <mywebsite/scene/TriangleFullScreen.hpp>
 
 class SceneNode;
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <GLES3/gl3.h>
 #include <mywebsite/gl/Shader.hpp>
 
 class Program

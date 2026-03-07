@@ -1,3 +1,4 @@
+#include <memory>
 #include <mywebsite/core/Renderer.hpp>
 #include <mywebsite/scene/SceneGraphNode.hpp>
 #include <print>
@@ -24,7 +25,6 @@ void SceneGraph::update(float dt)
 
   if (transition_)
   {
-    std::println("[SceneGraph] transition running");
     transition_->update(dt);
 
     if (next_)
@@ -36,6 +36,7 @@ void SceneGraph::render(Renderer& r)
 {
   if (!transition_)
   {
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     if (current_)
       current_->render(r);
     return;

@@ -50,14 +50,14 @@ EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
 
   if (k == '1')
     engine->transition_to_plasma();
+  if (k == '2')
+    engine->transition_to_monochrome();
 
   if (k == 'r')
   {
     std::println("[Engine] Reloading shaders");
 
-    AssetManager::instance()
-        .shaders()
-        .reload_all();
+    AssetManager::instance().shaders().reload_all();
   }
 
   return EM_TRUE;
@@ -109,20 +109,27 @@ EM_BOOL wheel_callback(int, const EmscriptenWheelEvent* e, void* userData)
 
 void Engine::transition_to_plasma()
 {
-  std::println("[Engine] Transition requested: Monochrome -> Plasma");
+  auto& glitch = AssetManager::instance().shaders().program<ShaderID::glitch_transition>();
 
-  auto& fade = AssetManager::instance().shaders().program<ShaderID::fade_transition>();
-
-  auto transition = std::make_unique<ShaderTransition>(fade, 1.0f);
+  auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
 
   graph_.transition(std::make_unique<PlasmaScene>(), std::move(transition));
+}
+
+void Engine::transition_to_monochrome()
+{
+  auto& glitch = AssetManager::instance().shaders().program<ShaderID::glitch_transition>();
+
+  auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
+
+  graph_.transition(std::make_unique<MonochromeScene>(), std::move(transition));
 }
 
 void Engine::init()
 {
   AssetManager::instance().initialize();
 
-  auto& program = AssetManager::instance().shaders().program<ShaderID::monochrome>();
+  auto& _ = AssetManager::instance().shaders().program<ShaderID::monochrome>();
 
   static Renderer renderer;
   renderer_ = &renderer;
@@ -149,12 +156,12 @@ void Engine::frame()
   double delta = now - lastTime;
   lastTime     = now;
 
+  graph_.update(delta);
+
   auto* node = graph_.current();
 
   if (node)
   {
-    node->update(now);
-
     Camera& cam = node->camera();
 
     float speed = 2.5f * delta;
@@ -179,6 +186,5 @@ void Engine::frame()
     }
   }
 
-  graph_.update(delta);
   graph_.render(*renderer_);
 }

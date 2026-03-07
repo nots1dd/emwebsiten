@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 
 uniform sampler2D sceneA;
 uniform sampler2D sceneB;
@@ -20,23 +20,20 @@ void main()
     float t = clamp(ease(progress), 0.0, 1.0);
 
     vec2 center = uv - 0.5;
-
-    // normalized radial distance (0..1)
     float dist = length(center) * 1.4142;
 
-    // ripple distortion
-    float ripple = sin(dist * 25.0 - t * 8.0) * 0.015;
+    float ripple = sin(dist * 30.0 - t * 10.0) * (1.0 - t) * 0.02;
 
-    vec2 offset = normalize(center + 0.0001) * ripple;
+    float len = length(center);
+    vec2 dir = (len > 0.0001) ? center / len : vec2(0.0);
 
-    vec2 uvA = clamp(uv + offset * (1.0 - t), 0.0, 1.0);
-    vec2 uvB = clamp(uv - offset * t, 0.0, 1.0);
+    vec2 uvA = clamp(uv + dir * ripple * (1.0 - t), 0.0, 1.0);
+    vec2 uvB = clamp(uv - dir * ripple * t, 0.0, 1.0);
 
     vec3 colA = texture(sceneA, uvA).rgb;
     vec3 colB = texture(sceneB, uvB).rgb;
 
-    // radial reveal
-    float mask = smoothstep(t - 0.2, t + 0.2, dist);
+    float mask = smoothstep(t - 0.15, t + 0.15, dist);
 
     vec3 color = mix(colA, colB, mask);
 

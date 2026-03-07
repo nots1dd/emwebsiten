@@ -1,6 +1,6 @@
 #pragma once
 
-#include <emscripten/emscripten.h> // NOLINT
+#include <emscripten/emscripten.h>
 #include <mywebsite/core/camera/Camera.hpp>
 
 class Renderer;
@@ -8,12 +8,12 @@ class Renderer;
 class Scene
 {
 public:
-  Scene() : camera_(800.f, 600.f) {}
+  Scene() : camera_(800.f, 600.f) {};
 
   virtual ~Scene() = default;
 
   virtual void init() {}
-  virtual void update([[maybe_unused]] float time) {}
+  virtual void update([[maybe_unused]] float dt) {}
   virtual void render(Renderer& renderer) = 0;
 
   auto               camera() -> Camera& { return camera_; }

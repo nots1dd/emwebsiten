@@ -1,4 +1,3 @@
-#include <GLES3/gl3.h>
 #include <mywebsite/scene/TriangleFullScreen.hpp>
 
 FullscreenTriangle::FullscreenTriangle()

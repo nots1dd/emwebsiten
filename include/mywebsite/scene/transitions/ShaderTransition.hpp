@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mywebsite/gl/Program.hpp"
+#include <algorithm>
 #include <mywebsite/core/Renderer.hpp>
 #include <mywebsite/scene/Transition.hpp>
 
@@ -17,7 +17,7 @@ public:
 
   void render(Renderer& r, GLuint texA, GLuint texB) override
   {
-    float t = time_ / duration_;
+    float t = std::clamp(time_ / duration_, 0.0f, 1.0f);
 
     r.render_transition(program_, texA, texB, t);
   }

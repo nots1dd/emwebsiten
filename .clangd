@@ -1,2 +1,8 @@
 CompileFlags:
+  Compiler: /usr/lib/emscripten/em++
+  Add: [
+    "-I/usr/lib/emscripten/system/include",
+    -std=c++23,
+    -DEMSCRIPTEN
+  ]
   CompilationDatabase: build

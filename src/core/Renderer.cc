@@ -1,6 +1,7 @@
 #include <GLES3/gl3.h>
 #include <mywebsite/core/Renderer.hpp>
 #include <mywebsite/scene/SceneGraphNode.hpp>
+#include <print>
 
 void Renderer::init(int width, int height)
 {
@@ -8,9 +9,22 @@ void Renderer::init(int width, int height)
   height_ = height;
 
   glGenFramebuffers(1, &fbo_);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+  if (status != GL_FRAMEBUFFER_COMPLETE)
+  {
+    std::println("[Renderer] FBO incomplete!");
+  }
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   texA_ = create_texture(width, height);
   texB_ = create_texture(width, height);
+
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
 }
 
 auto Renderer::create_texture(int w, int h) -> GLuint
@@ -24,6 +38,8 @@ auto Renderer::create_texture(int w, int h) -> GLuint
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   return tex;
 }
@@ -42,8 +58,6 @@ void Renderer::end_scene()
 
 void Renderer::render(Program& program, const FrameUniforms& frame)
 {
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
   glViewport(0, 0, width_, height_);
 
   glClear(GL_COLOR_BUFFER_BIT);
@@ -115,36 +129,32 @@ auto Renderer::render_scene_to_texture(SceneNode* node) -> GLuint
   return tex;
 }
 
-void Renderer::render_transition(
-    Program& program,
-    GLuint texA,
-    GLuint texB,
-    float progress)
+void Renderer::render_transition(Program& program, GLuint texA, GLuint texB, float progress)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER,0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    glViewport(0,0,width_,height_);
-    glClear(GL_COLOR_BUFFER_BIT);
+  glViewport(0, 0, width_, height_);
+  glClear(GL_COLOR_BUFFER_BIT);
 
-    program.use();
+  program.use();
 
-    GLint locA = program.uniform("sceneA");
-    GLint locB = program.uniform("sceneB");
-    GLint locT = program.uniform("progress");
-    GLint locRes = program.uniform("resolution");
+  GLint locA   = program.uniform("sceneA");
+  GLint locB   = program.uniform("sceneB");
+  GLint locT   = program.uniform("progress");
+  GLint locRes = program.uniform("resolution");
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texA);
-    glUniform1i(locA,0);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texA);
+  glUniform1i(locA, 0);
 
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texB);
-    glUniform1i(locB,1);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, texB);
+  glUniform1i(locB, 1);
 
-    glUniform1f(locT,progress);
+  glUniform1f(locT, progress);
 
-    if(locRes >= 0)
-        glUniform2f(locRes,width_,height_);
+  if (locRes >= 0)
+    glUniform2f(locRes, width_, height_);
 
-    triangle_.draw();
+  triangle_.draw();
 }

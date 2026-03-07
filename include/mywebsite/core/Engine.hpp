@@ -15,6 +15,7 @@ public:
   SceneGraph graph_;
 
   void transition_to_plasma();
+  void transition_to_monochrome();
 
 private:
   Renderer* renderer_ = nullptr;
