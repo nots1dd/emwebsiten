@@ -14,7 +14,7 @@ public:
   bool       input_enabled = false;
   SceneGraph graph_;
 
-  void transition_to_plasma();
+  void transition_to_glow();
   void transition_to_monochrome();
 
 private:

@@ -16,6 +16,16 @@ public:
   void begin_scene();
   void end_scene();
 
+  auto get_render_width() -> int
+  {
+    return width_;
+  }
+
+  auto get_render_height() -> int
+  {
+    return height_;
+  }
+
   void render(Program& program, const FrameUniforms& frame);
 
   auto render_scene_to_texture(SceneNode* node) -> GLuint;

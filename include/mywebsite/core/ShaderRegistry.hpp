@@ -15,6 +15,7 @@ enum class ShaderID : size_t
   crt,
   plasma,
   monochrome,
+  ultra,
 
   fade_transition,
   glitch_transition,
@@ -30,6 +31,10 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>(
    {.name = "monochrome",
     .vert = "/assets/shaders/fullscreen.vert",
     .frag = "/assets/shaders/monochrome.frag"},
+    {.name = "ultra",
+      .vert = "/assets/shaders/fullscreen.vert",
+      .frag = "/assets/shaders/ultra.frag"
+    },
    {.name = "fade_transition",
     .vert = "/assets/shaders/fullscreen.vert",
     .frag = "/assets/shaders/fade.transition.glsl"},

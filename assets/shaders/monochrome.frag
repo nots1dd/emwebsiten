@@ -15,18 +15,23 @@ uniform float uZoom;
 
 out vec4 FragColor;
 
+
 float field(vec2 p)
 {
+    float t = uTime * 0.25;   // slower motion
+
     float v = 0.0;
 
-    v += sin(p.x * 2.0);
-    v += sin(p.y * 2.0);
+    v += sin(p.x * 1.6 + t * 0.4);
+    v += sin(p.y * 1.4 - t * 0.3);
 
-    v += sin(p.x + p.y + uTime * 0.4);
-    v += sin(length(p) * 3.0 - uTime * 0.6);
+    v += sin(p.x + p.y + t * 0.6);
+
+    v += sin(length(p) * 2.2 - t * 0.8);
 
     return v;
 }
+
 
 void main()
 {
@@ -38,21 +43,44 @@ void main()
     vec3 rd = normalize((uView * vec4(uv, -1.0, 0.0)).xyz);
 
     float t = -ro.z / rd.z;
+
     vec3 hit = ro + rd * t;
 
     vec2 p = hit.xy;
 
+
+    /* subtle space warping */
+    float warp =
+        sin(p.x * 0.8 + uTime * 0.2) *
+        sin(p.y * 0.6 - uTime * 0.15);
+
+    p += warp * 0.15;
+
+
     float f = field(p);
 
-    // smooth contour bands
-    float bands = sin(f * 3.0);
 
-    float shade = smoothstep(-0.2, 0.2, bands);
+    /* uneven contour bands */
+    float bands = sin(f * 2.2 + sin(uTime * 0.2));
 
-    // subtle vignette
-    float vignette = 1.0 - smoothstep(0.6, 1.4, length(uv));
 
-    float col = shade * vignette;
+    float shade = smoothstep(-0.25, 0.25, bands);
+
+
+    float vignette =
+        1.0 - smoothstep(
+            0.55 + sin(uTime * 0.3) * 0.05,
+            1.45,
+            length(uv)
+        );
+
+
+    /* faint flicker */
+    float flicker =
+        0.97 + 0.03 * sin(float(uFrame) * 0.4);
+
+
+    float col = shade * vignette * flicker;
 
     FragColor = vec4(vec3(col), 1.0);
 }

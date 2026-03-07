@@ -6,7 +6,7 @@
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Engine.hpp>
 #include <mywebsite/scene/Monochrome.hpp>
-#include <mywebsite/scene/Plasma.hpp>
+#include <mywebsite/scene/Ultra.hpp>
 #include <mywebsite/scene/transitions/ShaderTransition.hpp>
 
 static double lastTime = 0.0;
@@ -49,7 +49,7 @@ EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
     key_d = true;
 
   if (k == '1')
-    engine->transition_to_plasma();
+    engine->transition_to_glow();
   if (k == '2')
     engine->transition_to_monochrome();
 
@@ -107,13 +107,13 @@ EM_BOOL wheel_callback(int, const EmscriptenWheelEvent* e, void* userData)
   return EM_TRUE;
 }
 
-void Engine::transition_to_plasma()
+void Engine::transition_to_glow()
 {
   auto& glitch = AssetManager::instance().shaders().program<ShaderID::glitch_transition>();
 
   auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
 
-  graph_.transition(std::make_unique<PlasmaScene>(), std::move(transition));
+  graph_.transition(std::make_unique<UltraScene>(), std::move(transition));
 }
 
 void Engine::transition_to_monochrome()

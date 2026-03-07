@@ -1,10 +1,10 @@
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Renderer.hpp>
-#include <mywebsite/scene/Monochrome.hpp>
+#include <mywebsite/scene/Ultra.hpp>
 
-void MonochromeScene::render(Renderer& renderer)
+void UltraScene::render(Renderer& renderer)
 {
-  auto& program = AssetManager::instance().shaders().program<ShaderID::monochrome>();
+  auto& program = AssetManager::instance().shaders().program<ShaderID::ultra>();
 
   FrameUniforms frame{};
 
