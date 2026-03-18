@@ -16,15 +16,18 @@ public:
   void begin_scene();
   void end_scene();
 
-  auto get_render_width() -> int
+  void set_mouse(float x, float y)
   {
-    return width_;
+    mouse_x_ = x;
+    mouse_y_ = y;
   }
 
-  auto get_render_height() -> int
-  {
-    return height_;
-  }
+  [[nodiscard]] auto mouse_x() const -> float { return mouse_x_; }
+  [[nodiscard]] auto mouse_y() const -> float { return mouse_y_; }
+
+  auto get_render_width() -> int { return width_; }
+
+  auto get_render_height() -> int { return height_; }
 
   void render(Program& program, const FrameUniforms& frame);
 
@@ -43,6 +46,9 @@ private:
 
   int width_  = 0;
   int height_ = 0;
+
+  float mouse_x_ = 0.0f;
+  float mouse_y_ = 0.0f;
 
   GLint uTime_;
   GLint uDelta_;

@@ -7,10 +7,7 @@ extern "C"
 {
 
   EMSCRIPTEN_KEEPALIVE
-  void set_input_enabled(int enabled) { engine.set_input_enabled(enabled); }
-
-  EMSCRIPTEN_KEEPALIVE
-  void mouse_move(float dx, float dy) { engine.mouse_move(dx, dy); }
+  void set_mouse(float x, float y) { engine.set_mouse(x, y); }
 }
 
 void frame() { engine.frame(); }

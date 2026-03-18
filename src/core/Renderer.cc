@@ -11,6 +11,10 @@ void Renderer::init(int width, int height)
   glGenFramebuffers(1, &fbo_);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
+  texA_ = create_texture(width, height);
+
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texA_, 0);
+
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
   if (status != GL_FRAMEBUFFER_COMPLETE)
@@ -20,7 +24,6 @@ void Renderer::init(int width, int height)
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  texA_ = create_texture(width, height);
   texB_ = create_texture(width, height);
 
   glDisable(GL_DEPTH_TEST);

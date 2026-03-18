@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.5...4.2.1)
-project(retro_site LANGUAGES C CXX)
+project(emwebsiten LANGUAGES C CXX)
 
 # -----------------------------------------------------------
 # ccache detect
 # -----------------------------------------------------------
-find_program(RETRO_CCACHE_PROGRAM ccache)
+find_program(EMWEBSITEN_CCACHE_PROGRAM ccache)
 
-if(RETRO_CCACHE_PROGRAM)
-    message(STATUS "ccache found: ${RETRO_CCACHE_PROGRAM}")
+if(EMWEBSITEN_CCACHE_PROGRAM)
+    message(STATUS "ccache found: ${EMWEBSITEN_CCACHE_PROGRAM}")
     message(STATUS "ccache enabled for C/C++ compilation")
-    set(CMAKE_C_COMPILER_LAUNCHER   ${RETRO_CCACHE_PROGRAM})
-    set(CMAKE_CXX_COMPILER_LAUNCHER ${RETRO_CCACHE_PROGRAM})
+    set(CMAKE_C_COMPILER_LAUNCHER   ${EMWEBSITEN_CCACHE_PROGRAM})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${EMWEBSITEN_CCACHE_PROGRAM})
 else()
     message(STATUS "ccache not found — builds will proceed without cache")
 endif()
@@ -48,32 +48,32 @@ target_include_directories(stb INTERFACE ${STB_DIR})
 # Sources
 # -----------------------------------------------------------
 
-file(GLOB_RECURSE RETRO_CORE_SOURCES
+file(GLOB_RECURSE EMWEBSITEN_CORE_SOURCES
     CONFIGURE_DEPENDS
     ${CMAKE_SOURCE_DIR}/src/core/*.cc
     ${CMAKE_SOURCE_DIR}/src/core/*.cpp
 )
 
-file(GLOB_RECURSE RETRO_GL_SOURCES
+file(GLOB_RECURSE EMWEBSITEN_GL_SOURCES
     CONFIGURE_DEPENDS
     ${CMAKE_SOURCE_DIR}/src/gl/*.cc
     ${CMAKE_SOURCE_DIR}/src/gl/*.cpp
 )
 
-file(GLOB_RECURSE RETRO_SCENE_SOURCES
+file(GLOB_RECURSE EMWEBSITEN_SCENE_SOURCES
     CONFIGURE_DEPENDS
     ${CMAKE_SOURCE_DIR}/src/scene/*.cc
     ${CMAKE_SOURCE_DIR}/src/scene/*.cpp
 )
 
-set(RETRO_SITE_SOURCES
+set(EMWEBSITEN_SITE_SOURCES
     src/main.cpp
-    ${RETRO_CORE_SOURCES}
-    ${RETRO_GL_SOURCES}
-    ${RETRO_SCENE_SOURCES}
+    ${EMWEBSITEN_CORE_SOURCES}
+    ${EMWEBSITEN_GL_SOURCES}
+    ${EMWEBSITEN_SCENE_SOURCES}
 )
 
-add_executable(${PROJECT_NAME} ${RETRO_SITE_SOURCES})
+add_executable(${PROJECT_NAME} ${EMWEBSITEN_SITE_SOURCES})
 
 target_compile_options(${PROJECT_NAME}
     PRIVATE
@@ -93,51 +93,51 @@ target_include_directories(${PROJECT_NAME}
         ${STB_DIR}
 )
 
-set(RETRO_ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
+set(EMWEBSITEN_ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
 # -----------------------------------------------------------
 # Assets (Emscripten Virtual FS)
 # -----------------------------------------------------------
 
-set(RETRO_ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
+set(EMWEBSITEN_ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
-set(RETRO_ASSET_FILES "")
-set(RETRO_ASSET_VFS_PATHS "")
-set(RETRO_PRELOAD_ASSETS "")
+set(EMWEBSITEN_ASSET_FILES "")
+set(EMWEBSITEN_ASSET_VFS_PATHS "")
+set(EMWEBSITEN_PRELOAD_ASSETS "")
 
-if(EXISTS "${RETRO_ASSETS_DIR}")
+if(EXISTS "${EMWEBSITEN_ASSETS_DIR}")
 
     # -------------------------------------------------------
     # Enumerate all asset files (for diagnostics only)
     # -------------------------------------------------------
-    file(GLOB_RECURSE RETRO_ASSET_FILES
-        RELATIVE "${RETRO_ASSETS_DIR}"
-        "${RETRO_ASSETS_DIR}/*"
+    file(GLOB_RECURSE EMWEBSITEN_ASSET_FILES
+        RELATIVE "${EMWEBSITEN_ASSETS_DIR}"
+        "${EMWEBSITEN_ASSETS_DIR}/*"
     )
 
-    foreach(asset IN LISTS RETRO_ASSET_FILES)
-        list(APPEND RETRO_ASSET_VFS_PATHS "/assets/${asset}")
+    foreach(asset IN LISTS EMWEBSITEN_ASSET_FILES)
+        list(APPEND EMWEBSITEN_ASSET_VFS_PATHS "/assets/${asset}")
     endforeach()
 
     # -------------------------------------------------------
     # Emscripten preload directive (linker option)
     # -------------------------------------------------------
-    set(RETRO_PRELOAD_ASSETS
-        "--preload-file=${RETRO_ASSETS_DIR}@/assets"
+    set(EMWEBSITEN_PRELOAD_ASSETS
+        "--preload-file=${EMWEBSITEN_ASSETS_DIR}@/assets"
     )
 
 else()
-    message(STATUS "Assets directory not found: ${RETRO_ASSETS_DIR}")
+    message(STATUS "Assets directory not found: ${EMWEBSITEN_ASSETS_DIR}")
 endif()
 
 # -----------------------------------------------------------
 # Assets Summary
 # -----------------------------------------------------------
-if(RETRO_ASSET_VFS_PATHS)
+if(EMWEBSITEN_ASSET_VFS_PATHS)
     message(STATUS "${SEP}")
     message(STATUS "${SEP}  ── Preloaded Assets ─────────────────────────────")
 
-    foreach(asset ${RETRO_ASSET_VFS_PATHS})
+    foreach(asset ${EMWEBSITEN_ASSET_VFS_PATHS})
         message(STATUS "${SEP}  • ${asset}")
     endforeach()
 else()
@@ -151,7 +151,7 @@ target_link_options(${PROJECT_NAME}
         -sUSE_WEBGL2=1
         -sWASM=1
         -sALLOW_MEMORY_GROWTH=1
-        ${RETRO_PRELOAD_ASSETS}
+        ${EMWEBSITEN_PRELOAD_ASSETS}
 )
 
 # -----------------------------------------------------------
@@ -174,31 +174,31 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 # Derived / Dynamic Build Info
 # -----------------------------------------------------------
 if(CMAKE_CROSSCOMPILING)
-    set(RETRO_TOOLCHAIN_NAME "Emscripten")
+    set(EMWEBSITEN_TOOLCHAIN_NAME "Emscripten")
 else()
-    set(RETRO_TOOLCHAIN_NAME "${CMAKE_CXX_COMPILER_ID}")
+    set(EMWEBSITEN_TOOLCHAIN_NAME "${CMAKE_CXX_COMPILER_ID}")
 endif()
 
-if(RETRO_PRELOAD_ASSETS)
-    set(RETRO_ASSETS_STATUS "ENABLED (${RETRO_ASSETS_DIR})")
+if(EMWEBSITEN_PRELOAD_ASSETS)
+    set(EMWEBSITEN_ASSETS_STATUS "ENABLED (${EMWEBSITEN_ASSETS_DIR})")
 else()
-    set(RETRO_ASSETS_STATUS "DISABLED")
+    set(EMWEBSITEN_ASSETS_STATUS "DISABLED")
 endif()
 
 if(TARGET md4c)
-    set(RETRO_MD4C_STATUS "ON")
+    set(EMWEBSITEN_MD4C_STATUS "ON")
 else()
-    set(RETRO_MD4C_STATUS "OFF")
+    set(EMWEBSITEN_MD4C_STATUS "OFF")
 endif()
 
 if(TARGET stb)
-    set(RETRO_STB_STATUS "ON")
+    set(EMWEBSITEN_STB_STATUS "ON")
 else()
-    set(RETRO_STB_STATUS "OFF")
+    set(EMWEBSITEN_STB_STATUS "OFF")
 endif()
 
-get_property(RETRO_COMPILE_FLAGS TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS)
-string(JOIN " " RETRO_COMPILE_FLAGS_STR ${RETRO_COMPILE_FLAGS})
+get_property(EMWEBSITEN_COMPILE_FLAGS TARGET ${PROJECT_NAME} PROPERTY COMPILE_OPTIONS)
+string(JOIN " " EMWEBSITEN_COMPILE_FLAGS_STR ${EMWEBSITEN_COMPILE_FLAGS})
 
 # -----------------------------------------------------------
 # Diagnostics Summary
@@ -210,19 +210,19 @@ set(SEP         "│")
 message(STATUS "${LINE_TOP}")
 message(STATUS "${SEP}  Project Name     : ${PROJECT_NAME}")
 message(STATUS "${SEP}  Build Type       : ${CMAKE_BUILD_TYPE}")
-message(STATUS "${SEP}  Toolchain        : ${RETRO_TOOLCHAIN_NAME}")
+message(STATUS "${SEP}  Toolchain        : ${EMWEBSITEN_TOOLCHAIN_NAME}")
 message(STATUS "${SEP}  C++ Standard     : C++${CMAKE_CXX_STANDARD}")
 message(STATUS "${SEP}  Source Directory : ${CMAKE_SOURCE_DIR}")
 message(STATUS "${SEP}")
 message(STATUS "${SEP}  ── Web Capabilities ─────────────────────────────")
 message(STATUS "${SEP}  • WebGL2         : ENABLED")
 message(STATUS "${SEP}  • WASM           : ${CMAKE_CROSSCOMPILING}")
-message(STATUS "${SEP}  • Assets FS      : ${RETRO_ASSETS_STATUS}")
+message(STATUS "${SEP}  • Assets FS      : ${EMWEBSITEN_ASSETS_STATUS}")
 message(STATUS "${SEP}")
 message(STATUS "${SEP}  ── third_party ──────────────────────────────────")
-message(STATUS "${SEP}  • md4c           : ${RETRO_MD4C_STATUS}")
-message(STATUS "${SEP}  • stb            : ${RETRO_STB_STATUS}")
+message(STATUS "${SEP}  • md4c           : ${EMWEBSITEN_MD4C_STATUS}")
+message(STATUS "${SEP}  • stb            : ${EMWEBSITEN_STB_STATUS}")
 message(STATUS "${SEP}")
 message(STATUS "${SEP}  ── Compiler Flags ───────────────────────────────")
-message(STATUS "${SEP}    ${RETRO_COMPILE_FLAGS_STR}")
+message(STATUS "${SEP}    ${EMWEBSITEN_COMPILE_FLAGS_STR}")
 message(STATUS "${LINE_BOTTOM}")

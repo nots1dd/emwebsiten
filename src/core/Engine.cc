@@ -16,26 +16,24 @@ static bool key_a = false;
 static bool key_s = false;
 static bool key_d = false;
 
-void Engine::set_input_enabled(bool v)
+void Engine::set_mouse(float x, float y)
 {
-  input_enabled = v;
-
-  if (!v)
-    key_w = key_a = key_s = key_d = false;
+  mouse_x = x;
+  mouse_y = y;
 }
 
 void Engine::mouse_move(float dx, float dy)
 {
   mouse_dx += dx;
   mouse_dy += dy;
+
+  mouse_x += dx;
+  mouse_y += dy;
 }
 
 EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
 {
   auto* engine = static_cast<Engine*>(userData);
-
-  if (!engine->input_enabled)
-    return EM_FALSE;
 
   char k = std::tolower(e->key[0]);
 
@@ -63,12 +61,8 @@ EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
   return EM_TRUE;
 }
 
-EM_BOOL keyup_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
+EM_BOOL keyup_callback(int, const EmscriptenKeyboardEvent* e, void*)
 {
-  auto* engine = static_cast<Engine*>(userData);
-
-  if (!engine->input_enabled)
-    return EM_FALSE;
 
   char k = std::tolower(e->key[0]);
 
@@ -87,9 +81,6 @@ EM_BOOL keyup_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
 EM_BOOL wheel_callback(int, const EmscriptenWheelEvent* e, void* userData)
 {
   auto* engine = static_cast<Engine*>(userData);
-
-  if (!engine->input_enabled)
-    return EM_FALSE;
 
   auto* node = engine->graph_.current();
   if (!node)
@@ -134,9 +125,15 @@ void Engine::init()
   static Renderer renderer;
   renderer_ = &renderer;
 
-  /* Query canvas size from Emscripten */
+  double dpr = emscripten_get_device_pixel_ratio();
+
   int w, h;
   emscripten_get_canvas_element_size("#canvas", &w, &h);
+
+  int fb_w = int(w * dpr);
+  int fb_h = int(h * dpr);
+
+  emscripten_set_canvas_element_size("#canvas", fb_w, fb_h);
 
   renderer_->init(w, h);
 
@@ -155,6 +152,9 @@ void Engine::frame()
 
   double delta = now - lastTime;
   lastTime     = now;
+
+  mouse_x = std::clamp(mouse_x, 0.0f, (float)renderer_->get_render_width());
+  mouse_y = std::clamp(mouse_y, 0.0f, (float)renderer_->get_render_height());
 
   graph_.update(delta);
 
@@ -175,16 +175,15 @@ void Engine::frame()
     if (key_d)
       cam.move_right(speed);
 
-    if (input_enabled)
-    {
-      float sensitivity = 0.002f;
+    float sensitivity = 0.002f;
 
-      cam.rotate(mouse_dx * sensitivity, mouse_dy * sensitivity);
+    cam.rotate(mouse_dx * sensitivity, mouse_dy * sensitivity);
 
-      mouse_dx = 0;
-      mouse_dy = 0;
-    }
+    mouse_dx = 0;
+    mouse_dy = 0;
   }
+
+  renderer_->set_mouse(mouse_x, mouse_y);
 
   graph_.render(*renderer_);
 }

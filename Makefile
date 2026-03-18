@@ -6,6 +6,7 @@ PROJECT_NAME := mywebsite
 EDGE_BINARY  := mywebsite
 
 SRC_DIRS := src include
+SHADER_DIRS := assets/shaders
 BUILD_DIR := build
 BUILD_DBG_DIR := build-dbg
 
@@ -23,6 +24,7 @@ COMPILE_COMMANDS := $(BUILD_DIR)/compile_commands.json
 # Find sources
 CPP_FILES := $(shell find $(SRC_DIRS) -type f \( -name "*.cpp" -o -name "*.cc" -o -name "*.cxx" \))
 HDR_FILES := $(shell find $(SRC_DIRS) -type f \( -name "*.h" -o -name "*.hpp" \))
+GLSL_FILES := $(shell find $(SHADER_DIRS) -type f \( -name "*.glsl" -o -name "*.frag" -o -name "*.vert" \))
 
 # ============================================================
 # ANSI Colors
@@ -116,7 +118,7 @@ test-dbg:
 
 fmt:
 	@echo -e "$(COLOR_BLUE)▶ Running clang-format...$(COLOR_RESET)"
-	@for file in $(CPP_FILES) $(HDR_FILES); do \
+	@for file in $(CPP_FILES) $(HDR_FILES) $(GLSL_FILES); do \
 		echo -e "  $(COLOR_CYAN)fmt$(COLOR_RESET) $$file"; \
 		$(CLANG_FORMAT) -i "$$file"; \
 	done
@@ -176,6 +178,7 @@ stats:
 	@echo -e "$(COLOR_BLUE)▶ Project statistics$(COLOR_RESET)"
 	@echo -e "  Source files : $$(echo $(CPP_FILES) | wc -w)"
 	@echo -e "  Header files : $$(echo $(HDR_FILES) | wc -w)"
+	@echo -e "  Shader files : $$(echo $(GLSL_FILES) | wc -w)"
 	@echo -e "  Total files  : $$(echo $(CPP_FILES) $(HDR_FILES) | wc -w)"
 
 ccache-stats:

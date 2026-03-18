@@ -8,18 +8,20 @@ class Engine
 public:
   void init();
   void frame();
-  void set_input_enabled(bool v);
+  void set_mouse(float x, float y);
   void mouse_move(float dx, float dy);
 
-  bool       input_enabled = false;
   SceneGraph graph_;
 
   void transition_to_glow();
   void transition_to_monochrome();
 
-private:
   Renderer* renderer_ = nullptr;
 
+private:
   float mouse_dx = 0.0f;
   float mouse_dy = 0.0f;
+
+  float mouse_x = 0.0f;
+  float mouse_y = 0.0f;
 };
