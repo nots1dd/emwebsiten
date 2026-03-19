@@ -9,7 +9,7 @@ public:
   void init();
   void frame();
   void set_mouse(float x, float y);
-  void mouse_move(float dx, float dy);
+  void accumulate_mouse_delta(float dx, float dy);
 
   SceneGraph graph_;
 

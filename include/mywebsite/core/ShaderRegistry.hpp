@@ -2,41 +2,95 @@
 
 #include <array>
 #include <string_view>
+#include <cstddef>
 
+// ------------------------------------------------------------
+// ShaderID
+// ------------------------------------------------------------
+enum class ShaderID : std::size_t
+{
+    monochrome,
+    ultra,
+    fade_transition,
+    glitch_transition,
+    COUNT
+};
+
+// ------------------------------------------------------------
+// Shader Descriptor
+// ------------------------------------------------------------
 struct ShaderDesc
 {
-  std::string_view name;
-  std::string_view vert;
-  std::string_view frag;
+    ShaderID        id;
+    std::string_view name;
+    std::string_view vert;
+    std::string_view frag;
 };
 
-enum class ShaderID : size_t
+// ------------------------------------------------------------
+// Registry (single source of truth)
+// ------------------------------------------------------------
+constexpr auto shader_registry = std::to_array<ShaderDesc>({
+    {.id=ShaderID::monochrome,        .name="monochrome",        .vert="/assets/shaders/fullscreen.vert", .frag="/assets/shaders/monochrome.frag"},
+    {.id=ShaderID::ultra,             .name="ultra",             .vert="/assets/shaders/fullscreen.vert", .frag="/assets/shaders/ultra.frag"},
+    {.id=ShaderID::fade_transition,   .name="fade_transition",   .vert="/assets/shaders/fullscreen.vert", .frag="/assets/shaders/fade.transition.glsl"},
+    {.id=ShaderID::glitch_transition, .name="glitch_transition", .vert="/assets/shaders/fullscreen.vert", .frag="/assets/shaders/glitch.transition.glsl"},
+});
+
+// ------------------------------------------------------------
+// Compile-time validation
+// ------------------------------------------------------------
+constexpr auto validate_shader_registry() -> bool
 {
-  crt,
-  plasma,
-  monochrome,
-  ultra,
+    // size must match enum
+    if (shader_registry.size() != static_cast<std::size_t>(ShaderID::COUNT))
+        return false;
 
-  fade_transition,
-  glitch_transition,
+    // ensure ordering matches enum values
+    for (std::size_t i = 0; i < shader_registry.size(); ++i)
+    {
+        if (static_cast<std::size_t>(shader_registry[i].id) != i)
+            return false;
+    }
 
-  COUNT
-};
+    return true;
+}
 
-constexpr auto shader_registry = std::to_array<ShaderDesc>(
-  {{.name = "crt", .vert = "/assets/shaders/fullscreen.vert", .frag = "/assets/shaders/crt.frag"},
-   {.name = "plasma",
-    .vert = "/assets/shaders/fullscreen.vert",
-    .frag = "/assets/shaders/plasma.frag"},
-   {.name = "monochrome",
-    .vert = "/assets/shaders/fullscreen.vert",
-    .frag = "/assets/shaders/monochrome.frag"},
-   {.name = "ultra",
-    .vert = "/assets/shaders/fullscreen.vert",
-    .frag = "/assets/shaders/ultra.frag"},
-   {.name = "fade_transition",
-    .vert = "/assets/shaders/fullscreen.vert",
-    .frag = "/assets/shaders/fade.transition.glsl"},
-   {.name = "glitch_transition",
-    .vert = "/assets/shaders/fullscreen.vert",
-    .frag = "/assets/shaders/glitch.transition.glsl"}});
+static_assert(validate_shader_registry(),
+              "Shader registry mismatch with ShaderID");
+
+// ------------------------------------------------------------
+// Access helpers
+// ------------------------------------------------------------
+
+// ID -> descriptor
+constexpr auto get_shader(ShaderID id) -> const ShaderDesc&
+{
+    return shader_registry[static_cast<std::size_t>(id)];
+}
+
+// ID -> name
+constexpr auto shader_name(ShaderID id) -> std::string_view
+{
+    return get_shader(id).name;
+}
+
+// name -> ID
+constexpr auto shader_from_name(std::string_view name) -> ShaderID
+{
+    for (const auto& s : shader_registry)
+    {
+        if (s.name == name)
+            return s.id;
+    }
+    return ShaderID::COUNT;
+}
+
+// ------------------------------------------------------------
+// Utility
+// ------------------------------------------------------------
+
+constexpr auto shader_count() -> std::size_t
+{
+    return static_cast<std::size_t>(ShaderID::COUNT);
+}

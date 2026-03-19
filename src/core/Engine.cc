@@ -5,7 +5,7 @@
 
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Engine.hpp>
-#include <mywebsite/scene/Monochrome.hpp>
+#include <mywebsite/scene/Home.hpp>
 #include <mywebsite/scene/Ultra.hpp>
 #include <mywebsite/scene/transitions/ShaderTransition.hpp>
 
@@ -22,17 +22,17 @@ void Engine::set_mouse(float x, float y)
   mouse_y = y;
 }
 
-void Engine::mouse_move(float dx, float dy)
+void Engine::accumulate_mouse_delta(float dx, float dy)
 {
   mouse_dx += dx;
   mouse_dy += dy;
-
-  mouse_x += dx;
-  mouse_y += dy;
 }
 
 EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
 {
+  if (e->ctrlKey || e->metaKey)
+    return EM_FALSE;
+
   auto* engine = static_cast<Engine*>(userData);
 
   char k = std::tolower(e->key[0]);
@@ -63,6 +63,8 @@ EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
 
 EM_BOOL keyup_callback(int, const EmscriptenKeyboardEvent* e, void*)
 {
+  if (e->ctrlKey || e->metaKey)
+    return EM_FALSE;
 
   char k = std::tolower(e->key[0]);
 
@@ -113,14 +115,14 @@ void Engine::transition_to_monochrome()
 
   auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
 
-  graph_.transition(std::make_unique<MonochromeScene>(), std::move(transition));
+  graph_.transition(std::make_unique<HomeScene>(), std::move(transition));
 }
 
 void Engine::init()
 {
   AssetManager::instance().initialize();
 
-  auto& _ = AssetManager::instance().shaders().program<ShaderID::monochrome>();
+  // auto& _ = AssetManager::instance().shaders().program<ShaderID::monochrome>();
 
   static Renderer renderer;
   renderer_ = &renderer;
@@ -135,9 +137,9 @@ void Engine::init()
 
   emscripten_set_canvas_element_size("#canvas", fb_w, fb_h);
 
-  renderer_->init(w, h);
+  renderer_->init(fb_w, fb_h);
 
-  graph_.set(std::make_unique<MonochromeScene>());
+  graph_.set(std::make_unique<HomeScene>());
 
   emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, true, wheel_callback);
 
@@ -153,8 +155,8 @@ void Engine::frame()
   double delta = now - lastTime;
   lastTime     = now;
 
-  mouse_x = std::clamp(mouse_x, 0.0f, (float)renderer_->get_render_width());
-  mouse_y = std::clamp(mouse_y, 0.0f, (float)renderer_->get_render_height());
+  mouse_x = std::clamp(mouse_x, 0.0f, 1.0f);
+  mouse_y = std::clamp(mouse_y, 0.0f, 1.0f);
 
   graph_.update(delta);
 

@@ -15,6 +15,7 @@ CLANG_FORMAT := clang-format
 CLANG_TIDY   := clang-tidy
 MAKE  := make
 CMAKE := cmake
+EMCMAKE := emcmake
 CCACHE := ccache
 
 EXTRA_CMAKE_FLAGS ?=
@@ -62,7 +63,7 @@ build:
 
 buildx:
 	@echo -e "$(COLOR_BLUE)▶ Configuring Release ($(BUILD_DIR))...$(COLOR_RESET)"
-	@$(CMAKE) -S . -B $(BUILD_DIR) \
+	@$(EMCMAKE) $(CMAKE) -S . -B $(BUILD_DIR) \
 		-D CMAKE_BUILD_TYPE=Release \
 		$(EXTRA_CMAKE_FLAGS)
 	@$(MAKE) build
@@ -80,7 +81,7 @@ build-dbg:
 
 buildx-dbg:
 	@echo -e "$(COLOR_BLUE)▶ Configuring Debug ($(BUILD_DBG_DIR))...$(COLOR_RESET)"
-	@$(CMAKE) -S . -B $(BUILD_DBG_DIR) \
+	@$(EMCMAKE) $(CMAKE) -S . -B $(BUILD_DBG_DIR) \
 		-D CMAKE_BUILD_TYPE=Debug \
 		-D SEEDN_ENABLE_ASAN=ON \
 		$(EXTRA_CMAKE_FLAGS)

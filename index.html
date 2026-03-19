@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sid k</title>
+
+<style>
+
+/* --------------------------
+   RESET + BASE
+-------------------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #0a0a0a;
+  color: #eaeaea;
+}
+
+/* --------------------------
+   SHADER CANVAS
+-------------------------- */
+
+#canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* subtle overlay for readability */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0,0,0,0.2),
+    rgba(0,0,0,0.7)
+  );
+  z-index: 1;
+}
+
+/* --------------------------
+   LAYOUT
+-------------------------- */
+
+main {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+  margin: auto;
+  padding: 120px 24px;
+}
+
+/* --------------------------
+   HERO
+-------------------------- */
+
+.hero {
+  margin-bottom: 120px;
+}
+
+.hero h1 {
+  font-size: clamp(48px, 8vw, 72px);
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.hero p {
+  margin-top: 16px;
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+/* --------------------------
+   SECTIONS
+-------------------------- */
+
+.section {
+  margin-bottom: 100px;
+}
+
+.section h2 {
+  font-size: 28px;
+  margin-bottom: 24px;
+  opacity: 0.9;
+}
+
+/* --------------------------
+   PROJECT CARD
+-------------------------- */
+
+.card {
+  padding: 24px;
+  margin-bottom: 16px;
+
+  border-radius: 16px;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.08);
+}
+
+.card h3 {
+  margin: 0 0 8px 0;
+}
+
+.card p {
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* --------------------------
+   FOOTER
+-------------------------- */
+
+.footer {
+  opacity: 0.6;
+  font-size: 14px;
+}
+
+/* --------------------------
+   CURSOR HINT
+-------------------------- */
+
+#hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 13px;
+  opacity: 0.5;
+  z-index: 3;
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<main>
+
+  <section class="hero">
+    <h1>sid k</h1>
+    <p>world • systems • hello</p>
+  </section>
+
+  <section class="section">
+    <h2>Projects</h2>
+
+    <div class="card">
+      <h3>Testing 1</h3>
+      <p>A test worthy of valor</p>
+    </div>
+
+    <div class="card">
+      <h3>Procedural test 2</h3>
+      <p>idk, this test should fill upto a certain point.</p>
+    </div>
+
+  </section>
+
+  <section class="section">
+    <h2>Contact</h2>
+    <div class="footer">
+      GitHub / Email / etc.
+    </div>
+  </section>
+
+</main>
+
+<div id="hint">move cursor • interact</div>
+
+<script>
+var Module = {};
+
+window.addEventListener("load", () => {
+
+  const canvas = document.getElementById("canvas");
+  Module.canvas = canvas;
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width  = window.innerWidth  * dpr;
+    canvas.height = window.innerHeight * dpr;
+
+    canvas.style.width  = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+  }
+
+  window.addEventListener("resize", resize);
+  resize();
+
+  let lastX = 0;
+  let lastY = 0;
+
+  document.addEventListener("mousemove", (e) => {
+
+    const rect = canvas.getBoundingClientRect();
+
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
+
+    x = Math.max(0, Math.min(x, rect.width));
+    y = Math.max(0, Math.min(y, rect.height));
+
+    // ---------------------------
+    // ABSOLUTE (normalized)
+    // ---------------------------
+    const nx = x / rect.width;
+    const ny = 1.0 - (y / rect.height);
+
+    Module._set_mouse(nx, ny);
+
+    // ---------------------------
+    // DELTA (for camera)
+    // ---------------------------
+    const dx = e.movementX || (x - lastX);
+    const dy = e.movementY || (y - lastY);
+
+    Module._accumulate_mouse_delta(dx, dy);
+
+    lastX = x;
+    lastY = y;
+  });
+
+});
+</script>
+
+<script src="site.js"></script>
+
+</body>
+</html>

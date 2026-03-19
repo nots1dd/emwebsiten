@@ -8,6 +8,9 @@ extern "C"
 
   EMSCRIPTEN_KEEPALIVE
   void set_mouse(float x, float y) { engine.set_mouse(x, y); }
+
+  EMSCRIPTEN_KEEPALIVE
+  void accumulate_mouse_delta(float dx, float dy) { engine.accumulate_mouse_delta(dx, dy); }
 }
 
 void frame() { engine.frame(); }
