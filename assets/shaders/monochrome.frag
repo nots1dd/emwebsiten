@@ -57,21 +57,28 @@ void main()
   vec3 ro = uCameraPos;
   vec3 rd = normalize((uView * vec4(uv, -1.0, 0.0)).xyz);
 
-  float t = -ro.z / rd.z;
-  vec3 hit = ro + rd * t;
+  float t   = -ro.z / rd.z;
+  vec3  hit = ro + rd * t;
 
   vec2 p = hit.xy;
 
   /* ---------------------------
      CURSOR (world space)
   --------------------------- */
-  vec2 m = (uMouse - 0.5) * 2.0;
-  m.x *= uResolution.x / uResolution.y;
+  vec2 mouseUV = (uMouse - 0.5) * 2.0;
+  mouseUV.x *= uResolution.x / uResolution.y;
 
-  vec2 cursor = m * 3.5;
+  /* build ray from mouse */
+  vec3 rdMouse = normalize((uView * vec4(mouseUV, -1.0, 0.0)).xyz);
+
+  /* intersect same plane as scene */
+  float tMouse   = -ro.z / rdMouse.z;
+  vec3  hitMouse = ro + rdMouse * tMouse;
+
+  vec2 cursor = hitMouse.xy;
 
   float dist = length(p - cursor);
-  vec2 dir = normalize(p - cursor + 1e-5);
+  vec2  dir  = normalize(p - cursor + 1e-5);
 
   /* ---------------------------
      FORCE FIELD (cleaner)
@@ -84,8 +91,8 @@ void main()
 
   /* swirl */
   float angle = influence * 0.8;
-  mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-  p = cursor + rot * (p - cursor);
+  mat2  rot   = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+  p           = cursor + rot * (p - cursor);
 
   /* subtle ripple */
   p += dir * sin(dist * 10.0 - uTime * 4.0) * 0.05 * influence;
@@ -93,8 +100,8 @@ void main()
   /* ---------------------------
      HEIGHT → 3D SURFACE
   --------------------------- */
-  float h = field(p);
-  vec3 pos = vec3(p, h * 0.4);
+  float h   = field(p);
+  vec3  pos = vec3(p, h * 0.4);
 
   vec3 normal = getNormal(p);
 
@@ -111,8 +118,8 @@ void main()
   float diff = max(dot(normal, lightDir), 0.0);
 
   /* specular */
-  vec3 reflectDir = reflect(-lightDir, normal);
-  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+  vec3  reflectDir = reflect(-lightDir, normal);
+  float spec       = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
 
   /* ambient */
   float ambient = 0.2;
@@ -134,7 +141,7 @@ void main()
      CURSOR (smaller + crisp)
   --------------------------- */
 
-  float core = exp(-dist * 40.0); // much tighter
+  float core = exp(-dist * 20.0); // much tighter
   float ring = smoothstep(0.06, 0.05, abs(dist - 0.12));
 
   float cursor_vis = core * 1.2 + ring * 0.8;

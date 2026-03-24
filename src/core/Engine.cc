@@ -1,13 +1,14 @@
 #include <algorithm>
+#include <memory>
 #include <print>
-
-#include <emscripten/html5.h>
 
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Engine.hpp>
 #include <mywebsite/scene/Home.hpp>
-#include <mywebsite/scene/Ultra.hpp>
+#include <mywebsite/scene/Page2.hpp>
 #include <mywebsite/scene/transitions/ShaderTransition.hpp>
+
+#include <emscripten/html5.h>
 
 static double lastTime = 0.0;
 
@@ -47,9 +48,9 @@ EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
     key_d = true;
 
   if (k == '1')
-    engine->transition_to_glow();
+    engine->transition_to_page2();
   if (k == '2')
-    engine->transition_to_monochrome();
+    engine->transition_to_home();
 
   if (k == 'r')
   {
@@ -100,16 +101,16 @@ EM_BOOL wheel_callback(int, const EmscriptenWheelEvent* e, void* userData)
   return EM_TRUE;
 }
 
-void Engine::transition_to_glow()
+void Engine::transition_to_page2()
 {
   auto& glitch = AssetManager::instance().shaders().program<ShaderID::glitch_transition>();
 
   auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
 
-  graph_.transition(std::make_unique<UltraScene>(), std::move(transition));
+  graph_.transition(std::make_unique<Page2Scene>(), std::move(transition));
 }
 
-void Engine::transition_to_monochrome()
+void Engine::transition_to_home()
 {
   auto& glitch = AssetManager::instance().shaders().program<ShaderID::glitch_transition>();
 
@@ -121,8 +122,6 @@ void Engine::transition_to_monochrome()
 void Engine::init()
 {
   AssetManager::instance().initialize();
-
-  // auto& _ = AssetManager::instance().shaders().program<ShaderID::monochrome>();
 
   static Renderer renderer;
   renderer_ = &renderer;
@@ -139,13 +138,13 @@ void Engine::init()
 
   renderer_->init(fb_w, fb_h);
 
-  graph_.set(std::make_unique<HomeScene>());
+  graph_.set(std::make_unique<Page2Scene>());
 
-  emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, true, wheel_callback);
+  emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, true, wheel_callback);
 
-  emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, true, keydown_callback);
+  emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, true, keydown_callback);
 
-  emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, true, keyup_callback);
+  emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, true, keyup_callback);
 }
 
 void Engine::frame()

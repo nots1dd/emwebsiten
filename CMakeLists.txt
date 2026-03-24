@@ -1,6 +1,74 @@
 cmake_minimum_required(VERSION 3.5...4.2.1)
 project(emwebsiten LANGUAGES C CXX)
 
+# general project cmake includes
+include(cmake/Assets.cmake)
+
+# -----------------------------------------------------------
+# Emscripten toolchain detection (STRICT)
+# -----------------------------------------------------------
+
+# Try to locate tools
+find_program(EMWEBSITEN_EMCMAKE emcmake)
+find_program(EMWEBSITEN_EMCC emcc)
+find_program(EMWEBSITEN_EMXX em++)
+
+# Debug print
+message(STATUS "---- Emscripten Toolchain Detection ----")
+message(STATUS "emcmake : ${EMWEBSITEN_EMCMAKE}")
+message(STATUS "emcc    : ${EMWEBSITEN_EMCC}")
+message(STATUS "em++    : ${EMWEBSITEN_EMXX}")
+
+# Fail if not found
+if(NOT EMWEBSITEN_EMCMAKE OR NOT EMWEBSITEN_EMCC OR NOT EMWEBSITEN_EMXX)
+    message(FATAL_ERROR
+        "\n❌ Emscripten toolchain not found!\n"
+        "Make sure you ran:\n"
+        "  source emsdk_env.sh\n"
+    )
+endif()
+
+# -----------------------------------------------------------
+# Detect EMSDK root (from emcc path)
+# -----------------------------------------------------------
+
+get_filename_component(EMWEBSITEN_EMCC_DIR ${EMWEBSITEN_EMCC} DIRECTORY)
+get_filename_component(EMWEBSITEN_EMSDK_ROOT ${EMWEBSITEN_EMCC_DIR}/../.. ABSOLUTE)
+
+message(STATUS "Detected EMSDK root: ${EMWEBSITEN_EMSDK_ROOT}")
+
+# -----------------------------------------------------------
+# Reject system emscripten (/usr/lib)
+# -----------------------------------------------------------
+
+if(EMWEBSITEN_EMCC MATCHES "^/usr/")
+    message(FATAL_ERROR
+        "\n❌ System Emscripten detected!\n"
+        "Path: ${EMWEBSITEN_EMCC}\n\n"
+        "This project requires EMSDK version.\n"
+        "Fix:\n"
+        "  source /path/to/emsdk/emsdk_env.sh\n"
+        "  rm -rf build\n"
+    )
+endif()
+
+# -----------------------------------------------------------
+# Ensure CMake is actually using em++
+# -----------------------------------------------------------
+
+if(NOT CMAKE_CXX_COMPILER MATCHES "em\\+\\+")
+    message(FATAL_ERROR
+        "\n❌ CMake is NOT using em++!\n"
+        "Current compiler: ${CMAKE_CXX_COMPILER}\n\n"
+        "Fix:\n"
+        "  emcmake cmake ...\n"
+        "or\n"
+        "  -DCMAKE_CXX_COMPILER=em++\n"
+    )
+endif()
+
+message(STATUS "✔ Emscripten toolchain validated")
+
 # -----------------------------------------------------------
 # ccache detect
 # -----------------------------------------------------------
@@ -93,8 +161,6 @@ target_include_directories(${PROJECT_NAME}
         ${STB_DIR}
 )
 
-set(EMWEBSITEN_ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
-
 # -----------------------------------------------------------
 # Assets (Emscripten Virtual FS)
 # -----------------------------------------------------------
@@ -103,55 +169,14 @@ set(EMWEBSITEN_ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
 set(EMWEBSITEN_ASSET_FILES "")
 set(EMWEBSITEN_ASSET_VFS_PATHS "")
-set(EMWEBSITEN_PRELOAD_ASSETS "")
 
-if(EXISTS "${EMWEBSITEN_ASSETS_DIR}")
-
-    # -------------------------------------------------------
-    # Enumerate all asset files (for diagnostics only)
-    # -------------------------------------------------------
-    file(GLOB_RECURSE EMWEBSITEN_ASSET_FILES
-        RELATIVE "${EMWEBSITEN_ASSETS_DIR}"
-        "${EMWEBSITEN_ASSETS_DIR}/*"
-    )
-
-    foreach(asset IN LISTS EMWEBSITEN_ASSET_FILES)
-        list(APPEND EMWEBSITEN_ASSET_VFS_PATHS "/assets/${asset}")
-    endforeach()
-
-    # -------------------------------------------------------
-    # Emscripten preload directive (linker option)
-    # -------------------------------------------------------
-    set(EMWEBSITEN_PRELOAD_ASSETS
-        "--preload-file=${EMWEBSITEN_ASSETS_DIR}@/assets"
-    )
-
-else()
-    message(STATUS "Assets directory not found: ${EMWEBSITEN_ASSETS_DIR}")
-endif()
-
-# -----------------------------------------------------------
-# Assets Summary
-# -----------------------------------------------------------
-if(EMWEBSITEN_ASSET_VFS_PATHS)
-    message(STATUS "${SEP}")
-    message(STATUS "${SEP}  ── Preloaded Assets ─────────────────────────────")
-
-    foreach(asset ${EMWEBSITEN_ASSET_VFS_PATHS})
-        message(STATUS "${SEP}  • ${asset}")
-    endforeach()
-else()
-    message(STATUS "${SEP}")
-    message(STATUS "${SEP}  ── Preloaded Assets ─────────────────────────────")
-    message(STATUS "${SEP}  (none)")
-endif()
+emwebsiten_assets_setup(${PROJECT_NAME} ${EMWEBSITEN_ASSETS_DIR})
 
 target_link_options(${PROJECT_NAME}
     PRIVATE
         -sUSE_WEBGL2=1
         -sWASM=1
         -sALLOW_MEMORY_GROWTH=1
-        ${EMWEBSITEN_PRELOAD_ASSETS}
 )
 
 # -----------------------------------------------------------

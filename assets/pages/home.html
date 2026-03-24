@@ -1,0 +1,74 @@
+<!-- assets/pages/home.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>sid k</title>
+
+  <link rel="stylesheet" href="/assets/styles/base.css">
+  <link rel="stylesheet" href="/assets/styles/layout.css">
+  <link rel="stylesheet" href="/assets/styles/components.css">
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<!-- NAVBAR -->
+<div id="navbar"></div>
+
+<div class="content">
+<main>
+
+  <section class="hero">
+    <h1 class="title">sid k</h1>
+    <p class="subtitle">systems • graphics • experiments</p>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section">
+    <h2>About</h2>
+    <p>
+      my about goes here.
+    </p>
+  </section>
+
+  <!-- BLOG PREVIEW -->
+  <section class="section">
+    <h2>Blog</h2>
+
+    <div class="card">
+      <h3>Building a shader engine</h3>
+      <p>How I structured rendering + assets.</p>
+    </div>
+
+    <div class="card">
+      <h3>WASM + CMake pipeline</h3>
+      <p>Asset bundling and dev workflow.</p>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <section class="section footer">
+    GitHub / Email / etc.
+  </section>
+
+</main>
+</div>
+
+<script src="/assets/scripts/main.js"></script>
+<script>
+var Module = {
+  locateFile: function(path) {
+    if (path.endsWith(".data") || path.endsWith(".wasm")) {
+      return "/build/" + path;
+    }
+    return path;
+  }
+};
+</script>
+<script src="/build/site.js"></script>
+
+</body>
+</html>

@@ -1,8 +1,9 @@
 CompileFlags:
-  Compiler: /usr/lib/emscripten/em++
+  Compiler: /home/s1dd/dev/emwebsiten/emsdk/upstream/emscripten/em++
   Add: [
-    "-I/usr/lib/emscripten/system/include",
-    -std=c++23,
-    -DEMSCRIPTEN
+    "--target=wasm32-unknown-emscripten",
+    "--sysroot=/home/s1dd/dev/emwebsiten/emsdk/upstream/emscripten/cache/sysroot",
+    "-std=c++23",
+    "-DEMSCRIPTEN"
   ]
   CompilationDatabase: build

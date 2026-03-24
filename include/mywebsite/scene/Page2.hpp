@@ -2,9 +2,7 @@
 
 #include <mywebsite/scene/Scene.hpp>
 
-// home scene
-
-class HomeScene : public Scene
+class Page2Scene : public Scene
 {
 public:
   void render(Renderer& renderer) override;

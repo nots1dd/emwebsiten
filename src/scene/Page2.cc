@@ -1,10 +1,10 @@
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Renderer.hpp>
-#include <mywebsite/scene/Home.hpp>
+#include <mywebsite/scene/Page2.hpp>
 
-void HomeScene::render(Renderer& renderer)
+void Page2Scene::render(Renderer& renderer)
 {
-  auto& post = AssetManager::instance().shaders().program<ShaderID::monochrome>();
+  auto& post = AssetManager::instance().shaders().program<ShaderID::plasma>();
 
   FrameUniforms frame{};
 

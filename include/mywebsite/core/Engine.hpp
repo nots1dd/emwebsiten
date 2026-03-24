@@ -13,8 +13,8 @@ public:
 
   SceneGraph graph_;
 
-  void transition_to_glow();
-  void transition_to_monochrome();
+  void transition_to_page2();
+  void transition_to_home();
 
   Renderer* renderer_ = nullptr;
 

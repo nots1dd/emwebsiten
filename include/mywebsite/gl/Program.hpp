@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mywebsite/gl/Shader.hpp>
+#include <unordered_map>
 
 class Program
 {
@@ -16,6 +17,9 @@ public:
   [[nodiscard]] auto id() const -> GLuint { return id_; }
 
 private:
-  GLuint id_{0};
-  bool   linked_{false};
+  GLuint                                         id_{0};
+  bool                                           linked_{false};
+  mutable std::unordered_map<std::string, GLint> uniform_cache_;
+
+  auto validate_uniforms() -> bool;
 };
