@@ -2,9 +2,13 @@
 
 html, body {
   margin: 0;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: "Gabarito", system-ui, sans-serif;
   background: #0a0a0a;
   color: #eaeaea;
+  height: 100%;
+  width: 100%;
+  min-width: 100vw;
+  overflow-x: hidden;
 }
 
 body.light {
@@ -23,4 +27,13 @@ body.light .card {
 
 body.light .navbar {
   background: rgba(255,255,255,0.6);
+}
+
+body.light .footer {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+body.light .footer-meta {
+  opacity: 0.6;
 }

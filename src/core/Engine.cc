@@ -103,7 +103,7 @@ EM_BOOL wheel_callback(int, const EmscriptenWheelEvent* e, void* userData)
 
 void Engine::transition_to_page2()
 {
-  auto& glitch = AssetManager::instance().shaders().program<ShaderID::glitch_transition>();
+  auto& glitch = AssetManager::instance().shaders().program<ShaderID::liquid_transition>();
 
   auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
 
@@ -112,7 +112,7 @@ void Engine::transition_to_page2()
 
 void Engine::transition_to_home()
 {
-  auto& glitch = AssetManager::instance().shaders().program<ShaderID::glitch_transition>();
+  auto& glitch = AssetManager::instance().shaders().program<ShaderID::liquid_transition>();
 
   auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
 

@@ -138,18 +138,6 @@ void main()
   float col = shade * lighting * vignette;
 
   /* ---------------------------
-     CURSOR (smaller + crisp)
-  --------------------------- */
-
-  float core = exp(-dist * 20.0); // much tighter
-  float ring = smoothstep(0.06, 0.05, abs(dist - 0.12));
-
-  float cursor_vis = core * 1.2 + ring * 0.8;
-
-  /* subtle highlight */
-  col += cursor_vis * 0.25;
-
-  /* ---------------------------
      FINAL
   --------------------------- */
 

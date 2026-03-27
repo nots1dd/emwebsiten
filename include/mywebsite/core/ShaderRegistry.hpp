@@ -15,6 +15,7 @@ enum class ShaderID : std::size_t
   nature,
   fade_transition,
   glitch_transition,
+  liquid_transition,
   COUNT
 };
 
@@ -57,6 +58,10 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "glitch_transition",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/glitch.transition.glsl"},
+  {.id   = ShaderID::liquid_transition,
+   .name = "liquid_transition",
+   .vert = "/assets/shaders/fullscreen.vert",
+   .frag = "/assets/shaders/liquid.transition.glsl"},
 });
 
 // ------------------------------------------------------------

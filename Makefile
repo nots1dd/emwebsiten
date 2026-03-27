@@ -1,9 +1,9 @@
 # ============================================================
-# mywebsite — Edge CDN Makefile
+# emwebsiten - Makefile
 # ============================================================
 
-PROJECT_NAME := mywebsite
-EDGE_BINARY  := mywebsite
+PROJECT_NAME := emwebsiten
+EDGE_BINARY  := emwebsiten
 
 SRC_DIRS := src include
 SHADER_DIRS := assets/shaders
@@ -50,7 +50,8 @@ COLOR_CYAN  := \033[36m
 	clean fmt fmt-check tidy \
 	test test-dbg \
 	stats verify-deps install-deps \
-	ccache-stats help
+	ccache-stats help \
+	run-website stop-website website-status website-logs
 
 # ============================================================
 # Release Build
@@ -191,12 +192,28 @@ ccache-stats:
 	fi
 
 # ============================================================
+# Website deployment (local)
+# ============================================================
+
+website-run:    
+	./scripts/run-website.sh start
+
+website-stop:   
+	./scripts/run-website.sh stop
+
+website-status: 
+	./scripts/run-website.sh status
+
+website-logs:   
+	./scripts/run-website.sh logs
+
+# ============================================================
 # Help
 # ============================================================
 
 help:
 	@echo ""
-	@echo -e "$(COLOR_BOLD)$(COLOR_GREEN)seeDN Makefile — Targets$(COLOR_RESET)"
+	@echo -e "$(COLOR_BOLD)$(COLOR_GREEN)emwebsiten Makefile — Targets$(COLOR_RESET)"
 	@echo ""
 	@echo -e "  $(COLOR_CYAN)buildx$(COLOR_RESET)        Configure + build Release"
 	@echo -e "  $(COLOR_CYAN)buildx-dbg$(COLOR_RESET)    Configure + build Debug (ASAN)"
