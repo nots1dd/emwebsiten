@@ -2,7 +2,9 @@
 
 #include <mywebsite/scene/Scene.hpp>
 
-class Page2Scene : public Scene
+// general scene not built yet on website
+
+class UnderConstructionScene : public Scene
 {
 public:
   void render(Renderer& renderer) override;

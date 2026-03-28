@@ -1,10 +1,10 @@
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Renderer.hpp>
-#include <mywebsite/scene/Page2.hpp>
+#include <mywebsite/scene/AboutInv.hpp>
 
-void Page2Scene::render(Renderer& renderer)
+void AboutInvScene::render(Renderer& renderer)
 {
-  auto& post = AssetManager::instance().shaders().program<ShaderID::plasma>();
+  auto& post = AssetManager::instance().shaders().program<ShaderID::not_neon_inv>();
 
   FrameUniforms frame{};
 

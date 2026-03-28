@@ -225,5 +225,36 @@ void main()
   col *= vignette;
   col *= 0.94 + 0.06 * sin(uTime * 0.4); /* breathing pulse */
 
-  FragColor = vec4(vec3(col), 1.0);
+  /* invert base */
+  float inv = 1.0 - col;
+
+  /* clouds → dark gray */
+  float clouds     = density * 0.7;
+  float darkClouds = smoothstep(0.2, 0.8, clouds);
+
+  /* stars → dark flicker */
+  float darkStars = (starField + starField2) * 0.8;
+
+  /* invert star behavior */
+  darkStars = pow(darkStars, 0.6);
+
+  /* base white space */
+  vec3 bg = vec3(1.0);
+
+  /* subtract clouds + stars */
+  vec3 rgb = bg - vec3(darkClouds * 0.6) - vec3(darkStars * 0.9);
+
+  /* preserve black hole */
+  rgb *= (1.0 - horizon);
+  rgb -= vec3(ring * 0.4);
+
+  /* vignette (invert style) */
+  rgb *= 1.0 - smoothstep(0.6, 1.5, length(uv)) * 0.1;
+
+  /* subtle flicker */
+  rgb *= 0.97 + 0.03 * sin(uTime * 0.6);
+
+  rgb = clamp(rgb, 0.0, 1.0);
+
+  FragColor = vec4(rgb, 1.0);
 }

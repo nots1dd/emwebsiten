@@ -10,12 +10,14 @@
 enum class ShaderID : std::size_t
 {
   monochrome,
-  plasma,
+  monochrome_inv,
+  not_neon,
+  not_neon_inv,
   ultra,
-  nature,
   fade_transition,
   glitch_transition,
   liquid_transition,
+  crack_transition,
   COUNT
 };
 
@@ -38,18 +40,22 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "monochrome",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/monochrome.frag"},
-  {.id   = ShaderID::plasma,
-   .name = "plasma",
+  {.id   = ShaderID::monochrome_inv,
+   .name = "monochrome_inv",
    .vert = "/assets/shaders/fullscreen.vert",
-   .frag = "/assets/shaders/plasma.frag"},
+   .frag = "/assets/shaders/monochrome-inv.frag"},
+  {.id   = ShaderID::not_neon,
+   .name = "not_neon",
+   .vert = "/assets/shaders/fullscreen.vert",
+   .frag = "/assets/shaders/not-neon.frag"},
+  {.id   = ShaderID::not_neon_inv,
+   .name = "not_neon_inv",
+   .vert = "/assets/shaders/fullscreen.vert",
+   .frag = "/assets/shaders/not-neon-inv.frag"},
   {.id   = ShaderID::ultra,
    .name = "ultra",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/ultra.frag"},
-  {.id   = ShaderID::nature,
-   .name = "nature",
-   .vert = "/assets/shaders/fullscreen.vert",
-   .frag = "/assets/shaders/nature.frag"},
   {.id   = ShaderID::fade_transition,
    .name = "fade_transition",
    .vert = "/assets/shaders/fullscreen.vert",
@@ -62,6 +68,10 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "liquid_transition",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/liquid.transition.glsl"},
+  {.id   = ShaderID::crack_transition,
+   .name = "crack_transition",
+   .vert = "/assets/shaders/fullscreen.vert",
+   .frag = "/assets/shaders/crack.transition.glsl"},
 });
 
 // ------------------------------------------------------------

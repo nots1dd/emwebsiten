@@ -1,11 +1,10 @@
 #include <algorithm>
-#include <memory>
 #include <print>
 
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Engine.hpp>
 #include <mywebsite/scene/Home.hpp>
-#include <mywebsite/scene/Page2.hpp>
+#include <mywebsite/scene/HomeInv.hpp>
 #include <mywebsite/scene/transitions/ShaderTransition.hpp>
 
 #include <emscripten/html5.h>
@@ -29,12 +28,10 @@ void Engine::accumulate_mouse_delta(float dx, float dy)
   mouse_dy += dy;
 }
 
-EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
+EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void*)
 {
   if (e->ctrlKey || e->metaKey)
     return EM_FALSE;
-
-  auto* engine = static_cast<Engine*>(userData);
 
   char k = std::tolower(e->key[0]);
 
@@ -46,11 +43,6 @@ EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void* userData)
     key_s = true;
   if (k == 'd')
     key_d = true;
-
-  if (k == '1')
-    engine->transition_to_page2();
-  if (k == '2')
-    engine->transition_to_home();
 
   if (k == 'r')
   {
@@ -101,24 +93,6 @@ EM_BOOL wheel_callback(int, const EmscriptenWheelEvent* e, void* userData)
   return EM_TRUE;
 }
 
-void Engine::transition_to_page2()
-{
-  auto& glitch = AssetManager::instance().shaders().program<ShaderID::liquid_transition>();
-
-  auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
-
-  graph_.transition(std::make_unique<Page2Scene>(), std::move(transition));
-}
-
-void Engine::transition_to_home()
-{
-  auto& glitch = AssetManager::instance().shaders().program<ShaderID::liquid_transition>();
-
-  auto transition = std::make_unique<ShaderTransition>(glitch, 1.0f);
-
-  graph_.transition(std::make_unique<HomeScene>(), std::move(transition));
-}
-
 void Engine::init()
 {
   AssetManager::instance().initialize();
@@ -138,7 +112,7 @@ void Engine::init()
 
   renderer_->init(fb_w, fb_h);
 
-  graph_.set(std::make_unique<Page2Scene>());
+  graph_.set(std::make_unique<HomeScene>());
 
   emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, true, wheel_callback);
 
@@ -176,7 +150,14 @@ void Engine::frame()
     if (key_d)
       cam.move_right(speed);
 
-    float sensitivity = 0.002f;
+    float zoom = cam.zoom();
+
+    /* normalized zoom factor */
+    float zoomFactor = std::clamp(zoom, 0.2f, 5.0f);
+
+    float sensitivity = 0.002f * (1.0f / (0.3f + zoomFactor));
+
+    sensitivity = std::clamp(sensitivity, 0.0004f, 0.01f);
 
     cam.rotate(mouse_dx * sensitivity, mouse_dy * sensitivity);
 

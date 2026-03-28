@@ -8,7 +8,7 @@ class GLSLLoader
 public:
   // Load + preprocess a shader file
   static auto load(const std::string_view& path, const std::string& version = "300 es",
-                   const std::string& precision = "mediump float") -> std::string;
+                   const std::string& precision = "highp float") -> std::string;
 
 private:
   static auto load_file(const std::string_view& path) -> std::string;
