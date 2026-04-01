@@ -1,10 +1,25 @@
 import { normalizePath } from "./utils.js";
+import { renderBlogPost } from "./components.js";
 
 export const ROUTES = {
   "/": "/frontend/pages/home.html",
   "/about": "/frontend/pages/about.html",
   "/blog": "/frontend/pages/blogs.html",
   "/projects": "/frontend/pages/projects.html",
+
+  "/blog/test1": "/frontend/pages/blog-post.html",
+  "/blog/test2": "/frontend/pages/blog-post.html",
+};
+
+export const BLOG_POSTS = {
+  "/blog/test1": {
+    title: "world hello",
+    file: "/public/blogs/test.md",
+  },
+  "/blog/test2": {
+    title: "Hello world",
+    file: "/public/blogs/test2.md",
+  },
 };
 
 export function routeToWasm(path) {
@@ -23,8 +38,8 @@ export function routeToWasm(path) {
 function attachCardHandlers() {
   document.querySelectorAll('.card').forEach(card => {
     card.onclick = () => {
-      const url = card.dataset.url;
-      if (url) window.open(url, '_blank');
+      const route = card.dataset.route;
+      if (route) navigate(route);
     };
   });
 }
@@ -67,10 +82,9 @@ export async function renderRoute(path) {
 
   routeToWasm(finalPath);
 
-  setTimeout(() => {
-    const first = document.querySelector(".card");
-    if (first) first.focus();
-  }, 0);
+  if (BLOG_POSTS[finalPath]) {
+    await renderBlogPost(finalPath);
+  }
 
   attachCardHandlers();
 }

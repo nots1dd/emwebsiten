@@ -1,0 +1,217 @@
+/* =========================
+   MARKDOWN BASE
+========================= */
+.markdown {
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.markdown h1,
+.markdown h2 {
+  margin: 24px 0 12px;
+}
+
+.markdown p {
+  opacity: 0.85;
+}
+
+/* =========================
+   INLINE CODE
+========================= */
+.markdown p code,
+.markdown li code {
+  background: var(--inline-code-bg);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* =========================
+   PRE BLOCK
+========================= */
+.markdown pre {
+  background: var(--inline-code-bg);
+  padding: 16px;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+/* =========================
+   CALLOUTS
+========================= */
+.md-callout {
+  margin: 10px 0;
+  padding: 12px 16px;
+
+  border-left: 4px solid var(--callout-border);
+  border-radius: 8px;
+
+  background: var(--callout-bg);
+  backdrop-filter: blur(8px);
+}
+
+/* title */
+.md-callout-title {
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  opacity: 0.85;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: var(--callout-border);
+}
+
+/* content */
+.md-callout-content p {
+  margin: 6px 0;
+  opacity: 1;
+}
+
+/* variants */
+.md-warning {
+  --callout-border: var(--callout-warning-border);
+  --callout-bg: var(--callout-warning-bg);
+}
+
+.md-info {
+  --callout-border: var(--callout-info-border);
+  --callout-bg: var(--callout-info-bg);
+}
+
+.md-caution {
+  --callout-border: var(--callout-caution-border);
+  --callout-bg: var(--callout-caution-bg);
+}
+
+.md-important {
+  --callout-border: var(--callout-important-border);
+  --callout-bg: var(--callout-important-bg);
+}
+
+.md-note {
+  --callout-border: var(--callout-note-border);
+  --callout-bg: var(--callout-note-bg);
+}
+
+/* =========================
+   CODE BLOCK (WRAPPER)
+========================= */
+.md-codeblock {
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 20px 0;
+
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+}
+
+.md-codeblock code {
+  all: unset;
+  font-family: monospace;
+  white-space: pre;
+}
+
+.md-codeblock code span {
+  background: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* =========================
+   HEADER
+========================= */
+.md-code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 6px 12px;
+  font-size: 12px;
+  opacity: 0.7;
+
+  border-bottom: 1px solid var(--code-border);
+}
+
+/* =========================
+   COPY BUTTON
+========================= */
+.md-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 8px;
+  font-size: 12px;
+
+  border-radius: 6px;
+  border: 1px solid var(--copy-btn-border);
+
+  background: var(--copy-btn-bg);
+  color: var(--text);
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.md-copy-btn:hover {
+  background: var(--copy-btn-hover);
+  transform: translateY(-1px);
+}
+
+.md-copy-btn:active {
+  transform: scale(0.96);
+}
+
+/* =========================
+   CODE AREA
+========================= */
+.md-codeblock pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  background: transparent;
+}
+
+/* =========================
+   SYNTAX
+========================= */
+.kw  { color: var(--syntax-kw); }
+.str { color: var(--syntax-str); }
+.com { color: var(--syntax-com); }
+.num { color: var(--syntax-num); }
+.fn  { color: var(--syntax-fn); }
+
+/* =========================
+   TABLES
+========================= */
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.markdown thead {
+  background: var(--table-head);
+}
+
+.markdown th {
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
+.markdown td {
+  padding: 10px 12px;
+  border-top: 1px solid var(--code-border);
+}
+
+.markdown tbody tr:nth-child(even) {
+  background: var(--table-row);
+}
+
+.markdown tbody tr:hover {
+  background: var(--table-hover);
+}

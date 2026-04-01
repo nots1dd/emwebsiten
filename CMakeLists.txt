@@ -177,6 +177,7 @@ target_link_options(${PROJECT_NAME}
         -sUSE_WEBGL2=1
         -sWASM=1
         -sALLOW_MEMORY_GROWTH=1
+        -sEXPORTED_RUNTIME_METHODS=['ccall']
 )
 
 # -----------------------------------------------------------
@@ -185,6 +186,7 @@ target_link_options(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         md4c
+        md4c-html
         stb
 )
 

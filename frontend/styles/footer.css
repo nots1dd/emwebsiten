@@ -1,0 +1,184 @@
+/* =========================
+   FOOTER
+========================= */
+.footer {
+  font-family: inherit;
+  margin-top: 120px;
+  padding: 28px 32px;
+  z-index: 5;
+
+  position: relative;
+
+  border-radius: 20px;
+
+  backdrop-filter: blur(18px);
+
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+
+  box-shadow:
+    0 10px 30px var(--shadow-soft),
+    inset 0 0 30px var(--glass-highlight);
+}
+
+/* =========================
+   TOP GLOW LINE
+========================= */
+.footer::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--glass-highlight),
+    transparent
+  );
+
+  opacity: 0.4;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.footer:hover::before {
+  opacity: 1;
+  transform: scaleX(1.1);
+}
+
+/* =========================
+   INTERNAL LIGHTING
+========================= */
+.footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      var(--glass-highlight),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 80% 50%,
+      var(--glass-highlight),
+      transparent 60%
+    );
+
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footer-brand {
+  font-size: 15px;
+  letter-spacing: 0.6px;
+}
+
+.footer-meta {
+  font-size: 12px;
+  opacity: 0.45;
+}
+
+/* =========================
+   LINKS
+========================= */
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.footer-links a {
+  font-size: 13px;
+
+  position: relative;
+  overflow: hidden;
+
+  padding: 6px 10px;
+  border-radius: 10px;
+
+  color: var(--text);
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    opacity 0.25s ease;
+}
+
+/* shine sweep */
+.footer-links a::before {
+  content: "";
+  pointer-events: none;
+
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    var(--glass-highlight),
+    transparent
+  );
+
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: all 0.4s ease;
+}
+
+.footer-links a:hover::before {
+  opacity: 1;
+  transform: translateX(100%);
+}
+
+/* hover state */
+.footer-links a:hover {
+  opacity: 1;
+
+  transform: translateY(-2px) scale(1.03);
+
+  background: var(--copy-btn-bg);
+
+  box-shadow:
+    0 6px 20px var(--shadow-soft),
+    inset 0 1px 0 var(--glass-highlight);
+}
+
+/* underline animation */
+.footer-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+
+  width: 0%;
+  height: 1px;
+
+  background: var(--link-hover-underline);
+  transition: 0.3s;
+}
+
+.footer-links a:hover::after {
+  width: 100%;
+}

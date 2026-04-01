@@ -6,9 +6,8 @@ void HomeScene::render(Renderer& renderer)
 {
   auto& shaders = AssetManager::instance().shaders();
 
-  auto& post = (theme_ == Theme::Inverted)
-                 ? shaders.program<ShaderID::monochrome_inv>()
-                 : shaders.program<ShaderID::monochrome>();
+  auto& post = (theme_ == Theme::Inverted) ? shaders.program<ShaderID::monochrome_inv>()
+                                           : shaders.program<ShaderID::monochrome>();
 
   FrameUniforms frame{};
 

@@ -1,0 +1,115 @@
+/* =========================
+   NAVBAR
+========================= */
+.navbar {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 1000px;
+
+  z-index: 5;
+
+  border-radius: 16px;
+  backdrop-filter: blur(16px);
+
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+
+  box-shadow: 0 10px 40px var(--shadow-strong);
+}
+
+/* =========================
+   INNER
+========================= */
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+}
+
+/* =========================
+   LINKS
+========================= */
+.nav-links a {
+  margin-left: 20px;
+  text-decoration: none;
+
+  color: var(--text);
+  opacity: 0.6;
+
+  position: relative;
+  transition: 0.25s;
+}
+
+/* pill container */
+.nav-link {
+  position: relative;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  color: inherit;
+  z-index: 1;
+}
+
+/* =========================
+   ACTIVE (glass pill)
+========================= */
+.nav-link.active {
+  background: var(--glass-highlight);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border: 1px solid var(--glass-border);
+
+  box-shadow:
+    inset 0 1px 1px var(--glass-highlight),
+    0 4px 20px var(--shadow-soft);
+}
+
+/* =========================
+   HOVER
+========================= */
+.nav-links a:hover {
+  opacity: 1;
+}
+
+/* underline animation */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+
+  width: 0%;
+  height: 1px;
+
+  background: var(--link-hover-underline);
+  transition: 0.3s;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* =========================
+   THEME BUTTON
+========================= */
+.theme-btn {
+  background: var(--copy-btn-bg);
+  border: 1px solid var(--copy-btn-border);
+
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.theme-btn:hover {
+  background: var(--copy-btn-hover);
+  transform: scale(1.05);
+}

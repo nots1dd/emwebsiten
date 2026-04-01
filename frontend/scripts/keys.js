@@ -37,7 +37,22 @@ const KEYMAP = {
   "xx": () => toggleCanvasMode(),
 
   "Enter": () => activateFocusedCard(),
+
+  "H": () => history.back(),     // go back
+  "L": () => history.forward(),  // go forward
 };
+
+const NAV_KEYS = [
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "PageUp",
+  "PageDown",
+  "Home",
+  "End",
+  " "
+];
 
 let currentMode = Mode.NORMAL;
 
@@ -104,9 +119,9 @@ function activateFocusedCard() {
   const el = cards[focusedIndex];
   if (!el) return;
 
-  const url = el.dataset.url;
-  if (url) {
-    window.open(url, "_blank");
+  const route = el.dataset.route;
+  if (route) {
+    navigate(route);
   }
 }
 
@@ -121,6 +136,13 @@ function isPrefix(str) {
 function handleKey(e) {
   const key = e.key;
 
+  if (NAV_KEYS.includes(key)) {
+    // reset buffer on any navigation key
+    buffer = "";
+    updateHints("");
+    return;
+  }
+
   if (e.ctrlKey || e.metaKey || e.altKey) return;
 
   // prevent default scrolling
@@ -130,7 +152,13 @@ function handleKey(e) {
 
   if (key === "j") return focusCard(focusedIndex + 1);
   if (key === "k") return focusCard(focusedIndex - 1);
-  if (key === "Enter") return activateFocusedCard();
+  if (key === "Enter") {
+    e.preventDefault();
+    buffer = "";
+    updateHints("");
+    activateFocusedCard();
+    return;
+  }
   if (key === "G") {
     KEYMAP["G"]();
     return;
@@ -139,6 +167,7 @@ function handleKey(e) {
   /* =========================
      BUFFERED KEYS
   ========================= */
+  if (key.length > 1) return;
   buffer += key;
   resetBufferSoon();
 

@@ -29,8 +29,17 @@ void Engine::accumulate_mouse_delta(float dx, float dy)
 
 EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void*)
 {
-  if (e->ctrlKey || e->metaKey)
+  if (e->ctrlKey || e->metaKey || e->altKey || e->shiftKey)
     return EM_FALSE;
+
+  std::string key = e->key;
+
+  // browser should handle nav keys
+  if (key == "ArrowUp" || key == "ArrowDown" || key == "ArrowLeft" || key == "ArrowRight" ||
+      key == "PageUp" || key == "PageDown" || key == "Home" || key == "End" || key == " ")
+  {
+    return EM_FALSE;
+  }
 
   char k = std::tolower(e->key[0]);
 
@@ -115,9 +124,9 @@ void Engine::init()
 
   emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, true, wheel_callback);
 
-  emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, true, keydown_callback);
+  emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, false, keydown_callback);
 
-  emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, true, keyup_callback);
+  emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, false, keyup_callback);
 }
 
 void Engine::frame()
