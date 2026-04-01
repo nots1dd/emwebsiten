@@ -4,7 +4,11 @@
 
 void AboutScene::render(Renderer& renderer)
 {
-  auto& post = AssetManager::instance().shaders().program<ShaderID::not_neon>();
+  auto& shaders = AssetManager::instance().shaders();
+
+  auto& post = (theme_ == Theme::Inverted)
+                 ? shaders.program<ShaderID::not_neon_inv>()
+                 : shaders.program<ShaderID::not_neon>();
 
   FrameUniforms frame{};
 

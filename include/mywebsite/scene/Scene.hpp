@@ -3,6 +3,12 @@
 #include <emscripten/emscripten.h>
 #include <mywebsite/core/camera/Camera.hpp>
 
+enum class Theme
+{
+  Normal,
+  Inverted
+};
+
 class Renderer;
 
 class Scene

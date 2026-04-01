@@ -4,7 +4,6 @@
 #include <mywebsite/core/AssetManager.hpp>
 #include <mywebsite/core/Engine.hpp>
 #include <mywebsite/scene/Home.hpp>
-#include <mywebsite/scene/HomeInv.hpp>
 #include <mywebsite/scene/transitions/ShaderTransition.hpp>
 
 #include <emscripten/html5.h>
@@ -112,7 +111,7 @@ void Engine::init()
 
   renderer_->init(fb_w, fb_h);
 
-  graph_.set(std::make_unique<HomeScene>());
+  graph_.set(std::make_unique<HomeScene>(Theme::Normal));
 
   emscripten_set_wheel_callback(EMSCRIPTEN_EVENT_TARGET_DOCUMENT, this, true, wheel_callback);
 

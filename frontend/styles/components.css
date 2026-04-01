@@ -319,3 +319,122 @@ body.light .nav-links a::after {
 .footer-links a:hover::after {
   width: 100%;
 }
+
+.logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.logo-glass {
+  position: relative;
+
+  border-radius: 10px;
+  padding: 2px;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  transition: all 0.2s ease;
+}
+
+/* LOGO IMAGE */
+.logo-glass img {
+  height: 24px;
+  display: block;
+  border-radius: 6px;
+}
+
+/* HOVER LIFT */
+.logo:hover .logo-glass {
+  transform: translateY(-1px) scale(1.02);
+
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.logo-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);   /* ↓ place BELOW logo */
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+
+  padding: 6px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+
+  border-radius: 8px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  color: rgba(255, 255, 255, 0.85);
+
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: all 0.2s ease;
+}
+
+/* tooltip arrow */
+.logo-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 8px;
+  height: 8px;
+
+  background: inherit;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* SHOW TOOLTIP */
+.logo:hover .logo-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.logo-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0.25) 0%,
+    rgba(255,255,255,0.05) 40%,
+    transparent 60%
+  );
+
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.logo:hover .logo-glass::after {
+  opacity: 1;
+}

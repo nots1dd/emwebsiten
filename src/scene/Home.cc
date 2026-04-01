@@ -4,7 +4,11 @@
 
 void HomeScene::render(Renderer& renderer)
 {
-  auto& post = AssetManager::instance().shaders().program<ShaderID::monochrome>();
+  auto& shaders = AssetManager::instance().shaders();
+
+  auto& post = (theme_ == Theme::Inverted)
+                 ? shaders.program<ShaderID::monochrome_inv>()
+                 : shaders.program<ShaderID::monochrome>();
 
   FrameUniforms frame{};
 
@@ -14,8 +18,7 @@ void HomeScene::render(Renderer& renderer)
   frame.mouseX = renderer.mouse_x();
   frame.mouseY = renderer.mouse_y();
 
-  frame.frame = 0;
-
+  frame.frame  = 0;
   frame.camera = &camera_;
 
   renderer.render(post, frame);

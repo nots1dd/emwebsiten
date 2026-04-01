@@ -5,7 +5,7 @@ import { initTheme } from "./theme.js";
 import { initRouter, renderRoute } from "./router.js";
 
 async function init() {
-  await loadComponent("navbar", "/assets/components/navbar.html");
+  await loadComponent("navbar", "/frontend/components/navbar.html");
 
   initCanvas();
   initInput();
@@ -14,11 +14,11 @@ async function init() {
 
   renderRoute(location.pathname);
 
-  await loadComponent("footer", "/assets/components/footer.html");
+  await loadComponent("footer", "/frontend/components/footer.html");
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  if (location.pathname.startsWith("/assets/")) {
+  if (location.pathname.startsWith("/frontend/")) {
     history.replaceState({}, "", "/");
   }
 

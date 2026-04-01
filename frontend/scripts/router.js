@@ -1,10 +1,10 @@
 import { normalizePath } from "./utils.js";
 
 export const ROUTES = {
-  "/": "/assets/pages/home.html",
-  "/about": "/assets/pages/about.html",
-  "/blog": "/assets/pages/blog.html",
-  "/projects": "/assets/pages/projects.html",
+  "/": "/frontend/pages/home.html",
+  "/about": "/frontend/pages/about.html",
+  "/blog": "/frontend/pages/blog.html",
+  "/projects": "/frontend/pages/projects.html",
 };
 
 export function routeToWasm(path) {
