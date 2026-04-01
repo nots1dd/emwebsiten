@@ -39,13 +39,26 @@
   transition: 0.25s;
 }
 
-body.light .nav-links a {
-  color: #111; /* dark text for light mode */
-  opacity: 0.7;
+.nav-link {
+  position: relative;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  color: inherit;
+  z-index: 1;
 }
 
-body.light .nav-links a::after {
-  background: #000;
+/* glass effect */
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.25),
+    0 4px 20px rgba(0,0,0,0.1);
 }
 
 .nav-links a:hover {
@@ -95,6 +108,9 @@ body.light .nav-links a::after {
 
 .card {
   position: relative;
+  cursor: pointer;
+  text-decoration: none;   /* remove underline */
+  color: inherit;          /* remove blue */
   overflow: hidden;
   padding: 28px;
   margin-bottom: 20px;
@@ -115,6 +131,25 @@ body.light .nav-links a::after {
     color 0.3s ease,
     border 0.3s ease,
     box-shadow 0.4s ease;
+}
+
+.card:focus {
+  outline: 2px solid rgba(255,255,255,0.4);
+  outline-offset: 4px;
+
+  transform: scale(1.02);
+}
+
+.card:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.4);
+  outline-offset: 4px;
+
+  transform: scale(1.02);
+}
+
+/* optional polish */
+.card:active {
+  transform: scale(0.98);
 }
 
 .card:hover {
@@ -166,10 +201,6 @@ body.light .nav-links a::after {
 
 .card:hover::before {
   opacity: 1;
-}
-
-.card:hover p {
-  opacity: 0.7;
 }
 
 .content {
@@ -229,7 +260,7 @@ body.light .nav-links a::after {
 }
 
 .footer {
-  position: relative;
+  font-family: inherit;
   margin-top: 120px;
   padding: 28px 32px;
   z-index: 5;
@@ -253,12 +284,42 @@ body.light .nav-links a::after {
   left: 20%;
   right: 20%;
   height: 1px;
+
   background: linear-gradient(
     to right,
     transparent,
-    rgba(255,255,255,0.1),
+    rgba(255,255,255,0.25),
     transparent
   );
+
+  opacity: 0.4;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.footer:hover::before {
+  opacity: 1;
+  transform: scaleX(1.1);
+}
+
+.footer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(255,255,255,0.06),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 80% 50%,
+      rgba(255,255,255,0.04),
+      transparent 60%
+    );
+
+  pointer-events: none;
 }
 
 .footer-inner {
@@ -275,13 +336,13 @@ body.light .nav-links a::after {
 }
 
 .footer-brand {
-  font-weight: 600;
-  letter-spacing: 0.4px;
+  font-size: 15px;
+  letter-spacing: 0.6px;
 }
 
 .footer-meta {
-  font-size: 13px;
-  opacity: 0.5;
+  font-size: 12px;
+  opacity: 0.45;
 }
 
 .footer-links {
@@ -291,13 +352,53 @@ body.light .nav-links a::after {
 }
 
 .footer-links a {
-  text-decoration: none;
-  color: inherit;
-  opacity: 0.6;
+  font-size: 13px;
   position: relative;
-  font-size: 14px;
+  overflow: hidden;
+  padding: 6px 10px;
+  border-radius: 10px;
 
-  transition: all 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.footer-links a::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.25),
+    transparent
+  );
+
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: all 0.4s ease;
+}
+
+.footer-links a:hover::before {
+  opacity: 1;
+  transform: translateX(100%);
+}
+
+.footer-links a:hover {
+  opacity: 1;
+
+  transform: translateY(-2px) scale(1.03);
+
+  background: rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 6px 20px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.15);
 }
 
 .footer-links a::after {
@@ -309,11 +410,6 @@ body.light .nav-links a::after {
   height: 1px;
   background: currentColor;
   transition: 0.3s;
-}
-
-.footer-links a:hover {
-  opacity: 1;
-  transform: translateY(-1px);
 }
 
 .footer-links a:hover::after {

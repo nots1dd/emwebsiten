@@ -47,7 +47,7 @@ public:
 
   void navigate_about() { navigate<ShaderID::crack_transition>(Route::About); }
 
-  void set_theme_home(bool dark) { set_theme<ShaderID::liquid_transition>(Route::Home, dark); }
+  void set_theme_home(bool dark) { set_theme<ShaderID::black_hole_transition>(Route::Home, dark); }
 
   void set_theme_about(bool dark) { set_theme<ShaderID::glitch_transition>(Route::About, dark); }
 

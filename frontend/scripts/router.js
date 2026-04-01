@@ -3,7 +3,7 @@ import { normalizePath } from "./utils.js";
 export const ROUTES = {
   "/": "/frontend/pages/home.html",
   "/about": "/frontend/pages/about.html",
-  "/blog": "/frontend/pages/blog.html",
+  "/blog": "/frontend/pages/blogs.html",
   "/projects": "/frontend/pages/projects.html",
 };
 
@@ -18,6 +18,15 @@ export function routeToWasm(path) {
       Module._navigate_about?.();
       break;
   }
+}
+
+function attachCardHandlers() {
+  document.querySelectorAll('.card').forEach(card => {
+    card.onclick = () => {
+      const url = card.dataset.url;
+      if (url) window.open(url, '_blank');
+    };
+  });
 }
 
 export function initRouter() {
@@ -57,10 +66,37 @@ export async function renderRoute(path) {
   setActiveLink(finalPath);
 
   routeToWasm(finalPath);
+
+  setTimeout(() => {
+    const first = document.querySelector(".card");
+    if (first) first.focus();
+  }, 0);
+
+  attachCardHandlers();
+}
+
+function moveNavHighlight(activeEl) {
+  const highlight = document.querySelector(".nav-highlight");
+  if (!highlight || !activeEl) return;
+
+  const rect = activeEl.getBoundingClientRect();
+  const parentRect = activeEl.parentElement.getBoundingClientRect();
+
+  highlight.style.width = `${rect.width}px`;
+  highlight.style.height = `${rect.height}px`;
+  highlight.style.transform = `translateX(${rect.left - parentRect.left}px)`;
 }
 
 export function setActiveLink(path) {
-  document.querySelectorAll(".nav-links a").forEach(a => {
-    a.classList.toggle("active", a.dataset.route === path);
+  const links = document.querySelectorAll(".nav-links a");
+  let activeEl = null;
+
+  links.forEach(a => {
+    const isActive = a.dataset.route === path;
+    a.classList.toggle("active", isActive);
+    if (isActive) activeEl = a;
   });
+
+  moveNavHighlight(activeEl);
 }
+

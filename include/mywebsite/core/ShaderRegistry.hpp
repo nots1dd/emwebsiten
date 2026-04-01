@@ -16,7 +16,7 @@ enum class ShaderID : std::size_t
   ultra,
   fade_transition,
   glitch_transition,
-  liquid_transition,
+  black_hole_transition,
   crack_transition,
   COUNT
 };
@@ -64,10 +64,10 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "glitch_transition",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/glitch.transition.glsl"},
-  {.id   = ShaderID::liquid_transition,
-   .name = "liquid_transition",
+  {.id   = ShaderID::black_hole_transition,
+   .name = "black_hole_transition",
    .vert = "/assets/shaders/fullscreen.vert",
-   .frag = "/assets/shaders/liquid.transition.glsl"},
+   .frag = "/assets/shaders/black-hole.transition.glsl"},
   {.id   = ShaderID::crack_transition,
    .name = "crack_transition",
    .vert = "/assets/shaders/fullscreen.vert",

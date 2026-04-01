@@ -1,5 +1,28 @@
 import { normalizePath } from "./utils.js";
 
+export function toggleTheme() {
+  const toggle = document.getElementById("theme-toggle");
+
+  document.body.classList.toggle("light");
+
+  const nowLight = document.body.classList.contains("light");
+
+  if (toggle) {
+    toggle.innerHTML = nowLight ? ICON_SUN : ICON_MOON;
+  }
+
+  localStorage.setItem("theme", nowLight ? "light" : "dark");
+
+  const path = normalizePath(location.pathname);
+
+  if (window.Module) {
+    if (path === "/") Module._set_theme_home?.(nowLight ? 1 : 0);
+    else if (path === "/about") Module._set_theme_about?.(nowLight ? 1 : 0);
+  }
+
+  console.log("[THEME] toggled →", nowLight ? "light" : "dark");
+}
+
 export function initTheme() {
   const toggle = document.getElementById("theme-toggle");
   if (!toggle) return;
@@ -10,21 +33,7 @@ export function initTheme() {
   if (isLight) document.body.classList.add("light");
   toggle.innerHTML = isLight ? ICON_SUN : ICON_MOON;
 
-  toggle.addEventListener("click", () => {
-    document.body.classList.toggle("light");
-
-    const nowLight = document.body.classList.contains("light");
-    toggle.innerHTML = nowLight ? ICON_SUN : ICON_MOON;
-
-    localStorage.setItem("theme", nowLight ? "light" : "dark");
-
-    const path = normalizePath(location.pathname);
-
-    if (Module) {
-      if (path === "/") Module._set_theme_home?.(nowLight ? 1 : 0);
-      else if (path === "/about") Module._set_theme_about?.(nowLight ? 1 : 0);
-    }
-  });
+  toggle.addEventListener("click", toggleTheme);
 }
 
 const ICON_MOON = `

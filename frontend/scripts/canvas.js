@@ -7,6 +7,14 @@ function tryResize() {
   resize();
 }
 
+export let canvasMode = false;
+
+export function toggleCanvasMode() {
+  canvasMode = !canvasMode;
+
+  document.body.classList.toggle("canvas-mode", canvasMode);
+}
+
 export function initCanvas() {
   const c = document.getElementById("canvas");
   if (!c) return;
