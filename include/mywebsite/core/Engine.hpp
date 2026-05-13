@@ -47,9 +47,16 @@ public:
 
   void navigate_about() { navigate<ShaderID::crack_transition>(Route::About); }
 
+  void navigate_projects() { navigate<ShaderID::crack_transition>(Route::Projects); }
+
   void set_theme_home(bool dark) { set_theme<ShaderID::black_hole_transition>(Route::Home, dark); }
 
   void set_theme_about(bool dark) { set_theme<ShaderID::glitch_transition>(Route::About, dark); }
+
+  void set_theme_projects(bool dark)
+  {
+    set_theme<ShaderID::ocean_transition>(Route::Projects, dark);
+  }
 
   Renderer* renderer_ = nullptr;
 

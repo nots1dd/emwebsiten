@@ -1,4 +1,7 @@
-precision highp float;
+// this is a modified shader of "another synthwave sunset thing"
+// written by stduhpf - https://www.shadertoy.com/view/tsScRK
+//
+// author did not mention any license so I assume it's free to use and modify.
 
 uniform float uTime;
 uniform float uDelta;

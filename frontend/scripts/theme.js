@@ -18,6 +18,7 @@ export function toggleTheme() {
   if (window.Module) {
     if (path === "/") Module._set_theme_home?.(nowLight ? 1 : 0);
     else if (path === "/about") Module._set_theme_about?.(nowLight ? 1 : 0);
+    else if (path === "/projects") Module._set_theme_projects?.(nowLight ? 1 : 0);
   }
 
   console.log("[THEME] toggled →", nowLight ? "light" : "dark");

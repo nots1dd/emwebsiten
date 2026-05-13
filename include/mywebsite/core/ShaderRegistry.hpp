@@ -13,11 +13,14 @@ enum class ShaderID : std::size_t
   monochrome_inv,
   not_neon,
   not_neon_inv,
+  nature,
+  nature_inv,
   ultra,
   fade_transition,
   glitch_transition,
   black_hole_transition,
   crack_transition,
+  ocean_transition,
   COUNT
 };
 
@@ -33,7 +36,7 @@ struct ShaderDesc
 };
 
 // ------------------------------------------------------------
-// Registry (single source of truth)
+// Registry
 // ------------------------------------------------------------
 constexpr auto shader_registry = std::to_array<ShaderDesc>({
   {.id   = ShaderID::monochrome,
@@ -52,6 +55,14 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "not_neon_inv",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/not-neon-inv.frag"},
+  {.id   = ShaderID::nature,
+   .name = "nature",
+   .vert = "/assets/shaders/fullscreen.vert",
+   .frag = "/assets/shaders/nature.frag"},
+  {.id   = ShaderID::nature_inv,
+   .name = "nature",
+   .vert = "/assets/shaders/fullscreen.vert",
+   .frag = "/assets/shaders/nature-inv.frag"},
   {.id   = ShaderID::ultra,
    .name = "ultra",
    .vert = "/assets/shaders/fullscreen.vert",
@@ -72,6 +83,10 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "crack_transition",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/crack.transition.glsl"},
+  {.id   = ShaderID::ocean_transition,
+   .name = "crack_transition",
+   .vert = "/assets/shaders/fullscreen.vert",
+   .frag = "/assets/shaders/ocean.transition.glsl"},
 });
 
 // ------------------------------------------------------------

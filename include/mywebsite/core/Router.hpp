@@ -3,6 +3,7 @@
 #include <memory>
 #include <mywebsite/scene/About.hpp>
 #include <mywebsite/scene/Home.hpp>
+#include <mywebsite/scene/Project.hpp>
 #include <mywebsite/scene/SceneGraphNode.hpp>
 #include <mywebsite/scene/UnderConstruction.hpp>
 
@@ -10,7 +11,6 @@ enum class Route
 {
   Home,
   About,
-  Blog,
   Projects
 };
 
@@ -25,6 +25,9 @@ inline auto make_scene(Route route, bool dark) -> std::unique_ptr<Scene>
 
     case Route::About:
       return std::make_unique<AboutScene>(theme);
+
+    case Route::Projects:
+      return std::make_unique<ProjectScene>(theme);
   }
 
   return std::make_unique<HomeScene>(theme); // fallback

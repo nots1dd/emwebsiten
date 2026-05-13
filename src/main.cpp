@@ -20,10 +20,16 @@ extern "C"
   void set_theme_about(bool dark) { engine.set_theme_about(dark); }
 
   EMSCRIPTEN_KEEPALIVE
+  void set_theme_projects(bool dark) { engine.set_theme_projects(dark); }
+
+  EMSCRIPTEN_KEEPALIVE
   void navigate_home() { engine.navigate_home(); }
 
   EMSCRIPTEN_KEEPALIVE
   void navigate_about() { engine.navigate_about(); }
+
+  EMSCRIPTEN_KEEPALIVE
+  void navigate_projects() { engine.navigate_projects(); }
 }
 
 // md4c stuff

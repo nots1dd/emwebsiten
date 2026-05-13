@@ -1,4 +1,7 @@
-precision highp float;
+// this is a modified shader of "another synthwave sunset thing"
+// written by stduhpf - https://www.shadertoy.com/view/tsScRK
+//
+// author did not mention any license so I assume it's free to use and modify.
 
 uniform float uTime;
 uniform float uDelta;
@@ -12,8 +15,6 @@ out vec4 FragColor;
 #define audio_vibration_amplitude 0.125
 
 float jTime;
-
-/* --------------------------- */
 
 float hash21(vec2 co) { return fract(sin(dot(co.xy, vec2(1.9898, 7.233))) * 45758.5433); }
 
@@ -40,8 +41,6 @@ float pow512(float a)
 
 float pow1d5(float a) { return a * sqrt(a); }
 
-/* --------------------------- */
-
 float hash(vec2 uv)
 {
   float a = amp(uv);
@@ -52,8 +51,6 @@ float hash(vec2 uv)
   return (a > 0. ? a * pow1d5(hash21(uv)) * w : 0.) -
          (textureMirror(vec2((uv.x * 29. + uv.y) * .03125, 1.)) * audio_vibration_amplitude);
 }
-
-/* --------------------------- */
 
 vec2 trinoise(vec2 uv)
 {
@@ -81,8 +78,6 @@ vec2 trinoise(vec2 uv)
   return vec2(mix(ns, nmid, dx), 0.0);
 }
 
-/* --------------------------- */
-
 vec2 map(vec3 p)
 {
   vec2 n = trinoise(p.xz);
@@ -95,8 +90,6 @@ vec3 grad(vec3 p)
   float      a = map(p).x;
   return vec3(map(p + e.xyy).x - a, map(p + e.yxy).x - a, map(p + e.yyx).x - a) / e.x;
 }
-
-/* --------------------------- */
 
 vec2 intersect(vec3 ro, vec3 rd)
 {
@@ -120,7 +113,6 @@ vec2 intersect(vec3 ro, vec3 rd)
   return vec2(-1);
 }
 
-/* --------------------------- */
 /* INVERTED SUN (dark) */
 
 void addsun(vec3 rd, vec3 ld, inout vec3 col)
@@ -138,7 +130,6 @@ void addsun(vec3 rd, vec3 ld, inout vec3 col)
   }
 }
 
-/* --------------------------- */
 /* DARK STARS */
 
 float starnoise(vec3 rd)
@@ -161,7 +152,6 @@ float starnoise(vec3 rd)
   return c * c;
 }
 
-/* --------------------------- */
 /* LIGHT SKY */
 
 vec3 gsky(vec3 rd, vec3 ld, bool mask)
@@ -185,8 +175,6 @@ vec3 gsky(vec3 rd, vec3 ld, bool mask)
 
   return clamp(col, 0.0, 1.0);
 }
-
-/* --------------------------- */
 
 void main()
 {

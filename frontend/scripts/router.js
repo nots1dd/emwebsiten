@@ -32,6 +32,9 @@ export function routeToWasm(path) {
     case "/about":
       Module._navigate_about?.();
       break;
+    case "/projects":
+      Module._navigate_projects?.();
+      break;
   }
 }
 
