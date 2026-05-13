@@ -1,52 +1,76 @@
-/* =========================
-   VIM HINTS CONTAINER
-========================= */
-.vim-hints {
+#vim-hints {
   position: fixed;
-  z-index: 3;
-
-  transform: translateX(-50%) translateY(10px);
-
-  display: flex;
-  gap: 10px;
-
-  padding: 8px 12px;
-  border-radius: 10px;
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 6px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-
-  color: var(--text);
-  font-size: 12px;
-
-  opacity: 0;
+  border-radius: 999px;
+  padding: 6px 14px 6px 10px;
+  font-family: "Gabarito", system-ui, sans-serif;
+  font-size: 13px;
+  white-space: nowrap;
   pointer-events: none;
-
-  transition: opacity 0.2s ease, transform 0.25s ease;
-}
-
-/* =========================
-   VISIBLE STATE
-========================= */
-.vim-hints.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-.vim-hints:not(.show) {
+  z-index: 9999;
   opacity: 0;
+  transition: opacity 0.15s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px var(--shadow-strong), 0 1px 4px var(--shadow-soft);
 }
 
-/* =========================
-   INDIVIDUAL HINT
-========================= */
-.vim-hint {
-  padding: 2px 6px;
-  border-radius: 6px;
+#vim-hints.show {
+  display: flex;
+  opacity: 1;
+}
 
-  background: var(--copy-btn-bg);
-  border: 1px solid var(--copy-btn-border);
+.vim-hint-prefix {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--glass-highlight);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 2px 9px;
+  opacity: 0.9;
+}
+
+.vim-hint-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--glass-border);
+  margin: 0 2px;
+}
+
+.vim-hint-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--glass-highlight);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.vim-hint-key {
+  font-weight: 600;
+  opacity: 1;
+  color: var(--text);
+}
+
+.vim-hint-label {
+  opacity: 0.6;
+}
+
+.vim-hint-sep {
+  color: var(--glass-border);
+  font-size: 11px;
+  margin: 0 1px;
+  opacity: 0.5;
 }
