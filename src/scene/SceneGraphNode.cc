@@ -32,6 +32,15 @@ void SceneGraph::update(float dt)
   }
 }
 
+void SceneGraph::resize(float w, float h)
+{
+  if (current_ && current_->scene())
+    current_->scene()->camera().resize(w, h);
+
+  if (next_ && next_->scene())
+    next_->scene()->camera().resize(w, h);
+}
+
 void SceneGraph::render(Renderer& r)
 {
   if (!transition_)
@@ -41,8 +50,6 @@ void SceneGraph::render(Renderer& r)
       current_->render(r);
     return;
   }
-
-  std::println("[SceneGraph] rendering transition");
 
   GLuint texA = r.render_scene_to_texture(current_.get());
   GLuint texB = r.render_scene_to_texture(next_.get());

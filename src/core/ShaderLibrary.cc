@@ -9,21 +9,23 @@ auto ShaderLibrary::instance() -> ShaderLibrary&
   return lib;
 }
 
+auto ShaderLibrary::build(const ShaderDesc& desc) -> std::unique_ptr<Program>
+{
+  std::string vs_src = GLSLLoader::load(desc.vert);
+  std::string fs_src = GLSLLoader::load(desc.frag);
+
+  Shader vs(GL_VERTEX_SHADER, vs_src);
+  Shader fs(GL_FRAGMENT_SHADER, fs_src);
+
+  return std::make_unique<Program>(vs, fs);
+}
+
 void ShaderLibrary::load_all()
 {
   for (size_t i = 0; i < shader_registry.size(); ++i)
   {
-    const auto& desc = shader_registry[i];
-
-    std::string vs_src = GLSLLoader::load(desc.vert);
-    std::string fs_src = GLSLLoader::load(desc.frag);
-
-    Shader vs(GL_VERTEX_SHADER, vs_src);
-    Shader fs(GL_FRAGMENT_SHADER, fs_src);
-
-    programs_[i] = std::make_unique<Program>(vs, fs);
-
-    std::println("Loaded shader '{}'", desc.name);
+    programs_[i] = build(shader_registry[i]);
+    std::println("Loaded shader '{}'", shader_registry[i].name);
   }
 }
 
@@ -33,31 +35,14 @@ void ShaderLibrary::reload_all()
 
   for (size_t i = 0; i < shader_registry.size(); ++i)
   {
-    const auto& desc = shader_registry.at(i);
-
-    std::string vs_src = GLSLLoader::load(desc.vert);
-    std::string fs_src = GLSLLoader::load(desc.frag);
-
-    Shader vs(GL_VERTEX_SHADER, vs_src);
-    Shader fs(GL_FRAGMENT_SHADER, fs_src);
-
-    programs_[i] = std::make_unique<Program>(vs, fs);
-
-    std::println("[ShaderLibrary] Reloaded '{}'", desc.name);
+    programs_[i] = build(shader_registry[i]);
+    std::println("[ShaderLibrary] Reloaded '{}'", shader_registry[i].name);
   }
 }
 
 void ShaderLibrary::reload(ShaderID id)
 {
-  const auto& desc = shader_registry[static_cast<size_t>(id)];
-
-  std::string vs_src = GLSLLoader::load(desc.vert);
-  std::string fs_src = GLSLLoader::load(desc.frag);
-
-  Shader vs(GL_VERTEX_SHADER, vs_src);
-  Shader fs(GL_FRAGMENT_SHADER, fs_src);
-
-  programs_[static_cast<size_t>(id)] = std::make_unique<Program>(vs, fs);
-
+  const auto& desc                   = shader_registry[static_cast<size_t>(id)];
+  programs_[static_cast<size_t>(id)] = build(desc);
   std::println("Reloaded shader '{}'", desc.name);
 }

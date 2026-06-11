@@ -42,6 +42,9 @@ public:
 
   void render(Renderer& r);
 
+  // Forward a new render size to the active (and transitioning) scene cameras.
+  void resize(float w, float h);
+
   [[nodiscard]]
   auto current() -> Scene*
   {

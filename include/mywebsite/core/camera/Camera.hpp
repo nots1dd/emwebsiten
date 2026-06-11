@@ -26,16 +26,20 @@ public:
 private:
   void update_view();
 
-  float width_;
-  float height_;
+  float width_  = -1.0f;
+  float height_ = -1.0f;
 
-  float yaw;
-  float pitch;
+  // zoom baked into the cached projection; lets resize() early-out when nothing
+  // changed (it is called every frame via Renderer::make_frame).
+  float proj_zoom_ = -1.0f;
+
+  float yaw   = 0.0f;
+  float pitch = 0.0f;
 
   float zoom_ = 1.0f;
 
-  std::array<float, 3> position_{0.f, 0.f, 3.5f};
+  std::array<float, 3> position_{0.f, 0.f, 0.f};
 
-  std::array<float, 16> proj_;
-  std::array<float, 16> view_;
+  std::array<float, 16> proj_{};
+  std::array<float, 16> view_{};
 };

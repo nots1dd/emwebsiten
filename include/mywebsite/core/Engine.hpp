@@ -12,6 +12,7 @@ public:
   void init();
   void frame();
   void set_mouse(float x, float y);
+  void set_resolution(int w, int h);
   void accumulate_mouse_delta(float dx, float dy);
 
   SceneGraph graph_;
@@ -43,20 +44,24 @@ public:
   }
 
   // public methods for JS boundary
-  void navigate_home() { navigate<ShaderID::crack_transition>(Route::Home); }
+  void navigate_home() { navigate<ShaderID::crt_static_transition>(Route::Home); }
 
-  void navigate_about() { navigate<ShaderID::crack_transition>(Route::About); }
+  void navigate_about() { navigate<ShaderID::crt_static_transition>(Route::About); }
 
-  void navigate_projects() { navigate<ShaderID::crack_transition>(Route::Projects); }
+  void navigate_projects() { navigate<ShaderID::crt_static_transition>(Route::Projects); }
 
-  void set_theme_home(bool dark) { set_theme<ShaderID::black_hole_transition>(Route::Home, dark); }
+  void navigate_blog() { navigate<ShaderID::crt_static_transition>(Route::Blog); }
 
-  void set_theme_about(bool dark) { set_theme<ShaderID::glitch_transition>(Route::About, dark); }
+  void set_theme_home(bool dark) { set_theme<ShaderID::power_off_transition>(Route::Home, dark); }
+
+  void set_theme_about(bool dark) { set_theme<ShaderID::datamosh_transition>(Route::About, dark); }
 
   void set_theme_projects(bool dark)
   {
-    set_theme<ShaderID::ocean_transition>(Route::Projects, dark);
+    set_theme<ShaderID::wave_dissolve_transition>(Route::Projects, dark);
   }
+
+  void set_theme_blog(bool dark) { set_theme<ShaderID::mosaic_dither_transition>(Route::Blog, dark); }
 
   Renderer* renderer_ = nullptr;
 

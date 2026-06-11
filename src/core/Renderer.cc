@@ -1,33 +1,48 @@
 #include <GLES3/gl3.h>
 #include <mywebsite/core/Renderer.hpp>
+#include <mywebsite/gl/Texture.hpp>
 #include <mywebsite/scene/SceneGraphNode.hpp>
 #include <print>
 
 void Renderer::init(int width, int height)
 {
-  width_  = width;
-  height_ = height;
-
   glGenFramebuffers(1, &fbo_);
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
-  texA_ = create_texture(width, height);
-
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texA_, 0);
-
-  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-  if (status != GL_FRAMEBUFFER_COMPLETE)
-  {
-    std::println("[Renderer] FBO incomplete!");
-  }
-
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-  texB_ = create_texture(width, height);
+  create_targets(width, height);
 
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
+}
+
+void Renderer::resize(int width, int height)
+{
+  if (width <= 0 || height <= 0 || (width == width_ && height == height_))
+    return;
+
+  create_targets(width, height);
+}
+
+void Renderer::create_targets(int width, int height)
+{
+  width_  = width;
+  height_ = height;
+
+  // Recreate the ping-pong render targets used by scene transitions.
+  if (texA_ != 0)
+    glDeleteTextures(1, &texA_);
+  if (texB_ != 0)
+    glDeleteTextures(1, &texB_);
+
+  texA_ = create_texture(width, height);
+  texB_ = create_texture(width, height);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texA_, 0);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    std::println("[Renderer] FBO incomplete!");
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 auto Renderer::create_texture(int w, int h) -> GLuint
@@ -59,6 +74,23 @@ void Renderer::end_scene()
   // nothing needed for now
 }
 
+auto Renderer::make_frame(Camera& cam) -> FrameUniforms
+{
+  // Keep the camera matched to the live render target (cheap: resize() is a
+  // no-op when nothing changed).
+  cam.resize(static_cast<float>(width_), static_cast<float>(height_));
+
+  FrameUniforms frame{};
+  frame.time   = time_;
+  frame.delta  = delta_;
+  frame.width  = static_cast<float>(width_);
+  frame.height = static_cast<float>(height_);
+  frame.mouseX = mouse_x_;
+  frame.mouseY = mouse_y_;
+  frame.camera = &cam;
+  return frame;
+}
+
 void Renderer::render(Program& program, const FrameUniforms& frame)
 {
   glViewport(0, 0, width_, height_);
@@ -67,47 +99,79 @@ void Renderer::render(Program& program, const FrameUniforms& frame)
 
   program.use();
 
-  uTime_       = program.uniform("uTime");
-  uDelta_      = program.uniform("uDelta");
-  uResolution_ = program.uniform("uResolution");
-  uMouse_      = program.uniform("uMouse");
-  uFrame_      = program.uniform("uFrame");
-  uProjection_ = program.uniform("uProjection");
-  uView_       = program.uniform("uView");
-  uCameraPos_  = program.uniform("uCameraPos");
-  uZoom_       = program.uniform("uZoom");
+  const Program::Uniforms& u = program.uniforms();
 
-  if (uTime_ >= 0)
-    glUniform1f(uTime_, frame.time);
+  if (u.time >= 0)
+    glUniform1f(u.time, frame.time);
 
-  if (uDelta_ >= 0)
-    glUniform1f(uDelta_, frame.delta);
+  if (u.delta >= 0)
+    glUniform1f(u.delta, frame.delta);
 
-  if (uResolution_ >= 0)
-    glUniform2f(uResolution_, frame.width, frame.height);
+  if (u.resolution >= 0)
+    glUniform2f(u.resolution, frame.width, frame.height);
 
-  if (uMouse_ >= 0)
-    glUniform2f(uMouse_, frame.mouseX, frame.mouseY);
+  if (u.mouse >= 0)
+    glUniform2f(u.mouse, frame.mouseX, frame.mouseY);
 
-  if (uFrame_ >= 0)
-    glUniform1i(uFrame_, frame.frame);
+  if (u.frame >= 0)
+    glUniform1i(u.frame, frame.frame);
 
   if (frame.camera)
   {
-    if (uProjection_ >= 0)
-      glUniformMatrix4fv(uProjection_, 1, false, frame.camera->projection());
+    if (u.projection >= 0)
+      glUniformMatrix4fv(u.projection, 1, false, frame.camera->projection());
 
-    if (uView_ >= 0)
-      glUniformMatrix4fv(uView_, 1, false, frame.camera->view());
+    if (u.view >= 0)
+      glUniformMatrix4fv(u.view, 1, false, frame.camera->view());
 
-    if (uCameraPos_ >= 0)
-      glUniform3fv(uCameraPos_, 1, frame.camera->position());
+    if (u.cameraPos >= 0)
+      glUniform3fv(u.cameraPos, 1, frame.camera->position());
 
-    if (uZoom_ >= 0)
-      glUniform1f(uZoom_, frame.camera->zoom());
+    if (u.zoom >= 0)
+      glUniform1f(u.zoom, frame.camera->zoom());
   }
 
+  // ShaderToy-style texture channels: bind each provided channel to its own
+  // texture unit and expose it as iChannelN + iChannelResolution[N]. Shaders
+  // that don't declare these uniforms simply ignore them (loc < 0).
+  for (int i = 0; i < FrameUniforms::CHANNEL_COUNT; ++i)
+  {
+    const Texture* channel = frame.channels[i];
+    if (channel == nullptr || channel->id() == 0)
+      continue;
+
+    glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(i));
+    glBindTexture(GL_TEXTURE_2D, channel->id());
+
+    if (u.channel[i] >= 0)
+      glUniform1i(u.channel[i], i);
+
+    if (u.channelRes[i] >= 0)
+      glUniform3f(u.channelRes[i], static_cast<float>(channel->width()),
+                  static_cast<float>(channel->height()), 1.0f);
+  }
+
+  glActiveTexture(GL_TEXTURE0);
+
   triangle_.draw();
+}
+
+void Renderer::set_channel(int index, GLuint tex)
+{
+  if (index < 0)
+    return;
+
+  if ((size_t)index >= channels_.size())
+    channels_.resize(index + 1, 0);
+
+  channels_[index] = tex;
+}
+
+auto Renderer::channel(int index) const -> GLuint
+{
+  if (index < 0 || (size_t)index >= channels_.size())
+    return 0;
+  return channels_[index];
 }
 
 auto Renderer::render_scene_to_texture(SceneNode* node) -> GLuint
@@ -141,23 +205,38 @@ void Renderer::render_transition(Program& program, GLuint texA, GLuint texB, flo
 
   program.use();
 
-  GLint locA   = program.uniform("sceneA");
-  GLint locB   = program.uniform("sceneB");
-  GLint locT   = program.uniform("progress");
-  GLint locRes = program.uniform("resolution");
+  const Program::Uniforms& u = program.uniforms();
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texA);
-  glUniform1i(locA, 0);
+  if (u.sceneA >= 0)
+    glUniform1i(u.sceneA, 0);
 
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, texB);
-  glUniform1i(locB, 1);
+  if (u.sceneB >= 0)
+    glUniform1i(u.sceneB, 1);
 
-  glUniform1f(locT, progress);
+  if (u.progress >= 0)
+    glUniform1f(u.progress, progress);
 
-  if (locRes >= 0)
-    glUniform2f(locRes, width_, height_);
+  if (u.transitionRes >= 0)
+    glUniform2f(u.transitionRes, width_, height_);
+
+  // Bind user channels starting at texture unit 2 so as not to collide
+  // with sceneA/sceneB which use units 0 and 1.
+  for (int i = 0; i < Program::CHANNEL_COUNT; ++i)
+  {
+    GLuint tex = channel(i);
+    if (tex == 0 || u.channel[i] < 0)
+      continue;
+
+    glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(2 + i));
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glUniform1i(u.channel[i], 2 + i);
+  }
+
+  glActiveTexture(GL_TEXTURE0);
 
   triangle_.draw();
 }

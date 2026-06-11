@@ -7,8 +7,17 @@ auto AssetManager::instance() -> AssetManager&
   return manager;
 }
 
-AssetManager::AssetManager() : shaders_(ShaderLibrary::instance()) {}
+AssetManager::AssetManager()
+    : shaders_(ShaderLibrary::instance()), textures_(TextureLibrary::instance())
+{
+}
 
-void AssetManager::initialize() { shaders_.load_all(); }
+void AssetManager::initialize()
+{
+  shaders_.load_all();
+  textures_.load_all();
+}
 
 auto AssetManager::shaders() -> ShaderLibrary& { return shaders_; }
+
+auto AssetManager::textures() -> TextureLibrary& { return textures_; }

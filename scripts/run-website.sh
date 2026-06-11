@@ -13,6 +13,9 @@ PID_FILE=".run-website.pid"
 LOG_FILE=".run-website.log"
 OPEN_URL="http://${HOST}:${PORT}/${HOME_PAGE}"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SPA_SERVER="${SCRIPT_DIR}/spa_server.py"
+
 RESET="\033[0m"
 BOLD="\033[1m"
 GREEN="\033[32m"
@@ -103,13 +106,15 @@ cmd_start() {
         exit 1
     fi
 
-    log_info "Starting Python HTTP server on ${HOST}:${PORT}..."
+    log_info "Starting SPA HTTP server on ${HOST}:${PORT}..."
     log_info "Serving directory: $(pwd)"
     log_info "Log file: ${LOG_FILE}"
 
-    # Launch daemonized server
-    nohup python3 -u -m http.server "$PORT" \
-        --bind "$HOST" \
+    # Launch daemonized SPA server (falls back to index.html for routes)
+    nohup python3 -u "$SPA_SERVER" \
+        --host "$HOST" \
+        --port "$PORT" \
+        --directory "$(pwd)" \
         > "$LOG_FILE" 2>&1 &
 
     local server_pid=$!

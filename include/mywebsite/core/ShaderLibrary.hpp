@@ -37,5 +37,8 @@ public:
   void reload(ShaderID id); // for hot reload
 
 private:
+  // Compile + link a single shader program from its registry descriptor.
+  static auto build(const ShaderDesc& desc) -> std::unique_ptr<Program>;
+
   std::array<std::unique_ptr<Program>, static_cast<size_t>(ShaderID::COUNT)> programs_;
 };

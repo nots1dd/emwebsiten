@@ -1,15 +1,16 @@
 import { normalizePath } from "./utils.js";
 import { renderBlogPost } from "./components.js";
 
-export const ROUTES = {
+// Top-level pages: route -> view template.
+const PAGES = {
   "/": "/frontend/pages/home.html",
   "/about": "/frontend/pages/about.html",
   "/blog": "/frontend/pages/blogs.html",
   "/projects": "/frontend/pages/projects.html",
-
-  "/blog/test1": "/frontend/pages/blog-post.html",
-  "/blog/test2": "/frontend/pages/blog-post.html",
 };
+
+// Every blog post renders through the same template.
+const BLOG_POST_VIEW = "/frontend/pages/blog-post.html";
 
 export const BLOG_POSTS = {
   "/blog/test1": {
@@ -22,20 +23,26 @@ export const BLOG_POSTS = {
   },
 };
 
-export function routeToWasm(path) {
-  if (!Module) return;
+// Full route table: pages plus a view for each blog post.
+export const ROUTES = {
+  ...PAGES,
+  ...Object.fromEntries(
+    Object.keys(BLOG_POSTS).map((path) => [path, BLOG_POST_VIEW]),
+  ),
+};
 
-  switch (path) {
-    case "/":
-      Module._navigate_home?.();
-      break;
-    case "/about":
-      Module._navigate_about?.();
-      break;
-    case "/projects":
-      Module._navigate_projects?.();
-      break;
-  }
+// Routes that drive the WASM scene -> the exported function to call.
+const WASM_NAV = {
+  "/": "_navigate_home",
+  "/about": "_navigate_about",
+  "/projects": "_navigate_projects",
+  "/blog": "_navigate_blog",
+};
+
+export function routeToWasm(path) {
+  // Blog index and every post share the pixel background scene.
+  const fn = path.startsWith("/blog/") ? "_navigate_blog" : WASM_NAV[path];
+  if (fn) Module?.[fn]?.();
 }
 
 function attachCardHandlers() {
@@ -73,20 +80,16 @@ export async function navigate(path) {
 
 export async function renderRoute(path) {
   path = normalizePath(path);
+  const resolved = path in ROUTES ? path : "/";
+
   const main = document.querySelector("main");
+  main.innerHTML = await fetch(ROUTES[resolved]).then(r => r.text());
 
-  const view = ROUTES[path] || ROUTES["/"];
-  const html = await fetch(view).then(r => r.text());
+  setActiveLink(resolved);
+  routeToWasm(resolved);
 
-  main.innerHTML = html;
-
-  const finalPath = path in ROUTES ? path : "/";
-  setActiveLink(finalPath);
-
-  routeToWasm(finalPath);
-
-  if (BLOG_POSTS[finalPath]) {
-    await renderBlogPost(finalPath);
+  if (BLOG_POSTS[resolved]) {
+    await renderBlogPost(resolved);
   }
 
   attachCardHandlers();

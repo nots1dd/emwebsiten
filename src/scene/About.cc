@@ -6,20 +6,10 @@ void AboutScene::render(Renderer& renderer)
 {
   auto& shaders = AssetManager::instance().shaders();
 
-  auto& post = (theme_ == Theme::Inverted) ? shaders.program<ShaderID::not_neon_inv>()
-                                           : shaders.program<ShaderID::not_neon>();
+  auto& post = (theme_ == Theme::Inverted) ? shaders.program<ShaderID::about_forest_inv>()
+                                           : shaders.program<ShaderID::about_forest>();
 
-  FrameUniforms frame{};
-
-  frame.time   = emscripten_get_now() * 0.001f;
-  frame.width  = renderer.get_render_width();
-  frame.height = renderer.get_render_height();
-  frame.mouseX = renderer.mouse_x();
-  frame.mouseY = renderer.mouse_y();
-
-  frame.frame = 0;
-
-  frame.camera = &camera_;
+  FrameUniforms frame = renderer.make_frame(camera_);
 
   renderer.render(post, frame);
 }

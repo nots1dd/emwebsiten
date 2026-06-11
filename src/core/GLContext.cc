@@ -9,6 +9,14 @@ GLContext::GLContext(const char* canvas)
   attr.minorVersion = 0;
   attr.alpha        = false;
 
+  // The renderer draws fullscreen passes with depth testing disabled, so depth
+  // and stencil buffers are pure waste. Keep MSAA on for clean edges and ask
+  // the browser for the high-performance (discrete) GPU.
+  attr.depth           = false;
+  attr.stencil         = false;
+  attr.antialias       = true;
+  attr.powerPreference = EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
+
   ctx_ = emscripten_webgl_create_context(canvas, &attr);
   if (!ctx_)
   {

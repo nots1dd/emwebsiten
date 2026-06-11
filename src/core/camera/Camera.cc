@@ -8,11 +8,6 @@ static auto ortho(float l, float r, float b, float t) -> std::array<float, 16>
           -(t + b) / (t - b), 0, 1};
 }
 
-static auto look_at(float x, float y, float z) -> std::array<float, 16>
-{
-  return {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -x, -y, -z, 1};
-}
-
 Camera::Camera(float width, float height)
 {
   resize(width, height);
@@ -21,8 +16,14 @@ Camera::Camera(float width, float height)
 
 void Camera::resize(float width, float height)
 {
-  width_  = width;
-  height_ = height;
+  // Idempotent: skip the recompute when neither the viewport nor the zoom that
+  // the cached projection was built with has changed.
+  if (width == width_ && height == height_ && zoom_ == proj_zoom_)
+    return;
+
+  width_     = width;
+  height_    = height;
+  proj_zoom_ = zoom_;
 
   proj_ = ortho(-width_ / 2.f * zoom_, width_ / 2.f * zoom_, -height_ / 2.f * zoom_,
                 height_ / 2.f * zoom_);
@@ -76,15 +77,33 @@ void Camera::rotate(float dx, float dy)
 
 void Camera::update_view()
 {
-  float cx = cos(pitch);
-  float sx = sin(pitch);
+  const float cx = std::cos(pitch);
+  const float sx = std::sin(pitch);
+  const float cy = std::cos(yaw);
+  const float sy = std::sin(yaw);
 
-  float cy = cos(yaw);
-  float sy = sin(yaw);
+  // Camera basis from yaw/pitch (unit length; pitch is clamped away from ±90°
+  // in rotate(), so 'forward' never aligns with world-up).
+  const std::array<float, 3> forward = {cy * cx, sx, sy * cx};
 
-  float forward[3] = {cy * cx, sx, sy * cx};
+  // right = normalize(forward x worldUp), worldUp = (0,1,0)
+  std::array<float, 3> right = {-forward[2], 0.f, forward[0]};
+  const float rlen = std::sqrt(right[0] * right[0] + right[2] * right[2]);
+  right[0] /= rlen;
+  right[2] /= rlen;
 
-  view_ = look_at(position_[0], position_[1], position_[2]);
+  // up = right x forward
+  const std::array<float, 3> up = {right[1] * forward[2] - right[2] * forward[1],
+                                   right[2] * forward[0] - right[0] * forward[2],
+                                   right[0] * forward[1] - right[1] * forward[0]};
+
+  // Column-major: columns map view-space axes to world space, so that shaders
+  // doing (uView * vec4(dir, 0)) rotate a ray direction. View -z is the look
+  // direction, hence col2 = -forward. Translation is -position.
+  view_ = {right[0],      right[1],      right[2],      0.f,
+           up[0],         up[1],         up[2],         0.f,
+           -forward[0],   -forward[1],   -forward[2],   0.f,
+           -position_[0], -position_[1], -position_[2], 1.f};
 }
 
 auto Camera::projection() const -> const float* { return proj_.data(); }

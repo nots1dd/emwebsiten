@@ -16,9 +16,12 @@ export function toggleTheme() {
   const path = normalizePath(location.pathname);
 
   if (window.Module) {
-    if (path === "/") Module._set_theme_home?.(nowLight ? 1 : 0);
-    else if (path === "/about") Module._set_theme_about?.(nowLight ? 1 : 0);
-    else if (path === "/projects") Module._set_theme_projects?.(nowLight ? 1 : 0);
+    const dark = nowLight ? 1 : 0;
+    if (path === "/") Module._set_theme_home?.(dark);
+    else if (path === "/about") Module._set_theme_about?.(dark);
+    else if (path === "/projects") Module._set_theme_projects?.(dark);
+    else if (path === "/blog" || path.startsWith("/blog/"))
+      Module._set_theme_blog?.(dark);
   }
 
   console.log("[THEME] toggled →", nowLight ? "light" : "dark");

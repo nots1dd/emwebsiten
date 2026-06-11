@@ -1,4 +1,5 @@
 #include "mywebsite/core/ShaderLibrary.hpp"
+#include <cstdio>
 #include <mywebsite/gl/Program.hpp>
 #include <print>
 
@@ -21,7 +22,38 @@ Program::Program(const Shader& vs, const Shader& fs)
     char log[1024];
     glGetProgramInfoLog(id_, sizeof(log), nullptr, log);
     std::println("Program link error:\n{}", log);
+    return;
   }
+
+  resolve_uniforms();
+}
+
+void Program::resolve_uniforms()
+{
+  uniforms_.time       = uniform("uTime");
+  uniforms_.delta      = uniform("uDelta");
+  uniforms_.resolution = uniform("uResolution");
+  uniforms_.mouse      = uniform("uMouse");
+  uniforms_.frame      = uniform("uFrame");
+  uniforms_.projection = uniform("uProjection");
+  uniforms_.view       = uniform("uView");
+  uniforms_.cameraPos  = uniform("uCameraPos");
+  uniforms_.zoom       = uniform("uZoom");
+
+  char name[32];
+  for (int i = 0; i < CHANNEL_COUNT; ++i)
+  {
+    snprintf(name, sizeof(name), "iChannel%d", i);
+    uniforms_.channel[i] = uniform(name);
+
+    snprintf(name, sizeof(name), "iChannelResolution[%d]", i);
+    uniforms_.channelRes[i] = uniform(name);
+  }
+
+  uniforms_.sceneA        = uniform("sceneA");
+  uniforms_.sceneB        = uniform("sceneB");
+  uniforms_.progress      = uniform("progress");
+  uniforms_.transitionRes = uniform("resolution");
 }
 
 auto Program::validate_uniforms() -> bool

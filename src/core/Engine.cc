@@ -27,6 +27,15 @@ void Engine::accumulate_mouse_delta(float dx, float dy)
   mouse_dy += dy;
 }
 
+void Engine::set_resolution(int w, int h)
+{
+  if (!renderer_ || w <= 0 || h <= 0)
+    return;
+
+  renderer_->resize(w, h);
+  graph_.resize(static_cast<float>(w), static_cast<float>(h));
+}
+
 EM_BOOL keydown_callback(int, const EmscriptenKeyboardEvent* e, void*)
 {
   if (e->ctrlKey || e->metaKey || e->altKey || e->shiftKey)
@@ -174,6 +183,7 @@ void Engine::frame()
   }
 
   renderer_->set_mouse(mouse_x, mouse_y);
+  renderer_->begin_frame(static_cast<float>(now), static_cast<float>(delta));
 
   graph_.render(*renderer_);
 }

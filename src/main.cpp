@@ -11,6 +11,9 @@ extern "C"
   void set_mouse(float x, float y) { engine.set_mouse(x, y); }
 
   EMSCRIPTEN_KEEPALIVE
+  void set_resolution(int w, int h) { engine.set_resolution(w, h); }
+
+  EMSCRIPTEN_KEEPALIVE
   void accumulate_mouse_delta(float dx, float dy) { engine.accumulate_mouse_delta(dx, dy); }
 
   EMSCRIPTEN_KEEPALIVE
@@ -23,6 +26,9 @@ extern "C"
   void set_theme_projects(bool dark) { engine.set_theme_projects(dark); }
 
   EMSCRIPTEN_KEEPALIVE
+  void set_theme_blog(bool dark) { engine.set_theme_blog(dark); }
+
+  EMSCRIPTEN_KEEPALIVE
   void navigate_home() { engine.navigate_home(); }
 
   EMSCRIPTEN_KEEPALIVE
@@ -30,6 +36,16 @@ extern "C"
 
   EMSCRIPTEN_KEEPALIVE
   void navigate_projects() { engine.navigate_projects(); }
+
+  EMSCRIPTEN_KEEPALIVE
+  void navigate_blog() { engine.navigate_blog(); }
+
+  EMSCRIPTEN_KEEPALIVE
+  void set_channel(int index, unsigned int tex)
+  {
+    if (engine.renderer_)
+      engine.renderer_->set_channel(index, static_cast<GLuint>(tex));
+  }
 }
 
 // md4c stuff

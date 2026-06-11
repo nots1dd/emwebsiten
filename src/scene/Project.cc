@@ -4,21 +4,16 @@
 
 void ProjectScene::render(Renderer& renderer)
 {
-  auto& shaders = AssetManager::instance().shaders();
+  auto& assets  = AssetManager::instance();
+  auto& shaders = assets.shaders();
 
-  auto& post = (theme_ == Theme::Inverted) ? shaders.program<ShaderID::nature_inv>()
-                                           : shaders.program<ShaderID::nature>();
+  auto& post = (theme_ == Theme::Inverted) ? shaders.program<ShaderID::projects_lava_inv>()
+                                           : shaders.program<ShaderID::projects_lava>();
 
-  FrameUniforms frame{};
+  FrameUniforms frame = renderer.make_frame(camera_);
 
-  frame.time   = emscripten_get_now() * 0.001f;
-  frame.width  = renderer.get_render_width();
-  frame.height = renderer.get_render_height();
-  frame.mouseX = renderer.mouse_x();
-  frame.mouseY = renderer.mouse_y();
-
-  frame.frame  = 0;
-  frame.camera = &camera_;
+  // Molten detail map for the lava shader (iChannel0).
+  frame.channels[0] = &assets.textures().get(TextureID::lava);
 
   renderer.render(post, frame);
 }
