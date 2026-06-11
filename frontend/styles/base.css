@@ -4,6 +4,13 @@
   --bg: #0a0a0a;
   --text: #eaeaea;
 
+  /* pixel-art accent font (keycaps, small labels) */
+  --pixel-font: "Press Start 2P", monospace;
+  /* faint CRT scanline overlay tint for glass panels */
+  --scanline: rgba(255,255,255,0.035);
+  /* pixel accent color for focus rings / keycap edges */
+  --pixel-accent: #6be0d0;
+
   --glass-bg: rgba(20,20,20,0.4);
   --glass-border: rgba(255,255,255,0.08);
   --glass-highlight: rgba(255,255,255,0.1);
@@ -69,6 +76,9 @@
 body.light {
   --bg: #f5f5f5;
   --text: #111;
+
+  --scanline: rgba(0,0,0,0.04);
+  --pixel-accent: #0b7d70;
 
   --glass-bg: rgba(255,255,255,0.55);
   --glass-border: rgba(0,0,0,0.08);

@@ -1,4 +1,5 @@
 import { normalizePath } from "./utils.js";
+import { themeFnFor } from "./router.js";
 
 export function toggleTheme() {
   const toggle = document.getElementById("theme-toggle");
@@ -13,16 +14,9 @@ export function toggleTheme() {
 
   localStorage.setItem("theme", nowLight ? "light" : "dark");
 
-  const path = normalizePath(location.pathname);
-
-  if (window.Module) {
-    const dark = nowLight ? 1 : 0;
-    if (path === "/") Module._set_theme_home?.(dark);
-    else if (path === "/about") Module._set_theme_about?.(dark);
-    else if (path === "/projects") Module._set_theme_projects?.(dark);
-    else if (path === "/blog" || path.startsWith("/blog/"))
-      Module._set_theme_blog?.(dark);
-  }
+  // Recolor the WebGL scene for the current route (drives the day/night swap).
+  const fn = themeFnFor(normalizePath(location.pathname));
+  if (window.Module && fn) Module[fn]?.(nowLight ? 1 : 0);
 
   console.log("[THEME] toggled →", nowLight ? "light" : "dark");
 }

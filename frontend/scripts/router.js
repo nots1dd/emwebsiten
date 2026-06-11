@@ -1,5 +1,6 @@
 import { normalizePath } from "./utils.js";
 import { renderBlogPost } from "./components.js";
+import { pageTransition } from "./transition.js";
 
 // Top-level pages: route -> view template.
 const PAGES = {
@@ -31,18 +32,26 @@ export const ROUTES = {
   ),
 };
 
-// Routes that drive the WASM scene -> the exported function to call.
-const WASM_NAV = {
-  "/": "_navigate_home",
-  "/about": "_navigate_about",
-  "/projects": "_navigate_projects",
-  "/blog": "_navigate_blog",
+// Each route's WASM entry points: scene navigation + theme recolor.
+const WASM_ROUTES = {
+  "/":         { nav: "_navigate_home",     theme: "_set_theme_home" },
+  "/about":    { nav: "_navigate_about",    theme: "_set_theme_about" },
+  "/projects": { nav: "_navigate_projects", theme: "_set_theme_projects" },
+  "/blog":     { nav: "_navigate_blog",     theme: "_set_theme_blog" },
 };
 
+// Resolve a path to its WASM entry (blog posts share the blog scene).
+function wasmRoute(path) {
+  return path.startsWith("/blog/") ? WASM_ROUTES["/blog"] : WASM_ROUTES[path];
+}
+
 export function routeToWasm(path) {
-  // Blog index and every post share the pixel background scene.
-  const fn = path.startsWith("/blog/") ? "_navigate_blog" : WASM_NAV[path];
+  const fn = wasmRoute(path)?.nav;
   if (fn) Module?.[fn]?.();
+}
+
+export function themeFnFor(path) {
+  return wasmRoute(path)?.theme ?? null;
 }
 
 function attachCardHandlers() {
@@ -78,21 +87,35 @@ export async function navigate(path) {
   await renderRoute(path);
 }
 
+let firstRender = true;
+
 export async function renderRoute(path) {
   path = normalizePath(path);
   const resolved = path in ROUTES ? path : "/";
 
   const main = document.querySelector("main");
-  main.innerHTML = await fetch(ROUTES[resolved]).then(r => r.text());
 
-  setActiveLink(resolved);
-  routeToWasm(resolved);
+  // Fetch + inject the view, then run its post-processing.
+  const swap = async () => {
+    main.innerHTML = await fetch(ROUTES[resolved]).then(r => r.text());
 
-  if (BLOG_POSTS[resolved]) {
-    await renderBlogPost(resolved);
+    setActiveLink(resolved);
+    routeToWasm(resolved);
+
+    if (BLOG_POSTS[resolved]) {
+      await renderBlogPost(resolved);
+    }
+
+    attachCardHandlers();
+  };
+
+  // No glitch on the very first paint; otherwise play the corrupted-glass wipe.
+  if (firstRender) {
+    firstRender = false;
+    await swap();
+  } else {
+    await pageTransition(swap);
   }
-
-  attachCardHandlers();
 }
 
 function moveNavHighlight(activeEl) {

@@ -1,199 +1,178 @@
 import { navigate } from "./router.js";
 import { toggleTheme } from "./theme.js";
 import { toggleCanvasMode } from "./canvas.js";
+import { initHelp, toggleHelp } from "./help.js";
 
-export const Mode = {
-  NORMAL: "normal",
-  INSERT: "insert",
-};
+/* =========================================================
+   Single source of truth for every keybinding.
+   Drives the dispatcher, the hint pill, and the help panel.
+   `seq`  — keys to press (a char sequence like "gh", or a
+            single key like "j" / "G" / "Enter").
+   `cat`  — group shown in the help panel.
+   `move` — engages vim mode (lets arrow keys disengage focus).
+========================================================= */
+const BINDINGS = [
+  { seq: "gh", label: "home",     cat: "Navigate", run: () => navigate("/") },
+  { seq: "ga", label: "about",    cat: "Navigate", run: () => navigate("/about") },
+  { seq: "gb", label: "blog",     cat: "Navigate", run: () => navigate("/blog") },
+  { seq: "gp", label: "projects", cat: "Navigate", run: () => navigate("/projects") },
 
-const KEYMAP = {
-  "gh": () => navigate("/"),
-  "ga": () => navigate("/about"),
-  "gb": () => navigate("/blog"),
-  "gp": () => navigate("/projects"),
+  { seq: "j",  label: "down",   cat: "Move", move: true, run: () => moveDown() },
+  { seq: "k",  label: "up",     cat: "Move", move: true, run: () => moveUp() },
+  { seq: "gg", label: "top",    cat: "Move", move: true, run: () => { scrollPageTo(0); focusCard(0, false); } },
+  { seq: "G",  label: "bottom", cat: "Move", move: true, run: () => { scrollPageTo(pageBottom()); focusCard(cardCount() - 1, false); } },
+  { seq: "Enter", label: "open focused card", cat: "Move", run: () => activateFocusedCard() },
 
-  "gg": () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    focusCard(0);
-  },
+  { seq: "H", label: "back",    cat: "History", run: () => history.back() },
+  { seq: "L", label: "forward", cat: "History", run: () => history.forward() },
 
-  "G": () => {
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-    const cards = getCards();
-    if (cards.length) focusCard(cards.length - 1);
-  },
+  { seq: "ct", label: "toggle theme",  cat: "View", run: () => toggleTheme() },
+  { seq: "xx", label: "canvas mode",   cat: "View", run: () => toggleCanvasMode() },
 
-  "j": () => focusCard(focusedIndex + 1),
-  "k": () => focusCard(focusedIndex - 1),
-  "ct": () => toggleTheme(),
-  "xx": () => toggleCanvasMode(),
-
-  "Enter": () => activateFocusedCard(),
-
-  "H": () => history.back(),
-  "L": () => history.forward(),
-};
-
-const NAV_KEYS = [
-  "ArrowUp",
-  "ArrowDown",
-  "ArrowLeft",
-  "ArrowRight",
-  "PageUp",
-  "PageDown",
-  "Home",
-  "End",
-  " ",
+  { seq: "?",  label: "this help", cat: "Help", run: () => toggleHelp() },
 ];
 
-let currentMode = Mode.NORMAL;
+const BY_SEQ = new Map(BINDINGS.map((b) => [b.seq, b]));
+
+const NAV_KEYS = [
+  "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
+  "PageUp", "PageDown", "Home", "End", " ",
+];
+
+// Printable keys that begin (or are) a binding — we swallow these so the
+// browser doesn't scroll / open quick-find while a sequence is in flight.
+const OWNED_KEYS = new Set(BINDINGS.flatMap((b) => (b.seq.length === 1 ? [b.seq] : [b.seq[0]])));
+
 let buffer = "";
 let bufferTimer = null;
 let focusedIndex = 0;
-
-// Arrow keys are passive until vim nav is first engaged
-let vimEngaged = false;
+let vimEngaged = false; // arrow keys stay passive until vim nav is used
 
 export function initKeys() {
+  initHelp(BINDINGS);
   document.addEventListener("keydown", (e) => {
     if (isTypingContext(e)) return;
     handleKey(e);
   });
 }
 
+/* ---------- helpers ---------- */
 function isTypingContext(e) {
   const tag = e.target.tagName;
   return tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable;
 }
 
-function resetBufferSoon() {
-  clearTimeout(bufferTimer);
-  bufferTimer = setTimeout(() => {
-    buffer = "";
-    updateHints("");
-  }, 600);
+/* ---- page scrolling ----
+   `overflow-x:hidden` on <body> forces overflow-y:auto, so the BODY (not the
+   window) is the scroll container here — pick whichever element actually
+   scrolls so the keys work on every page, list or not. */
+function scrollerEl() {
+  const b = document.body, d = document.documentElement;
+  return b.scrollHeight > b.clientHeight ? b : d;
+}
+function pageBottom() {
+  return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+}
+function scrollPageTo(top) {
+  scrollerEl().scrollTo({ top, behavior: "smooth" });
+}
+function scrollPageBy(dy) {
+  scrollerEl().scrollBy({ top: dy, behavior: "smooth" });
 }
 
 function getCards() {
   return Array.from(document.querySelectorAll(".card"));
 }
+function cardCount() {
+  return getCards().length;
+}
 
-function focusCard(index) {
+function focusCard(index, scroll = true) {
   const cards = getCards();
   if (!cards.length) return;
-
   focusedIndex = (index + cards.length) % cards.length;
-
   const el = cards[focusedIndex];
   el.focus({ preventScroll: true });
-  el.scrollIntoView({ block: "center", behavior: "smooth" });
+  if (scroll) el.scrollIntoView({ block: "center", behavior: "smooth" });
+}
+
+// j/k: step through cards when present, otherwise scroll the page.
+function moveDown() {
+  if (cardCount()) focusCard(focusedIndex + 1);
+  else scrollPageBy(Math.round(window.innerHeight * 0.15));
+}
+function moveUp() {
+  if (cardCount()) focusCard(focusedIndex - 1);
+  else scrollPageBy(-Math.round(window.innerHeight * 0.15));
 }
 
 function activateFocusedCard() {
-  const cards = getCards();
-  const el = cards[focusedIndex];
-  if (!el) return;
-  const route = el.dataset.route;
+  const route = getCards()[focusedIndex]?.dataset.route;
   if (route) navigate(route);
 }
 
 function isPrefix(str) {
-  if (str === "g") return true;
-  return Object.keys(KEYMAP).some((cmd) => cmd.startsWith(str));
+  return BINDINGS.some((b) => b.seq.length > 1 && b.seq.startsWith(str) && b.seq !== str);
 }
 
-function engage() {
-  vimEngaged = true;
+function resetBuffer() {
+  buffer = "";
+  updateHints("");
 }
 
+function resetBufferSoon() {
+  clearTimeout(bufferTimer);
+  bufferTimer = setTimeout(resetBuffer, 600);
+}
+
+function fire(binding) {
+  if (binding.move) vimEngaged = true;
+  binding.run();
+  resetBuffer();
+}
+
+/* ---------- dispatcher ---------- */
 function handleKey(e) {
   const key = e.key;
 
   if (NAV_KEYS.includes(key)) {
-    // Only intercept arrow keys after vim nav has been engaged
-    if (!vimEngaged) return;
-
-    if (document.activeElement) document.activeElement.blur();
-    buffer = "";
-    updateHints("");
+    if (!vimEngaged) return; // passive until vim nav engaged
+    document.activeElement?.blur();
+    resetBuffer();
     return;
   }
 
   if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-  if (["j", "k", "g", "G"].includes(key)) e.preventDefault();
-
-  if (key === "j") {
-    engage();
-    focusCard(focusedIndex + 1);
-    return;
-  }
-  if (key === "k") {
-    engage();
-    focusCard(focusedIndex - 1);
-    return;
-  }
-  if (key === "Enter") {
-    e.preventDefault();
-    buffer = "";
-    updateHints("");
-    activateFocusedCard();
-    return;
-  }
-  if (key === "G") {
-    engage();
-    KEYMAP["G"]();
+  // Named (non-printable) keys map directly by sequence, e.g. Enter.
+  if (key.length > 1) {
+    const b = BY_SEQ.get(key);
+    if (b) { e.preventDefault(); fire(b); }
     return;
   }
 
-  if (key.length > 1) return;
+  if (OWNED_KEYS.has(key)) e.preventDefault();
 
   buffer += key;
   resetBufferSoon();
   updateHints(buffer);
 
-  if (KEYMAP[buffer]) {
-    if (buffer === "gg") engage();
-    KEYMAP[buffer]();
-    buffer = "";
-    updateHints("");
-    return;
-  }
+  const exact = BY_SEQ.get(buffer);
+  if (exact) { fire(exact); return; }
 
-  if (!isPrefix(buffer)) {
-    buffer = "";
-    updateHints("");
-  }
+  if (!isPrefix(buffer)) resetBuffer();
 }
 
-/* =========================
-   TOOLTIP — bottom-center pill
-========================= */
-
-const HINT_LABELS = {
-  h: "home",
-  a: "about",
-  b: "blog",
-  p: "projects",
-  g: "top",
-  t: "theme",
-  x: "canvas",
-};
-
+/* =========================================================
+   Hint pill — shows the keys that continue the current prefix.
+========================================================= */
 function updateHints(prefix) {
-  let el = document.getElementById("vim-hints");
+  const el = document.getElementById("vim-hints");
   if (!el) return;
 
-  if (!prefix) {
-    el.classList.remove("show");
-    el.innerHTML = "";
-    return;
-  }
-
-  const matches = Object.keys(KEYMAP).filter(
-    (cmd) => cmd.startsWith(prefix) && cmd !== prefix
-  );
+  const matches = prefix
+    ? BINDINGS.filter((b) => b.seq.startsWith(prefix) && b.seq !== prefix)
+    : [];
 
   if (!matches.length) {
     el.classList.remove("show");
@@ -202,21 +181,13 @@ function updateHints(prefix) {
   }
 
   const chips = matches
-    .map((cmd) => {
-      const nextKey = cmd[prefix.length];
-      const label = HINT_LABELS[nextKey] || "";
-      return `<span class="vim-hint-chip">
-        <span class="vim-hint-key">${nextKey}</span>
-        ${label ? `<span class="vim-hint-label">${label}</span>` : ""}
-      </span>`;
-    })
+    .map((b) => `<span class="vim-hint-chip">
+        <kbd class="kbd">${b.seq[prefix.length]}</kbd>
+        <span class="vim-hint-label">${b.label}</span>
+      </span>`)
     .join('<span class="vim-hint-sep">·</span>');
 
-  el.innerHTML = `
-    <span class="vim-hint-prefix">${prefix}</span>
-    <span class="vim-hint-divider"></span>
-    ${chips}
-  `;
-
+  el.innerHTML = `<kbd class="kbd vim-hint-prefix">${prefix}</kbd>
+    <span class="vim-hint-divider"></span>${chips}`;
   el.classList.add("show");
 }

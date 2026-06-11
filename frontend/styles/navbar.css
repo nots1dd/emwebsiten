@@ -1,6 +1,7 @@
 /* =========================
    NAVBAR
 ========================= */
+/* Panel chrome (bg/border/blur/shadow) comes from the shared .glass class. */
 .navbar {
   position: fixed;
   top: 16px;
@@ -10,14 +11,7 @@
   max-width: 1000px;
 
   z-index: 5;
-
   border-radius: 16px;
-  backdrop-filter: blur(16px);
-
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-
-  box-shadow: 0 10px 40px var(--shadow-strong);
 }
 
 /* =========================
@@ -27,7 +21,57 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
+  gap: 12px;
+  padding: 10px 14px;
+}
+
+.nav-left,
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-ctrl {
+  display: flex;
+  gap: 4px;
+}
+
+/* =========================
+   ICON / CHROME BUTTONS
+========================= */
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1;
+
+  background: var(--copy-btn-bg);
+  border: 1px solid var(--copy-btn-border);
+  border-radius: 8px;
+  cursor: pointer;
+
+  transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+  opacity: 0.7;
+}
+
+.nav-btn:hover {
+  opacity: 1;
+  background: var(--copy-btn-hover);
+  transform: translateY(-1px);
+}
+
+.nav-btn:active { transform: translateY(0) scale(0.94); }
+
+/* the "?" help button gets the pixel font */
+.nav-btn-pixel {
+  font-family: var(--pixel-font);
+  font-size: 11px;
 }
 
 /* =========================

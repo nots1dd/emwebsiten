@@ -1,11 +1,19 @@
-<header class="navbar">
+<header class="navbar glass scanlines">
   <div class="nav-inner">
-    <a href="/" class="logo">
-      <div class="logo-glass">
-        <img src="/assets/logo.jpg" alt="sid k" />
+
+    <div class="nav-left">
+      <div class="nav-ctrl">
+        <button class="nav-btn" data-action="back" aria-label="Go back" title="Back (H)">‹</button>
+        <button class="nav-btn" data-action="forward" aria-label="Go forward" title="Forward (L)">›</button>
       </div>
-      <span class="logo-tooltip">sid k</span>
-    </a>
+
+      <a href="/" class="logo">
+        <div class="logo-glass">
+          <img src="/assets/logo.jpg" alt="sid k" />
+        </div>
+        <span class="logo-tooltip">sid k</span>
+      </a>
+    </div>
 
     <nav class="nav-links">
       <a href="/" data-link data-route="/" class="nav-link">Home</a>
@@ -14,8 +22,12 @@
       <a href="/projects" data-link data-route="/projects" class="nav-link">Projects</a>
     </nav>
 
-    <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
-      <span class="icon"></span>
-    </button>
+    <div class="nav-right">
+      <button class="nav-btn nav-btn-pixel" data-action="help" aria-label="Keyboard shortcuts" title="Keybinds (?)">?</button>
+      <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
+        <span class="icon"></span>
+      </button>
+    </div>
+
   </div>
 </header>
