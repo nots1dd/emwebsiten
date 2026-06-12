@@ -54,7 +54,7 @@ public:
 
   void set_theme_home(bool dark) { set_theme<ShaderID::spacetime_rip_transition>(Route::Home, dark); }
 
-  void set_theme_about(bool dark) { set_theme<ShaderID::datamosh_transition>(Route::About, dark); }
+  void set_theme_about(bool dark) { set_theme<ShaderID::overgrowth_transition>(Route::About, dark); }
 
   void set_theme_projects(bool dark)
   {

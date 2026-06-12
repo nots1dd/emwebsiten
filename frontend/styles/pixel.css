@@ -6,6 +6,20 @@
    - pixel focus : blocky focus ring for cards / buttons
 ========================================================= */
 
+/* =========================================================
+   Datamosh text selection — glitchy magenta/cyan, not browser blue
+   (::selection only honors a few props; text-shadow shows where supported)
+========================================================= */
+::selection {
+  background: rgba(255, 0, 128, 0.85);
+  color: #e9fffb;
+  text-shadow: 1px 0 rgba(0, 225, 220, 0.9), -1px 0 rgba(255, 0, 128, 0.6);
+}
+::-moz-selection {
+  background: rgba(255, 0, 128, 0.85);
+  color: #e9fffb;
+}
+
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);

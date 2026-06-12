@@ -2,8 +2,8 @@
 # ============================================================
 # gen_resume_pdf.py
 #
-# Writes a minimal, valid one-page placeholder resume.pdf to the
-# project root (served at /resume.pdf). Pure stdlib — no PDF
+# Writes a minimal, valid one-page placeholder resume.pdf into
+# public/ (served at /public/resume.pdf). Pure stdlib — no PDF
 # library. Replace the generated file with your real resume.
 # ============================================================
 
@@ -20,8 +20,8 @@ LINES = [
     ("placeholder resume", 13, 692),
     ("", 12, 676),
     ("This is a generated placeholder.", 12, 660),
-    ("Replace  resume.pdf  at the project root with your real resume,", 12, 642),
-    ("then it will show in the /resume viewer and download at /resume.pdf.", 12, 624),
+    ("Replace  public/resume.pdf  with your real resume,", 12, 642),
+    ("then it will show in the /resume viewer and download from public/.", 12, 624),
     ("", 12, 600),
     ("- built-in PDF viewer (no extra dependencies)", 12, 582),
     ("- matches the site's glass + pixel theme", 12, 564),
@@ -69,7 +69,9 @@ def build_pdf() -> bytes:
 
 def main() -> None:
     here = os.path.dirname(os.path.abspath(__file__))
-    out_path = os.path.normpath(os.path.join(here, "..", "resume.pdf"))
+    out_dir = os.path.normpath(os.path.join(here, "..", "public"))
+    os.makedirs(out_dir, exist_ok=True)
+    out_path = os.path.join(out_dir, "resume.pdf")
     with open(out_path, "wb") as f:
         f.write(build_pdf())
     print(f"wrote {out_path} ({os.path.getsize(out_path)} bytes)")
