@@ -105,11 +105,11 @@ void drawRingedSystem(inout vec3 col, vec2 p, vec2 pos, float pr, vec3 c1, vec3 
   drawBody(col, p, mpos, pr * 0.42, vec3(0.6, 0.6, 0.68), vec3(1.0, 1.0, 1.0), ldir, 22.0, w);
 }
 
-/* star tidally devoured, stretched toward the hole with an infalling stream */
-void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
+/* star tidally devoured: a glowing-bordered body that fades over time (life) */
+void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol, float life)
 {
   float sa     = uTime * 0.22 + 0.5;
-  vec2  pos    = orbit(0.40, sa);
+  vec2  pos    = orbit(0.34, sa);
   float a0     = atan(pos.y, pos.x), r0 = length(pos);
   vec2  toHole = normalize(-pos);
 
@@ -122,7 +122,7 @@ void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
     vec2  sp  = vec2(cos(ang) * rad, sin(ang) * rad * 0.5);
     stream += smoothstep(0.022 * (1.0 - s) + 0.004, 0.0, length(p - sp));
   }
-  col += streamCol * clamp(stream, 0.0, 1.8) * 0.9;
+  col += streamCol * clamp(stream, 0.0, 1.8) * 0.9 * life;
 
   vec2  lp    = p - pos;
   float along = dot(lp, toHole);
@@ -130,11 +130,11 @@ void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
   float strc  = along > 0.0 ? 1.7 : 1.0;
   float sd    = length(perp + toHole * (along / strc));
 
-  float aa = atan(lp.y, lp.x);
-  col += star * exp(-length(lp) * 7.5) * (0.8 + 0.25 * sin(aa * 16.0 - uTime * 2.5)) * 1.3;
-
+  float R    = 0.075;
   float gran = det(perp * 20.0 + vec2(uTime * 0.1, 0.0)) * 0.3;
-  col = mix(col, star * (1.1 + gran) + 0.25, smoothstep(0.085, 0.07, sd));
+  col = mix(col, star * (1.0 + gran) + 0.15, smoothstep(R + 0.008, R - 0.006, sd) * life);
+  /* glowing rim border (replaces the radial beams) */
+  col += star * exp(-pow((sd - R) / 0.016, 2.0)) * 1.3 * life;
 }
 
 void main()
@@ -150,6 +150,9 @@ void main()
 
   float d = length(p);
   vec3  ldir = normalize(vec3(-0.5, 0.45, 0.7));
+
+  /* the star slowly dims and fades; the accretion disk brightens as it does */
+  float starLife = 0.5 + 0.5 * cos(uTime * 0.13);
 
   /* reverse-lensed background (light pushed outward) */
   float swirl = -0.28 / (d + 0.12);
@@ -186,48 +189,45 @@ void main()
   }
 
   /* planets behind */
-  float a0 = uTime * 0.25 + 0.0, a1 = -uTime * 0.16 + 2.1, a2 = uTime * 0.11 + 4.0;
-  vec2  q0 = orbit(0.52, a0), q1 = orbit(0.72, a1), q2 = orbit(0.90, a2);
+  float a0 = uTime * 0.25 + 0.0, a1 = -uTime * 0.16 + 2.1;
+  vec2  q0 = orbit(0.62, a0), q1 = orbit(0.85, a1);
   vec3  pc0 = vec3(0.7, 0.55, 0.8),  pc0b = vec3(1.0, 0.9, 1.0);
   vec3  pc1 = vec3(0.55, 0.7, 0.9),  pc1b = vec3(0.85, 0.95, 1.0);
-  vec3  pc2 = vec3(0.9, 0.7, 0.55),  pc2b = vec3(1.0, 0.95, 0.85);
 
   // depth weight (behind/front of the disk)
   float b0 = smoothstep(-0.22, 0.22, sin(a0));
   float b1 = smoothstep(-0.22, 0.22, sin(a1));
-  float b2 = smoothstep(-0.22, 0.22, sin(a2));
 
-  drawSystem(col, p, q0, 0.05, pc0, pc0b, ldir, uTime * 0.9, b0);
+  drawBody(col, p, q0, 0.05, pc0, pc0b, ldir, 16.0, b0);
   drawRingedSystem(col, p, q1, 0.065, pc1, pc1b, ldir, -uTime * 0.7 + 1.0, b1);
-  drawSystem(col, p, q2, 0.055, pc2, pc2b, ldir, uTime * 0.6 + 2.0, b2);
 
-  /* radiant white-hole core: disc + glow + outward rays */
-  float rays = 0.75 + 0.25 * sin(atan(p.y, p.x) * 12.0 - uTime * 1.5);
-  col += vec3(1.0, 0.97, 0.9) * exp(-d * 11.0) * 0.7 * rays;
-  col = mix(col, vec3(1.0), smoothstep(RH, RH - 0.012, d));
+  /* radiant white-hole core — blue-tinted, not pure white */
+  col += vec3(0.7, 0.85, 1.0) * exp(-d * 11.0) * 0.6;
+  col = mix(col, vec3(0.86, 0.93, 1.0), smoothstep(RH, RH - 0.012, d));
 
-  /* cool/white accretion disk */
+  /* cool accretion disk — keeps its blue/violet hue as it brightens */
   vec2  e   = vec2(p.x, p.y / 0.30);
   float ed  = length(e);
   float ang = atan(p.y, p.x);
   float diskMask = smoothstep(0.17, 0.21, ed) * (1.0 - smoothstep(0.44, 0.52, ed));
   float turb = det(vec2(ang * 0.6 + ed * 2.0 + uTime * 0.25, ed * 3.0));
-  vec3  diskCol = mix(vec3(0.6, 0.85, 1.0), vec3(1.0, 1.0, 1.0), smoothstep(0.17, 0.5, ed));
-  col = mix(col, diskCol * (0.7 + 0.5 * turb), diskMask);
-  col += vec3(0.9, 0.97, 1.0) * exp(-pow((d - RH) / 0.02, 2.0)) * 1.0;
+  vec3  diskCol = mix(vec3(0.32, 0.58, 0.95), vec3(0.7, 0.88, 1.0), smoothstep(0.17, 0.5, ed));
+  diskCol = mix(diskCol, vec3(0.7, 0.55, 0.95), turb * 0.35);          // violet streaks
+  float diskGain = 1.0 + 0.7 * (1.0 - starLife);
+  col = mix(col, diskCol * (0.75 + 0.4 * turb) * diskGain, diskMask);
+  col += vec3(0.65, 0.82, 1.0) * exp(-pow((d - RH) / 0.02, 2.0)) * (0.8 + 0.5 * (1.0 - starLife));
 
-  /* star being devoured (bright star, cool/white stream) */
-  drawStar(col, p, vec3(1.0, 0.98, 0.95), vec3(0.7, 0.92, 1.0));
+  /* red star being devoured; fades over time while the disk brightens */
+  drawStar(col, p, vec3(0.95, 0.22, 0.14), vec3(1.0, 0.5, 0.25), starLife);
 
-  /* planets in front */
-  drawSystem(col, p, q0, 0.05, pc0, pc0b, ldir, uTime * 0.9, 1.0 - b0);
+  /* bodies in front */
+  drawBody(col, p, q0, 0.05, pc0, pc0b, ldir, 16.0, 1.0 - b0);
   drawRingedSystem(col, p, q1, 0.065, pc1, pc1b, ldir, -uTime * 0.7 + 1.0, 1.0 - b1);
-  drawSystem(col, p, q2, 0.055, pc2, pc2b, ldir, uTime * 0.6 + 2.0, 1.0 - b2);
 
   /* floating astronaut */
   float hh = 0.07, ww = hh * (16.0 / 24.0);
   // astronaut
-  vec2  apos = orbit(0.62, uTime * 0.2 + 1.0) + vec2(0.0, 0.02 * sin(uTime * 1.6));
+  vec2  apos = orbit(0.74, uTime * 0.2 + 1.0) + vec2(0.0, 0.02 * sin(uTime * 1.6));
   vec2  lp   = rot(0.4 * sin(uTime * 0.5) + 0.2 * sin(uTime * 0.9)) * (p - apos);
   vec2  uvA  = vec2(lp.x / ww * 0.5 + 0.5, 0.5 + lp.y / hh * 0.5);
   if (iChannelResolution[1].x > 0.0 && uvA.x > 0.0 && uvA.x < 1.0 && uvA.y > 0.0 && uvA.y < 1.0)

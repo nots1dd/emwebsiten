@@ -106,15 +106,14 @@ void drawRingedSystem(inout vec3 col, vec2 p, vec2 pos, float pr, vec3 c1, vec3 
   drawBody(col, p, mpos, pr * 0.42, vec3(0.35, 0.35, 0.42), vec3(0.85, 0.86, 0.95), ldir, 22.0, w);
 }
 
-/* star tidally devoured, stretched toward the hole with an infalling stream */
+/* orange-giant star tidally devoured, with an infalling stream */
 void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
 {
   float sa     = uTime * 0.22 + 0.5;
-  vec2  pos    = orbit(0.40, sa);
+  vec2  pos    = orbit(0.34, sa);
   float a0     = atan(pos.y, pos.x), r0 = length(pos);
   vec2  toHole = normalize(-pos);
 
-  /* tidal stream spiralling into the hole */
   float stream = 0.0;
   for (int i = 0; i < 18; i++)
   {
@@ -126,20 +125,16 @@ void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
   }
   col += streamCol * clamp(stream, 0.0, 1.8) * 0.9;
 
-  /* star body */
   vec2  lp    = p - pos;
   float along = dot(lp, toHole);
   vec2  perp  = lp - along * toHole;
   float strc  = along > 0.0 ? 1.7 : 1.0;
   float sd    = length(perp + toHole * (along / strc));
 
-  /* corona rays + broad glow */
-  float aa = atan(lp.y, lp.x);
-  col += star * exp(-length(lp) * 7.5) * (0.8 + 0.25 * sin(aa * 16.0 - uTime * 2.5)) * 1.3;
-
-  /* bright core + granulation */
-  float gran = det(perp * 20.0 + vec2(uTime * 0.1, 0.0)) * 0.3;
-  col = mix(col, star * (1.1 + gran) + 0.25, smoothstep(0.085, 0.07, sd));
+  float R    = 0.095;                              // giant
+  float gran = det(perp * 18.0 + vec2(uTime * 0.1, 0.0)) * 0.3;
+  col += star * exp(-length(lp) * 6.0) * 0.9;      // smooth glow, no tangent rays
+  col = mix(col, star * (1.0 + gran) + 0.2, smoothstep(R + 0.01, R - 0.008, sd));
 }
 
 void main()
@@ -180,22 +175,19 @@ void main()
     col += vec3(0.85, 0.9, 1.0) * st * smoothstep(0.16, 0.0, length(fract(sp) - 0.5)) * (0.4 + 0.6 * tw);
   }
 
-  /* ---- orbiting planets (behind the hole first) ---- */
-  float a0 = uTime * 0.25 + 0.0,  a1 = -uTime * 0.16 + 2.1,  a2 = uTime * 0.11 + 4.0;
-  vec2  q0 = orbit(0.52, a0), q1 = orbit(0.72, a1), q2 = orbit(0.90, a2);
+  /* ---- orbiting bodies: a plain planet + a ringed planet, set well back ---- */
+  float a0 = uTime * 0.25 + 0.0,  a1 = -uTime * 0.16 + 2.1;
+  vec2  q0 = orbit(0.62, a0), q1 = orbit(0.85, a1);
   vec3  pc0 = vec3(0.55, 0.25, 0.6),  pc0b = vec3(0.95, 0.6, 1.0);
   vec3  pc1 = vec3(0.2, 0.4, 0.7),    pc1b = vec3(0.6, 0.85, 1.0);
-  vec3  pc2 = vec3(0.7, 0.4, 0.3),    pc2b = vec3(1.0, 0.8, 0.6);
 
   // depth weight (behind/front of the disk)
   float b0 = smoothstep(-0.22, 0.22, sin(a0));
   float b1 = smoothstep(-0.22, 0.22, sin(a1));
-  float b2 = smoothstep(-0.22, 0.22, sin(a2));
 
-  /* behind the hole/disk — middle planet is ringed */
-  drawSystem(col, p, q0, 0.05, pc0, pc0b, ldir, uTime * 0.9, b0);
+  /* behind the hole/disk (q0 plain, q1 ringed with a moon) */
+  drawBody(col, p, q0, 0.05, pc0, pc0b, ldir, 16.0, b0);
   drawRingedSystem(col, p, q1, 0.065, pc1, pc1b, ldir, -uTime * 0.7 + 1.0, b1);
-  drawSystem(col, p, q2, 0.055, pc2, pc2b, ldir, uTime * 0.6 + 2.0, b2);
 
   /* ---- event horizon ---- */
   col = mix(col, vec3(0.0), smoothstep(RH, RH - 0.012, d));
@@ -215,18 +207,17 @@ void main()
   float arc = smoothstep(0.018, 0.0, abs(d - (RH + 0.045))) * step(0.0, p.y);
   col += vec3(1.0, 0.6, 0.25) * arc * (0.5 + 0.5 * turb);
 
-  /* ---- star being devoured ---- */
-  drawStar(col, p, vec3(0.85, 0.92, 1.0), vec3(1.0, 0.6, 0.25));
+  /* ---- orange giant being devoured ---- */
+  drawStar(col, p, vec3(1.0, 0.5, 0.15), vec3(1.0, 0.55, 0.2));
 
-  /* ---- planets in front of the hole ---- */
-  drawSystem(col, p, q0, 0.05, pc0, pc0b, ldir, uTime * 0.9, 1.0 - b0);
+  /* ---- bodies in front of the hole ---- */
+  drawBody(col, p, q0, 0.05, pc0, pc0b, ldir, 16.0, 1.0 - b0);
   drawRingedSystem(col, p, q1, 0.065, pc1, pc1b, ldir, -uTime * 0.7 + 1.0, 1.0 - b1);
-  drawSystem(col, p, q2, 0.055, pc2, pc2b, ldir, uTime * 0.6 + 2.0, 1.0 - b2);
 
   /* ---- floating astronaut (iChannel1) ---- */
   float hh = 0.07, ww = hh * (16.0 / 24.0);
   // astronaut
-  vec2  apos = orbit(0.62, uTime * 0.2 + 1.0) + vec2(0.0, 0.02 * sin(uTime * 1.6));
+  vec2  apos = orbit(0.74, uTime * 0.2 + 1.0) + vec2(0.0, 0.02 * sin(uTime * 1.6));
   vec2  lp   = rot(0.4 * sin(uTime * 0.5) + 0.2 * sin(uTime * 0.9)) * (p - apos);
   vec2  uvA  = vec2(lp.x / ww * 0.5 + 0.5, 0.5 + lp.y / hh * 0.5);
   if (iChannelResolution[1].x > 0.0 && uvA.x > 0.0 && uvA.x < 1.0 && uvA.y > 0.0 && uvA.y < 1.0)
