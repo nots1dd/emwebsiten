@@ -148,7 +148,8 @@
    (lift / 3D tilt) worth keeping, so they use a transform-free chromatic
    glitch — the RGB split + scanline-free corruption layers on top. */
 .footer-links a:hover,
-.card:hover {
+.card:hover,
+.resume-btn:hover {
   animation: glitchTint 0.28s steps(3, end) infinite;
 }
 
@@ -174,7 +175,8 @@
   .help-close:hover,
   .md-copy-btn:hover,
   .footer-links a:hover,
-  .card:hover {
+  .card:hover,
+  .resume-btn:hover {
     animation: none;
   }
 }

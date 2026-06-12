@@ -13,6 +13,9 @@ enum class TextureID : std::size_t
   logo,
   pixel_palette,
   lava,
+  space_nebula,
+  astronaut,
+  creeper,
   COUNT
 };
 
@@ -49,6 +52,29 @@ constexpr auto texture_registry = std::to_array<TextureDesc>({
    // Seamless molten detail map: tile + keep the pixel look.
    .options = {.wrap_s     = GL_REPEAT,
                .wrap_t     = GL_REPEAT,
+               .min_filter = GL_NEAREST,
+               .mag_filter = GL_NEAREST}},
+  {.id   = TextureID::space_nebula,
+   .name = "space_nebula",
+   .path = "/assets/textures/space-nebula.png",
+   // Seamless nebula / turbulence detail map.
+   .options = {.wrap_s     = GL_REPEAT,
+               .wrap_t     = GL_REPEAT,
+               .min_filter = GL_NEAREST,
+               .mag_filter = GL_NEAREST}},
+  {.id   = TextureID::astronaut,
+   .name = "astronaut",
+   .path = "/assets/textures/astronaut.png",
+   // Pixel sprite: clamp + nearest, no tiling.
+   .options = {.wrap_s     = GL_CLAMP_TO_EDGE,
+               .wrap_t     = GL_CLAMP_TO_EDGE,
+               .min_filter = GL_NEAREST,
+               .mag_filter = GL_NEAREST}},
+  {.id   = TextureID::creeper,
+   .name = "creeper",
+   .path = "/assets/textures/creeper.png",
+   .options = {.wrap_s     = GL_CLAMP_TO_EDGE,
+               .wrap_t     = GL_CLAMP_TO_EDGE,
                .min_filter = GL_NEAREST,
                .mag_filter = GL_NEAREST}},
 });

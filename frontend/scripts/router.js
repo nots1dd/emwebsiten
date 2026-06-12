@@ -8,6 +8,7 @@ const PAGES = {
   "/about": "/frontend/pages/about.html",
   "/blog": "/frontend/pages/blogs.html",
   "/projects": "/frontend/pages/projects.html",
+  "/resume": "/frontend/pages/resume.html",
 };
 
 // Every blog post renders through the same template.

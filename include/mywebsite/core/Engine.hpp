@@ -52,7 +52,7 @@ public:
 
   void navigate_blog() { navigate<ShaderID::crt_static_transition>(Route::Blog); }
 
-  void set_theme_home(bool dark) { set_theme<ShaderID::power_off_transition>(Route::Home, dark); }
+  void set_theme_home(bool dark) { set_theme<ShaderID::spacetime_rip_transition>(Route::Home, dark); }
 
   void set_theme_about(bool dark) { set_theme<ShaderID::datamosh_transition>(Route::About, dark); }
 

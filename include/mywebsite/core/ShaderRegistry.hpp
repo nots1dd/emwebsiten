@@ -24,6 +24,7 @@ enum class ShaderID : std::size_t
   blog_pixel,
   blog_pixel_inv,
   mosaic_dither_transition,
+  spacetime_rip_transition,
   COUNT
 };
 
@@ -102,6 +103,10 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "mosaic_dither_transition",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/mosaic-dither.transition.glsl"},
+  {.id   = ShaderID::spacetime_rip_transition,
+   .name = "spacetime_rip_transition",
+   .vert = "/assets/shaders/fullscreen.vert",
+   .frag = "/assets/shaders/spacetime-rip.transition.glsl"},
 });
 
 // ------------------------------------------------------------

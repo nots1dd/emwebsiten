@@ -16,6 +16,7 @@ const BINDINGS = [
   { seq: "ga", label: "about",    cat: "Navigate", run: () => navigate("/about") },
   { seq: "gb", label: "blog",     cat: "Navigate", run: () => navigate("/blog") },
   { seq: "gp", label: "projects", cat: "Navigate", run: () => navigate("/projects") },
+  { seq: "gr", label: "resume",   cat: "Navigate", run: () => navigate("/resume") },
 
   { seq: "j",  label: "down",   cat: "Move", move: true, run: () => moveDown() },
   { seq: "k",  label: "up",     cat: "Move", move: true, run: () => moveUp() },
