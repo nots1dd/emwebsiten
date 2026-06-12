@@ -10,9 +10,7 @@
 // ------------------------------------------------------------
 enum class TextureID : std::size_t
 {
-  logo,
   pixel_palette,
-  lava,
   space_nebula,
   astronaut,
   creeper,
@@ -34,30 +32,16 @@ struct TextureDesc
 // Registry
 // ------------------------------------------------------------
 constexpr auto texture_registry = std::to_array<TextureDesc>({
-  {.id      = TextureID::logo,
-   .name    = "logo",
-   .path    = "/assets/logo.jpg",
-   .options = {}},
   {.id   = TextureID::pixel_palette,
    .name = "pixel_palette",
    .path = "/assets/textures/pixel-palette.png",
-   // Pixel-art lookup: hard steps, clamp at the ends.
    .options = {.wrap_s     = GL_CLAMP_TO_EDGE,
                .wrap_t     = GL_CLAMP_TO_EDGE,
-               .min_filter = GL_NEAREST,
-               .mag_filter = GL_NEAREST}},
-  {.id   = TextureID::lava,
-   .name = "lava",
-   .path = "/assets/textures/lava-noise.png",
-   // Seamless molten detail map: tile + keep the pixel look.
-   .options = {.wrap_s     = GL_REPEAT,
-               .wrap_t     = GL_REPEAT,
                .min_filter = GL_NEAREST,
                .mag_filter = GL_NEAREST}},
   {.id   = TextureID::space_nebula,
    .name = "space_nebula",
    .path = "/assets/textures/space-nebula.png",
-   // Seamless nebula / turbulence detail map.
    .options = {.wrap_s     = GL_REPEAT,
                .wrap_t     = GL_REPEAT,
                .min_filter = GL_NEAREST,
@@ -65,7 +49,6 @@ constexpr auto texture_registry = std::to_array<TextureDesc>({
   {.id   = TextureID::astronaut,
    .name = "astronaut",
    .path = "/assets/textures/astronaut.png",
-   // Pixel sprite: clamp + nearest, no tiling.
    .options = {.wrap_s     = GL_CLAMP_TO_EDGE,
                .wrap_t     = GL_CLAMP_TO_EDGE,
                .min_filter = GL_NEAREST,

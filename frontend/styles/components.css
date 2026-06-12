@@ -99,8 +99,6 @@
 /* =========================
    CONTENT WRAPPER
 ========================= */
-/* Glass chrome from the shared .glass class; .content keeps its layout +
-   a richer inner glow + stronger blur. */
 .content {
   position: relative;
   z-index: 2;
@@ -211,7 +209,7 @@
 ========================= */
 .logo-tooltip {
   position: absolute;
-  top: calc(100% + 10px);   /* BELOW logo */
+  top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%) translateY(-6px);
 
@@ -244,7 +242,7 @@
   content: "";
   position: absolute;
 
-  top: -4px; /* move ABOVE tooltip */
+  top: -4px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
 

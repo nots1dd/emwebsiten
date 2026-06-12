@@ -13,8 +13,6 @@ Program::Program(const Shader& vs, const Shader& fs)
   GLint status = 0;
   glGetProgramiv(id_, GL_LINK_STATUS, &status);
 
-  // bool uniformsValidated = validate_uniforms();
-
   linked_ = (status == GL_TRUE);
 
   if (!linked_)

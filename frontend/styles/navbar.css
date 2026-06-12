@@ -1,7 +1,6 @@
 /* =========================
    NAVBAR
 ========================= */
-/* Panel chrome (bg/border/blur/shadow) comes from the shared .glass class. */
 .navbar {
   position: fixed;
   top: 16px;

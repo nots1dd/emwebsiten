@@ -1,7 +1,4 @@
-// overgrowth transition — nature reclaiming the screen.
-// Pixel foliage climbs up and engulfs sceneA (the swap to sceneB happens hidden
-// under the leaves at the peak), then the foliage recedes to ease sceneB in.
-// Soft dithered organic front + drifting leaves. Pixelated + scanlines.
+// Overgrowth transition — foliage engulfs sceneA then recedes to reveal sceneB.
 
 precision         highp float;
 uniform sampler2D sceneA;
@@ -52,18 +49,18 @@ void main()
   float aspect = resolution.x / resolution.y;
   vec2  ar     = vec2(aspect, 1.0);
 
-  float t = smoothstep(0.0, 1.0, clamp(progress, 0.0, 1.0));   // eased
+  float t = smoothstep(0.0, 1.0, clamp(progress, 0.0, 1.0));
 
-  /* organic foliage field, biased to grow from the bottom, slowly drifting */
+  /* foliage field, biased to grow from the bottom */
   float fld = fbm(uv * ar * 7.0 + vec2(progress * 0.4, 0.0)) * 0.55 + uv.y * 0.5;
 
-  /* coverage rises 0->1 (engulf) then falls 1->0 (recede); soft dithered front */
+  /* coverage rises (engulf) then falls (recede) */
   float tri  = (t < 0.5) ? t * 2.0 : 2.0 - t * 2.0;
   float th   = tri * 1.25;
   float dith = (bayer4(block) - 0.5) * 0.12;
   float cover = smoothstep(fld - 0.10, fld + 0.10, th + dith);
 
-  /* the scene underneath flips while fully covered */
+  /* scene underneath flips while covered */
   vec3 scene = (progress < 0.5) ? texture(sceneA, uv).rgb : texture(sceneB, uv).rgb;
 
   /* leafy foliage with dappled light + veins */
@@ -74,7 +71,7 @@ void main()
 
   vec3 col = mix(scene, fol, cover);
 
-  /* drifting, spinning leaves around the growth front (mid-transition only) */
+  /* drifting leaves around the growth front */
   float vis = sin(progress * 3.14159265);
   for (int i = 0; i < 10; i++)
   {
@@ -82,7 +79,7 @@ void main()
     float lx = fract(hash(vec2(fi, 1.0)) + progress * 0.2 * (0.5 + hash(vec2(fi, 2.0))));
     float ly = fract(hash(vec2(fi, 3.0)) - progress * 0.5);
     vec2  lp = rot(progress * 6.0 + fi) * ((uv - vec2(lx, ly)) * ar);
-    float lm = smoothstep(0.016, 0.0, length(lp * vec2(1.0, 2.0)));   // small oval leaf
+    float lm = smoothstep(0.016, 0.0, length(lp * vec2(1.0, 2.0)));
     col = mix(col, vec3(0.32, 0.55, 0.16), lm * vis * 0.85);
   }
 

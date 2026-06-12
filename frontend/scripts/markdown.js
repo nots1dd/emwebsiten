@@ -260,7 +260,7 @@ export function enhanceCodeBlocks(container) {
   container.querySelectorAll("pre code").forEach(block => {
     const rawCode = block.textContent;
 
-    // detect language safely
+    // detect language
     const match = block.className.match(/language-(\w+)/);
     const lang = match ? match[1] : "plain";
 
@@ -283,7 +283,6 @@ export function enhanceCodeBlocks(container) {
     wrapper.querySelector(".md-copy-btn").onclick = () => {
       navigator.clipboard.writeText(rawCode);
 
-      // optional feedback
       const btn = wrapper.querySelector(".md-copy-btn");
       btn.textContent = "copied";
       setTimeout(() => (btn.textContent = "copy"), 1000);

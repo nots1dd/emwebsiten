@@ -9,8 +9,7 @@ class Program
 public:
   static constexpr int CHANNEL_COUNT = 3;
 
-  // Standard uniform locations, resolved once at link time so the hot render
-  // path never does a string lookup. -1 means the shader does not declare it.
+  // Uniform locations resolved once at link time. -1 means not declared.
   struct Uniforms
   {
     GLint time       = -1;

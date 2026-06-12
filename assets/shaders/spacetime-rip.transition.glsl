@@ -1,7 +1,4 @@
-// spacetime-rip transition — falling into a black hole, out of a white one.
-// 0 -> 0.5: sceneA swirls + spaghettifies into a singularity (collapse).
-// 0.5 -> 1: sceneB unwinds back out of the point (emerge). Chromatic rip +
-// a bright singularity flash at the pinch. Pixelated + scanlines.
+// Spacetime-rip transition — sceneA collapses into a singularity, sceneB emerges.
 
 precision         highp float;
 uniform sampler2D sceneA;
@@ -25,15 +22,15 @@ void main()
   bool  first = t < 0.5;
   float s     = first ? t * 2.0 : (t - 0.5) * 2.0;
 
-  // collapse shrinks the scene into the centre; emerge expands it back out
+  /* collapse shrinks into the centre; emerge expands back out */
   float scale = first ? max(1.0 - 0.92 * s, 0.06) : max(0.08 + 0.92 * s, 0.06);
-  // swirl is strongest near the singularity, and unwinds on the way out
+  /* swirl strongest near the singularity, unwinds on the way out */
   float sw = (first ? s : -(1.0 - s)) * 3.2 / (d + 0.1);
 
   vec2 sp  = (rot(sw) * p) / scale;
   vec2 quv = sp / vec2(aspect, 1.0) + 0.5;
 
-  // radial chromatic "rip" (grows toward the pinch)
+  /* radial chromatic rip */
   vec2 rd = normalize(p) * (0.008 + 0.05 * s);
 
   vec3 col;
@@ -50,10 +47,10 @@ void main()
     col.b = texture(sceneB, quv - rd).b;
   }
 
-  // darken the throat as the scene collapses in
+  /* darken the throat on collapse */
   col *= 1.0 - (first ? s : 0.0) * smoothstep(0.14, 0.0, d) * 0.85;
 
-  // singularity flash + ring at the pinch (t ~ 0.5)
+  /* singularity flash + ring at the pinch */
   float flash = smoothstep(0.34, 0.5, t) * smoothstep(0.66, 0.5, t);
   col += vec3(1.0, 0.92, 0.82) * flash *
          (exp(-d * 6.0) * 2.2 + exp(-pow((d - 0.05) / 0.02, 2.0)) * 1.2);

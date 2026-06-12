@@ -1,8 +1,6 @@
 /* =========================================================
    Page transition overlay (corrupted-pixel + glass)
-   Covers the .content panel during a route swap. A solid glass
-   layer masks the swap; ::before paints animated chromatic
-   glitch bands; .scanlines (::after) adds CRT lines.
+   Masks the .content panel during a route swap.
 ========================================================= */
 .page-fx {
   position: absolute;

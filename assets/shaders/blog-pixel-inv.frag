@@ -1,6 +1,4 @@
-// Pixel / dithered-gradient background — inverted (light theme) variant.
-// Same dither as pixel.frag but the palette lookup and tone are flipped so
-// the near-white end dominates.
+// Blog — pixel dithered-gradient background (light)
 
 uniform float uTime;
 uniform vec2  uResolution;
@@ -69,10 +67,8 @@ void main()
   float dithered = g + (bayer4(block) - 0.5) / LEVELS;
   float level    = floor(clamp(dithered, 0.0, 1.0) * (LEVELS - 1.0) + 0.5);
 
-  // Inverted palette coordinate -> light end dominates.
   vec3 col = palette(1.0 - (level + 0.5) / LEVELS);
 
-  // Lift toward white for the light theme, gentle scanline.
   col = mix(col, vec3(1.0), 0.35);
   col *= 0.92 + 0.08 * sin(gl_FragCoord.y * 3.14159);
   vec2 v = (gl_FragCoord.xy / uResolution) - 0.5;

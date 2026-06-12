@@ -32,8 +32,7 @@ public:
     delta_ = delta;
   }
 
-  // Build the common per-frame uniforms for a scene, syncing the camera to the
-  // current render size. Scenes fill in channels/frame index as needed.
+  // Build the common per-frame uniforms, syncing the camera to the render size.
   auto make_frame(Camera& cam) -> FrameUniforms;
 
   [[nodiscard]] auto mouse_x() const -> float { return mouse_x_; }
@@ -48,9 +47,7 @@ public:
 
   void render_transition(Program& transition, GLuint texA, GLuint texB, float progress);
 
-  // Register a texture to be available in shaders as iChannelN
-  // The channel will be bound to texture unit (2 + index) because
-  // units 0 and 1 are used for sceneA/sceneB in transitions.
+  // Register a texture exposed in shaders as iChannelN (bound to unit 2 + index).
   void set_channel(int index, GLuint tex);
   [[nodiscard]] auto channel(int index) const -> GLuint;
 

@@ -2,7 +2,7 @@
 
 #include <mywebsite/scene/Scene.hpp>
 
-// home scene
+// project scene
 
 class ProjectScene : public Scene
 {

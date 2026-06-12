@@ -76,8 +76,7 @@ void Renderer::end_scene()
 
 auto Renderer::make_frame(Camera& cam) -> FrameUniforms
 {
-  // Keep the camera matched to the live render target (cheap: resize() is a
-  // no-op when nothing changed).
+  // Keep the camera matched to the live render target.
   cam.resize(static_cast<float>(width_), static_cast<float>(height_));
 
   FrameUniforms frame{};
@@ -131,9 +130,7 @@ void Renderer::render(Program& program, const FrameUniforms& frame)
       glUniform1f(u.zoom, frame.camera->zoom());
   }
 
-  // ShaderToy-style texture channels: bind each provided channel to its own
-  // texture unit and expose it as iChannelN + iChannelResolution[N]. Shaders
-  // that don't declare these uniforms simply ignore them (loc < 0).
+  // ShaderToy-style channels: bind each to its own unit as iChannelN + iChannelResolution[N].
   for (int i = 0; i < FrameUniforms::CHANNEL_COUNT; ++i)
   {
     const Texture* channel = frame.channels[i];
@@ -223,8 +220,7 @@ void Renderer::render_transition(Program& program, GLuint texA, GLuint texB, flo
   if (u.transitionRes >= 0)
     glUniform2f(u.transitionRes, width_, height_);
 
-  // Bind user channels starting at texture unit 2 so as not to collide
-  // with sceneA/sceneB which use units 0 and 1.
+  // User channels start at unit 2 to avoid colliding with sceneA/sceneB (units 0/1).
   for (int i = 0; i < Program::CHANNEL_COUNT; ++i)
   {
     GLuint tex = channel(i);

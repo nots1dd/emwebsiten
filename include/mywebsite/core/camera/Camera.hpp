@@ -29,8 +29,7 @@ private:
   float width_  = -1.0f;
   float height_ = -1.0f;
 
-  // zoom baked into the cached projection; lets resize() early-out when nothing
-  // changed (it is called every frame via Renderer::make_frame).
+  // Zoom baked into the cached projection; lets resize() early-out when unchanged.
   float proj_zoom_ = -1.0f;
 
   float yaw   = 0.0f;

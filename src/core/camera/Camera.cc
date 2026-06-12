@@ -16,8 +16,7 @@ Camera::Camera(float width, float height)
 
 void Camera::resize(float width, float height)
 {
-  // Idempotent: skip the recompute when neither the viewport nor the zoom that
-  // the cached projection was built with has changed.
+  // Skip recompute when viewport and zoom are unchanged.
   if (width == width_ && height == height_ && zoom_ == proj_zoom_)
     return;
 
@@ -82,8 +81,7 @@ void Camera::update_view()
   const float cy = std::cos(yaw);
   const float sy = std::sin(yaw);
 
-  // Camera basis from yaw/pitch (unit length; pitch is clamped away from ±90°
-  // in rotate(), so 'forward' never aligns with world-up).
+  // Camera basis from yaw/pitch.
   const std::array<float, 3> forward = {cy * cx, sx, sy * cx};
 
   // right = normalize(forward x worldUp), worldUp = (0,1,0)
@@ -97,9 +95,7 @@ void Camera::update_view()
                                    right[2] * forward[0] - right[0] * forward[2],
                                    right[0] * forward[1] - right[1] * forward[0]};
 
-  // Column-major: columns map view-space axes to world space, so that shaders
-  // doing (uView * vec4(dir, 0)) rotate a ray direction. View -z is the look
-  // direction, hence col2 = -forward. Translation is -position.
+  // Column-major view matrix: col2 = -forward (look dir), translation = -position.
   view_ = {right[0],      right[1],      right[2],      0.f,
            up[0],         up[1],         up[2],         0.f,
            -forward[0],   -forward[1],   -forward[2],   0.f,

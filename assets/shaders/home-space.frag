@@ -1,6 +1,4 @@
-// Home — black hole (dark). Lensed starfield + nebula (iChannel0), a glowing
-// accretion disk, three planets with orbiting moons, and a floating pixel
-// astronaut (iChannel1). Pixelated + dithered, camera pan/zoom, scanlines.
+// Home — black hole (dark)
 
 uniform float uTime;
 uniform vec2  uResolution;
@@ -8,8 +6,8 @@ uniform vec2  uMouse;
 uniform vec3  uCameraPos;
 uniform float uZoom;
 
-uniform sampler2D iChannel0;          // tileable nebula / turbulence
-uniform sampler2D iChannel1;          // astronaut sprite (RGBA)
+uniform sampler2D iChannel0;          // nebula / turbulence
+uniform sampler2D iChannel1;          // astronaut sprite
 uniform vec3      iChannelResolution[3];
 
 out vec4 FragColor;
@@ -62,7 +60,7 @@ vec3 posterize(vec3 c, vec2 block)
   return floor(clamp(c + d, 0.0, 1.0) * (LEVELS - 1.0) + 0.5) / (LEVELS - 1.0);
 }
 
-/* shaded sphere body with banded texture; w = coverage weight (depth fade) */
+/* shaded sphere body; w = depth-fade weight */
 void drawBody(inout vec3 col, vec2 p, vec2 pos, float r, vec3 c1, vec3 c2, vec3 ldir, float ts, float w)
 {
   if (w <= 0.0) return;
@@ -85,7 +83,7 @@ void drawSystem(inout vec3 col, vec2 p, vec2 pos, float pr, vec3 c1, vec3 c2, ve
   drawBody(col, p, mpos, pr * 0.42, vec3(0.35, 0.35, 0.42), vec3(0.85, 0.86, 0.95), ldir, 22.0, w);
 }
 
-/* Saturn-style ring; `back` selects the arc behind the body (lp.y >= 0) */
+/* Saturn-style ring; `back` selects the arc behind the body */
 void drawRing(inout vec3 col, vec2 p, vec2 pos, float pr, float w, bool back)
 {
   vec2 lp = p - pos;
@@ -101,15 +99,14 @@ void drawRing(inout vec3 col, vec2 p, vec2 pos, float pr, float w, bool back)
 
 void drawRingedSystem(inout vec3 col, vec2 p, vec2 pos, float pr, vec3 c1, vec3 c2, vec3 ldir, float ma, float w)
 {
-  drawRing(col, p, pos, pr, w, true);   // ring arc behind the planet
+  drawRing(col, p, pos, pr, w, true);
   drawBody(col, p, pos, pr, c1, c2, ldir, 16.0, w);
-  drawRing(col, p, pos, pr, w, false);  // ring arc in front
+  drawRing(col, p, pos, pr, w, false);
   vec2 mpos = pos + orbit(pr * 2.6, ma) * vec2(1.0, 0.7);
   drawBody(col, p, mpos, pr * 0.42, vec3(0.35, 0.35, 0.42), vec3(0.85, 0.86, 0.95), ldir, 22.0, w);
 }
 
-/* a star on a close orbit, tidally devoured — stretched toward the hole with a
-   bright stream of matter spiralling in. star/streamCol set the palette. */
+/* star tidally devoured, stretched toward the hole with an infalling stream */
 void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
 {
   float sa     = uTime * 0.22 + 0.5;
@@ -122,25 +119,25 @@ void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
   for (int i = 0; i < 18; i++)
   {
     float s   = float(i) / 17.0;
-    float ang = a0 + s * s * 2.8;            // winds up as it nears the hole
+    float ang = a0 + s * s * 2.8;
     float rad = mix(r0, RH * 1.05, s);
     vec2  sp  = vec2(cos(ang) * rad, sin(ang) * rad * 0.5);
     stream += smoothstep(0.022 * (1.0 - s) + 0.004, 0.0, length(p - sp));
   }
   col += streamCol * clamp(stream, 0.0, 1.8) * 0.9;
 
-  /* star body: teardrop stretched toward the hole */
+  /* star body */
   vec2  lp    = p - pos;
   float along = dot(lp, toHole);
   vec2  perp  = lp - along * toHole;
-  float strc  = along > 0.0 ? 1.7 : 1.0;     // elongate the hole-facing side
+  float strc  = along > 0.0 ? 1.7 : 1.0;
   float sd    = length(perp + toHole * (along / strc));
 
   /* corona rays + broad glow */
   float aa = atan(lp.y, lp.x);
   col += star * exp(-length(lp) * 7.5) * (0.8 + 0.25 * sin(aa * 16.0 - uTime * 2.5)) * 1.3;
 
-  /* bright core with surface granulation */
+  /* bright core + granulation */
   float gran = det(perp * 20.0 + vec2(uTime * 0.1, 0.0)) * 0.3;
   col = mix(col, star * (1.1 + gran) + 0.25, smoothstep(0.085, 0.07, sd));
 }
@@ -190,13 +187,12 @@ void main()
   vec3  pc1 = vec3(0.2, 0.4, 0.7),    pc1b = vec3(0.6, 0.85, 1.0);
   vec3  pc2 = vec3(0.7, 0.4, 0.3),    pc2b = vec3(1.0, 0.8, 0.6);
 
-  // depth weight: 1 = fully behind the disk plane, 0 = fully in front. The
-  // smooth band makes a planet cross-fade through the disk instead of popping.
+  // depth weight (behind/front of the disk)
   float b0 = smoothstep(-0.22, 0.22, sin(a0));
   float b1 = smoothstep(-0.22, 0.22, sin(a1));
   float b2 = smoothstep(-0.22, 0.22, sin(a2));
 
-  /* behind the hole/disk (weighted) — middle planet is ringed */
+  /* behind the hole/disk — middle planet is ringed */
   drawSystem(col, p, q0, 0.05, pc0, pc0b, ldir, uTime * 0.9, b0);
   drawRingedSystem(col, p, q1, 0.065, pc1, pc1b, ldir, -uTime * 0.7 + 1.0, b1);
   drawSystem(col, p, q2, 0.055, pc2, pc2b, ldir, uTime * 0.6 + 2.0, b2);
@@ -219,20 +215,19 @@ void main()
   float arc = smoothstep(0.018, 0.0, abs(d - (RH + 0.045))) * step(0.0, p.y);
   col += vec3(1.0, 0.6, 0.25) * arc * (0.5 + 0.5 * turb);
 
-  /* ---- star being devoured (hot blue star, orange tidal stream) ---- */
+  /* ---- star being devoured ---- */
   drawStar(col, p, vec3(0.85, 0.92, 1.0), vec3(1.0, 0.6, 0.25));
 
-  /* ---- planets in front of the hole (complementary weight) ---- */
+  /* ---- planets in front of the hole ---- */
   drawSystem(col, p, q0, 0.05, pc0, pc0b, ldir, uTime * 0.9, 1.0 - b0);
   drawRingedSystem(col, p, q1, 0.065, pc1, pc1b, ldir, -uTime * 0.7 + 1.0, 1.0 - b1);
   drawSystem(col, p, q2, 0.055, pc2, pc2b, ldir, uTime * 0.6 + 2.0, 1.0 - b2);
 
   /* ---- floating astronaut (iChannel1) ---- */
   float hh = 0.07, ww = hh * (16.0 / 24.0);
-  // the astronaut also revolves around the hole, gently tumbling as it goes
+  // astronaut
   vec2  apos = orbit(0.62, uTime * 0.2 + 1.0) + vec2(0.0, 0.02 * sin(uTime * 1.6));
   vec2  lp   = rot(0.4 * sin(uTime * 0.5) + 0.2 * sin(uTime * 0.9)) * (p - apos);
-  // +lp.y so the helmet stays up (textures load vertically flipped)
   vec2  uvA  = vec2(lp.x / ww * 0.5 + 0.5, 0.5 + lp.y / hh * 0.5);
   if (iChannelResolution[1].x > 0.0 && uvA.x > 0.0 && uvA.x < 1.0 && uvA.y > 0.0 && uvA.y < 1.0)
   {

@@ -1,7 +1,4 @@
-// crack transition — color CRT "channel switch".
-// An old color TV losing signal: barrel-curved glass, RGB aperture-grille mask,
-// scanlines, chromatic aberration / channel desync, colored static and a VHS
-// rolling bar while sceneA flips to sceneB.
+// CRT-static transition — color TV "channel switch" between scenes.
 
 precision         highp float;
 uniform sampler2D sceneA;
@@ -37,14 +34,14 @@ vec2 curveUV(vec2 uv)
 float scanlines(vec2 uv)
 {
   float line = mod(uv.y * resolution.y, 3.0);
-  return 1.0 - smoothstep(1.6, 2.4, line) * 0.5; // dark gap every 3rd row
+  return 1.0 - smoothstep(1.6, 2.4, line) * 0.5;
 }
 /* RGB aperture grille: each device-pixel column favors one phosphor */
 vec3 apertureMask(float fragx)
 {
   float c = mod(fragx, 3.0);
   vec3  m = c < 1.0 ? vec3(1.0, 0.35, 0.35) : (c < 2.0 ? vec3(0.35, 1.0, 0.35) : vec3(0.35, 0.35, 1.0));
-  return mix(vec3(1.0), m, 0.55); // keep some base brightness
+  return mix(vec3(1.0), m, 0.55);
 }
 float vignette(vec2 uv)
 {

@@ -110,7 +110,7 @@ export async function renderRoute(path) {
     attachCardHandlers();
   };
 
-  // No glitch on the very first paint; otherwise play the corrupted-glass wipe.
+  // skip transition on first paint.
   if (firstRender) {
     firstRender = false;
     await swap();

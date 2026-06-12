@@ -9,9 +9,7 @@ GLContext::GLContext(const char* canvas)
   attr.minorVersion = 0;
   attr.alpha        = false;
 
-  // The renderer draws fullscreen passes with depth testing disabled, so depth
-  // and stencil buffers are pure waste. Keep MSAA on for clean edges and ask
-  // the browser for the high-performance (discrete) GPU.
+  // Fullscreen passes need no depth/stencil; keep MSAA and request the high-performance GPU.
   attr.depth           = false;
   attr.stencil         = false;
   attr.antialias       = true;

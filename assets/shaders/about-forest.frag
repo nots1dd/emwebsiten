@@ -1,6 +1,4 @@
-// About — forest lake (night). Textured conifer treeline, grassy level bank, a
-// reflective lake, a moon, fireflies and a sitter gazing up. iChannel0 = detail
-// noise, iChannel1 = sitter sprite. Pixelated + dithered, camera pan/zoom.
+// About — forest lake (night)
 
 uniform float uTime;
 uniform vec2  uResolution;
@@ -16,8 +14,8 @@ out vec4 FragColor;
 
 const float PIXEL   = 3.0;
 const float LEVELS  = 6.0;
-const float HORIZON = 0.52;   // far waterline / tree base
-const float BANK    = 0.24;   // near waterline / grass top
+const float HORIZON = 0.52;
+const float BANK    = 0.24;
 
 float hash21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 vec2  hash22(vec2 p)
@@ -61,11 +59,11 @@ vec3 posterize(vec3 c, vec2 block)
   return floor(clamp(c + d, 0.0, 1.0) * (LEVELS - 1.0) + 0.5) / (LEVELS - 1.0);
 }
 
-/* a stacked-triangle conifer with a little trunk */
+/* stacked-triangle conifer */
 float conifer(vec2 uv, vec2 base, float h, float w)
 {
   if (uv.y >= base.y - 0.02 && uv.y < base.y + 0.04 && abs(uv.x - base.x) < w * 0.16)
-    return 1.0; // trunk
+    return 1.0;
   float m = 0.0;
   for (int k = 0; k < 3; k++)
   {
@@ -98,7 +96,7 @@ void treeline(inout vec3 c, vec2 uv, float baseY, float spacing, vec3 ca, vec3 c
   }
 }
 
-/* sky + moon + stars + treelines — reused for the lake reflection */
+/* sky + moon + stars + treelines */
 vec3 upperScene(vec2 uv)
 {
   float aspect = uResolution.x / uResolution.y;
@@ -115,7 +113,7 @@ vec3 upperScene(vec2 uv)
     c += vec3(0.8, 0.9, 1.0) * smoothstep(0.12, 0.0, length(fract(sp) - 0.5))
        * (0.4 + 0.6 * sin(uTime * 2.0 + sh.y * 30.0));
 
-  /* occasional comet / shooting star streaking across the sky */
+  /* shooting star */
   float cyc = floor(uTime / 5.0);
   float lt  = fract(uTime / 5.0);
   vec2  sdir = normalize(vec2(0.8, -0.45));
@@ -151,7 +149,7 @@ void drawGrass(inout vec3 col, vec2 uv, vec3 ga, vec3 gb)
   }
 }
 
-/* a little creeper lying on the grass, gazing up */
+/* sitter sprite */
 void drawCreeper(inout vec3 col, vec2 uv)
 {
   if (iChannelResolution[1].x <= 0.0) return;
@@ -183,7 +181,7 @@ void main()
   }
   else if (uv.y >= BANK)
   {
-    /* reflective lake — mirror the upper scene with a rippled lookup */
+    /* reflective lake */
     float rip = 0.010 * sin(uv.x * 36.0 + uTime * 2.0)
               + 0.012 * (det(vec2(uv.x * 6.0, uv.y * 18.0 - uTime * 0.5)) - 0.5);
     vec2  ruv  = vec2(uv.x + rip * 0.6, 2.0 * HORIZON - uv.y + rip);
@@ -194,7 +192,7 @@ void main()
   }
   else
   {
-    /* grassy level bank */
+    /* grassy bank */
     float g = det(vec2(uv.x * 5.0, uv.y * 10.0) + par);
     col = mix(vec3(0.03, 0.11, 0.06), vec3(0.05, 0.17, 0.08), g);
     col *= 0.7 + 0.5 * uv.y / BANK;

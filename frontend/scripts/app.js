@@ -6,7 +6,7 @@ import { initRouter, renderRoute } from "./router.js";
 import { initKeys } from "./keys.js";
 import { toggleHelp } from "./help.js";
 
-// Navbar chrome buttons (back / forward / help) — vim H/L/? mirror these.
+// Navbar chrome buttons.
 const CONTROLS = {
   back: () => history.back(),
   forward: () => history.forward(),

@@ -4,13 +4,7 @@
 #include <array>
 #include <mywebsite/gl/Texture.hpp>
 
-// ------------------------------------------------------------
-// TextureLibrary
-//
-// Loads and owns every texture in the registry, mirroring
-// ShaderLibrary. Textures are decoded from the preloaded VFS
-// once during AssetManager::initialize().
-// ------------------------------------------------------------
+// Loads and owns every texture in the registry, mirroring ShaderLibrary.
 class TextureLibrary
 {
 public:

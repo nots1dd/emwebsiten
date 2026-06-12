@@ -3,13 +3,7 @@
 #include <GLES3/gl3.h>
 #include <string_view>
 
-// ------------------------------------------------------------
-// Texture
-//
-// A 2D GL texture decoded from an image file in the (preloaded)
-// virtual filesystem via stb_image. Used as a ShaderToy-style
-// iChannel source. Move-only RAII wrapper around a GL texture.
-// ------------------------------------------------------------
+// Move-only RAII wrapper around a 2D GL texture decoded via stb_image.
 class Texture
 {
 public:

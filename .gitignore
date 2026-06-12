@@ -3,3 +3,4 @@ build/
 emsdk/
 *.log
 *.pid
+*/**/__pycache__/

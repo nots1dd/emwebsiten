@@ -1,6 +1,5 @@
 /* =========================================================
-   Resume doc viewer — glass + pixel chrome around a native
-   (browser-rendered) PDF in an iframe. Theme-aware via vars.
+   Resume doc viewer — glass + pixel chrome around a PDF iframe.
 ========================================================= */
 .resume {
   display: flex;

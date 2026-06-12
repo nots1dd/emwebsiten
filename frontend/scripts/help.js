@@ -1,5 +1,4 @@
-// Keybind help overlay — built once from the shared BINDINGS table so it can
-// never drift from the actual keymap. Glass panel + pixel keycaps.
+// Keybind help overlay — built from the shared BINDINGS table.
 
 const CAT_ORDER = ["Navigate", "Move", "History", "View", "Help"];
 

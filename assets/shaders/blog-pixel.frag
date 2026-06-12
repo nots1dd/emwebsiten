@@ -1,6 +1,4 @@
-// Pixel / dithered-gradient background for the blog page.
-// 4x4 Bayer ordered dithering of an animated gradient, colored through a
-// small palette texture bound on iChannel0.
+// Blog — pixel dithered-gradient background
 
 uniform float uTime;
 uniform vec2  uResolution;
@@ -11,8 +9,8 @@ uniform vec3      iChannelResolution[3];
 
 out vec4 FragColor;
 
-const float PIXEL  = 5.0; // block size in device pixels
-const float LEVELS = 8.0; // palette entries / dither steps
+const float PIXEL  = 5.0;
+const float LEVELS = 8.0;
 
 /* 4x4 Bayer threshold matrix, normalized to (0,1) */
 float bayer4(vec2 p)
@@ -21,7 +19,6 @@ float bayer4(vec2 p)
   int y = int(mod(p.y, 4.0));
   int i = x + y * 4;
 
-  // ((m + 0.5) / 16.0) ordering matrix
   float m[16];
   m[0] = 0.0;  m[1] = 8.0;  m[2] = 2.0;  m[3] = 10.0;
   m[4] = 12.0; m[5] = 4.0;  m[6] = 14.0; m[7] = 6.0;
@@ -47,17 +44,15 @@ float vnoise(vec2 p)
 
 vec3 palette(float t)
 {
-  // Sample the bound palette texture if present, else a computed fallback.
   if (iChannelResolution[0].x > 0.0)
     return texture(iChannel0, vec2(clamp(t, 0.0, 1.0), 0.5)).rgb;
 
   return mix(vec3(0.05, 0.04, 0.16), vec3(0.91, 0.95, 1.0), t);
 }
 
-/* gradient brightness in [0,1] for a pixel block (override hook for -inv) */
+/* gradient brightness in [0,1] for a pixel block */
 float gradient(vec2 blockUv, vec2 px)
 {
-  // diagonal sweep + slow scroll + mouse parallax + faint noise
   vec2 m = (uMouse - 0.5) * 0.3;
   float g = dot(blockUv + m, vec2(0.6, 0.4)) + uTime * 0.06;
   g += 0.12 * vnoise(blockUv * 4.0 + uTime * 0.15);
@@ -66,19 +61,17 @@ float gradient(vec2 blockUv, vec2 px)
 
 void main()
 {
-  // Snap to pixel blocks.
   vec2 block = floor(gl_FragCoord.xy / PIXEL);
   vec2 blockUv = (block * PIXEL) / uResolution;
 
   float g = gradient(blockUv, block);
 
-  // Ordered dithering into LEVELS discrete steps.
   float dithered = g + (bayer4(block) - 0.5) / LEVELS;
   float level    = floor(clamp(dithered, 0.0, 1.0) * (LEVELS - 1.0) + 0.5);
 
   vec3 col = palette((level + 0.5) / LEVELS);
 
-  // CRT-ish scanline + soft vignette.
+  /* scanline + vignette */
   col *= 0.85 + 0.15 * sin(gl_FragCoord.y * 3.14159);
   vec2 v = (gl_FragCoord.xy / uResolution) - 0.5;
   col *= 1.0 - 0.5 * dot(v, v);

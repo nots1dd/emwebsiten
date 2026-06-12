@@ -5,10 +5,7 @@ import { initHelp, toggleHelp } from "./help.js";
 
 /* =========================================================
    Single source of truth for every keybinding.
-   Drives the dispatcher, the hint pill, and the help panel.
-   `seq`  — keys to press (a char sequence like "gh", or a
-            single key like "j" / "G" / "Enter").
-   `cat`  — group shown in the help panel.
+   `seq` — keys to press. `cat` — help-panel group.
    `move` — engages vim mode (lets arrow keys disengage focus).
 ========================================================= */
 const BINDINGS = [
@@ -40,8 +37,7 @@ const NAV_KEYS = [
   "PageUp", "PageDown", "Home", "End", " ",
 ];
 
-// Printable keys that begin (or are) a binding — we swallow these so the
-// browser doesn't scroll / open quick-find while a sequence is in flight.
+// Printable keys that begin (or are) a binding.
 const OWNED_KEYS = new Set(BINDINGS.flatMap((b) => (b.seq.length === 1 ? [b.seq] : [b.seq[0]])));
 
 let buffer = "";
@@ -64,9 +60,7 @@ function isTypingContext(e) {
 }
 
 /* ---- page scrolling ----
-   `overflow-x:hidden` on <body> forces overflow-y:auto, so the BODY (not the
-   window) is the scroll container here — pick whichever element actually
-   scrolls so the keys work on every page, list or not. */
+   body is the scroll container here; pick whichever element actually scrolls. */
 function scrollerEl() {
   const b = document.body, d = document.documentElement;
   return b.scrollHeight > b.clientHeight ? b : d;

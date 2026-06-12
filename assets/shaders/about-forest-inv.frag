@@ -1,6 +1,4 @@
-// About — forest lake (day). Bright variant: blue sky + sun, sunlit conifer
-// treeline, grassy level bank, a reflective lake, drifting birds and the same
-// sitter gazing up. iChannel0 = detail, iChannel1 = sitter. Pixelated.
+// About — forest lake (day)
 
 uniform float uTime;
 uniform vec2  uResolution;
@@ -110,7 +108,7 @@ vec3 upperScene(vec2 uv)
   float cl = det(uv * vec2(3.0, 2.0) + vec2(uTime * 0.02, 0.0));
   c = mix(c, vec3(1.0), smoothstep(0.62, 0.95, cl) * 0.5 * step(HORIZON, uv.y));
 
-  /* occasional comet streaking across the sky */
+  /* shooting star */
   float cyc = floor(uTime / 5.0);
   float lt  = fract(uTime / 5.0);
   vec2  sdir = normalize(vec2(0.8, -0.45));
@@ -146,7 +144,7 @@ void drawGrass(inout vec3 col, vec2 uv, vec3 ga, vec3 gb)
   }
 }
 
-/* a little creeper lying on the grass, gazing up */
+/* sitter sprite */
 void drawCreeper(inout vec3 col, vec2 uv)
 {
   if (iChannelResolution[1].x <= 0.0) return;
@@ -176,7 +174,7 @@ void main()
   {
     col = upperScene(uv);
 
-    /* a few drifting birds (chevrons) up in the sky */
+    /* drifting birds */
     for (int i = 0; i < 3; i++)
     {
       float fi = float(i);

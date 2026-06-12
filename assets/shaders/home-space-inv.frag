@@ -1,6 +1,4 @@
-// Home — white hole (light). Inverted variant: pale space, a glowing core that
-// radiates light outward, a cool/white accretion disk, three planets with
-// moons, and the floating astronaut. Pixelated + dithered, camera pan/zoom.
+// Home — white hole (light)
 
 uniform float uTime;
 uniform vec2  uResolution;
@@ -84,7 +82,7 @@ void drawSystem(inout vec3 col, vec2 p, vec2 pos, float pr, vec3 c1, vec3 c2, ve
   drawBody(col, p, mpos, pr * 0.42, vec3(0.6, 0.6, 0.68), vec3(1.0, 1.0, 1.0), ldir, 22.0, w);
 }
 
-/* Saturn-style ring; `back` selects the arc behind the body (lp.y >= 0) */
+/* Saturn-style ring; `back` selects the arc behind the body */
 void drawRing(inout vec3 col, vec2 p, vec2 pos, float pr, float w, bool back)
 {
   vec2 lp = p - pos;
@@ -107,8 +105,7 @@ void drawRingedSystem(inout vec3 col, vec2 p, vec2 pos, float pr, vec3 c1, vec3 
   drawBody(col, p, mpos, pr * 0.42, vec3(0.6, 0.6, 0.68), vec3(1.0, 1.0, 1.0), ldir, 22.0, w);
 }
 
-/* a star on a close orbit, tidally devoured — stretched toward the hole with a
-   bright stream of matter spiralling in. star/streamCol set the palette. */
+/* star tidally devoured, stretched toward the hole with an infalling stream */
 void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
 {
   float sa     = uTime * 0.22 + 0.5;
@@ -161,7 +158,7 @@ void main()
 
   vec3 col = mix(vec3(0.80, 0.78, 0.94), vec3(0.93, 0.90, 1.0), block.y / res.y);
 
-  /* soft pastel nebula — layered noise with hue variation (pink/blue/peach) */
+  /* soft pastel nebula */
   float n1 = det(wp * 0.5 + vec2(uTime * 0.008, 0.0) + par);
   float n2 = det(wp * 1.1 - vec2(uTime * 0.012, 0.0) + 3.0);
   float n3 = det(wp * 2.3 + vec2(0.0, uTime * 0.01) + 7.0);
@@ -174,11 +171,11 @@ void main()
   nebCol = mix(nebCol, cPeach, smoothstep(0.55, 0.95, n1) * 0.6);
 
   col = mix(col, nebCol, clouds * 0.7);
-  /* faint bright wisps + dust speckle for depth */
+  /* faint wisps + dust speckle */
   col += vec3(1.0, 0.98, 1.0) * smoothstep(0.78, 1.0, n1 * n3) * 0.12;
   col -= vec3(0.06, 0.05, 0.08) * smoothstep(0.6, 0.9, n3) * (1.0 - clouds);
 
-  /* faint stars (darken slightly on the light sky) */
+  /* faint stars */
   for (int L = 0; L < 2; L++)
   {
     float fl = float(L);
@@ -195,7 +192,7 @@ void main()
   vec3  pc1 = vec3(0.55, 0.7, 0.9),  pc1b = vec3(0.85, 0.95, 1.0);
   vec3  pc2 = vec3(0.9, 0.7, 0.55),  pc2b = vec3(1.0, 0.95, 0.85);
 
-  // depth weight: 1 = behind the disk plane, 0 = in front (smooth cross-fade).
+  // depth weight (behind/front of the disk)
   float b0 = smoothstep(-0.22, 0.22, sin(a0));
   float b1 = smoothstep(-0.22, 0.22, sin(a1));
   float b2 = smoothstep(-0.22, 0.22, sin(a2));
@@ -204,8 +201,7 @@ void main()
   drawRingedSystem(col, p, q1, 0.065, pc1, pc1b, ldir, -uTime * 0.7 + 1.0, b1);
   drawSystem(col, p, q2, 0.055, pc2, pc2b, ldir, uTime * 0.6 + 2.0, b2);
 
-  /* radiant white-hole core: bright disc + tight glow + outward rays
-     (kept tight so it doesn't wash out the planets/nebula) */
+  /* radiant white-hole core: disc + glow + outward rays */
   float rays = 0.75 + 0.25 * sin(atan(p.y, p.x) * 12.0 - uTime * 1.5);
   col += vec3(1.0, 0.97, 0.9) * exp(-d * 11.0) * 0.7 * rays;
   col = mix(col, vec3(1.0), smoothstep(RH, RH - 0.012, d));
@@ -230,10 +226,9 @@ void main()
 
   /* floating astronaut */
   float hh = 0.07, ww = hh * (16.0 / 24.0);
-  // the astronaut also revolves around the hole, gently tumbling as it goes
+  // astronaut
   vec2  apos = orbit(0.62, uTime * 0.2 + 1.0) + vec2(0.0, 0.02 * sin(uTime * 1.6));
   vec2  lp   = rot(0.4 * sin(uTime * 0.5) + 0.2 * sin(uTime * 0.9)) * (p - apos);
-  // +lp.y so the helmet stays up (textures load vertically flipped)
   vec2  uvA  = vec2(lp.x / ww * 0.5 + 0.5, 0.5 + lp.y / hh * 0.5);
   if (iChannelResolution[1].x > 0.0 && uvA.x > 0.0 && uvA.x < 1.0 && uvA.y > 0.0 && uvA.y < 1.0)
   {

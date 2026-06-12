@@ -12,8 +12,8 @@ void ProjectScene::render(Renderer& renderer)
 
   FrameUniforms frame = renderer.make_frame(camera_);
 
-  // Molten detail map for the lava shader (iChannel0).
-  frame.channels[0] = &assets.textures().get(TextureID::lava);
+  // iChannel0 = frost/crystal detail noise for the ice fractal.
+  frame.channels[0] = &assets.textures().get(TextureID::space_nebula);
 
   renderer.render(post, frame);
 }

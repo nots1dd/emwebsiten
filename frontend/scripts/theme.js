@@ -14,7 +14,7 @@ export function toggleTheme() {
 
   localStorage.setItem("theme", nowLight ? "light" : "dark");
 
-  // Recolor the WebGL scene for the current route (drives the day/night swap).
+  // Recolor the WebGL scene for the current route.
   const fn = themeFnFor(normalizePath(location.pathname));
   if (window.Module && fn) Module[fn]?.(nowLight ? 1 : 0);
 

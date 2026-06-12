@@ -1,14 +1,10 @@
 /* =========================================================
    Pixel + glass shared primitives
-   - .glass      : the frosted panel (DRY'd from navbar/content/…)
-   - .scanlines  : faint CRT line overlay for glass panels
-   - .kbd        : pixel keycap (Press Start 2P)
-   - pixel focus : blocky focus ring for cards / buttons
+   .glass / .scanlines / .kbd / pixel focus ring
 ========================================================= */
 
 /* =========================================================
-   Datamosh text selection — glitchy magenta/cyan, not browser blue
-   (::selection only honors a few props; text-shadow shows where supported)
+   Datamosh text selection
 ========================================================= */
 ::selection {
   background: rgba(255, 0, 128, 0.85);
@@ -67,7 +63,7 @@
 
   background: var(--glass-highlight);
   border: 1px solid var(--glass-border);
-  border-bottom-width: 2px;        /* keycap depth */
+  border-bottom-width: 2px;
   border-radius: 4px;
   box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
@@ -81,16 +77,11 @@
 .theme-btn:focus-visible {
   outline: 2px solid var(--pixel-accent);
   outline-offset: 3px;
-  border-radius: 4px;            /* squarer = more pixel */
+  border-radius: 4px;
 }
 
 /* =========================================================
-   Glitch / corrupt hover for buttons (works in both themes)
-   - filter drop-shadow gives an RGB split on the button shape
-     (so it also works on the SVG theme icon)
-   - text-shadow splits glyph buttons (‹ › ?)
-   - a theme-aware scanline flash sweeps the icon buttons
-   - steps() timing makes the motion chunky/pixelated
+   Glitch / corrupt hover for buttons
 ========================================================= */
 .nav-btn,
 .theme-btn,
@@ -100,7 +91,7 @@
   position: relative;
 }
 
-/* scanline flash overlay (icon buttons only — nav-link keeps its underline ::after) */
+/* scanline flash overlay (icon buttons only) */
 .nav-btn,
 .theme-btn,
 .help-close {
@@ -158,9 +149,7 @@
   }
 }
 
-/* Footer links + section cards already have their own hover transform
-   (lift / 3D tilt) worth keeping, so they use a transform-free chromatic
-   glitch — the RGB split + scanline-free corruption layers on top. */
+/* Transform-free chromatic glitch for elements with their own hover transform. */
 .footer-links a:hover,
 .card:hover,
 .resume-btn:hover {
@@ -196,8 +185,7 @@
 }
 
 /* =========================================================
-   Retro pixel cursors (32x32, served from /frontend/cursors)
-   Fallback keyword keeps things usable if the image 404s.
+   Retro pixel cursors (served from /frontend/cursors)
 ========================================================= */
 html,
 body {

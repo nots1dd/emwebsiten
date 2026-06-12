@@ -1,5 +1,4 @@
-// Page transition — a corrupted-pixel + glass wipe that covers the content
-// panel while the route's HTML/CSS is swapped underneath, then reveals it.
+// Page transition — glass wipe that masks the route swap, then reveals it.
 
 let fx = null;
 
@@ -22,9 +21,9 @@ export async function pageTransition(swap) {
   if (!el) { await swap(); return; }
 
   el.classList.add("show");
-  await wait(170);   // cover-in (glass + glitch ramps to opaque)
-  await swap();      // swap html/css behind the mask
-  await wait(40);    // let new layout settle
+  await wait(170);   // cover-in
+  await swap();      // swap behind the mask
+  await wait(40);    // let layout settle
   el.classList.remove("show");
   await wait(220);   // reveal-out
 }

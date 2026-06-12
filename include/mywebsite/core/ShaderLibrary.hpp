@@ -13,10 +13,8 @@ struct UniformSpec
 
 static constexpr std::array REQUIRED_UNIFORMS = {
   UniformSpec{"uTime", GL_FLOAT},
-  // UniformSpec{"uDelta", GL_FLOAT},
   UniformSpec{"uResolution", GL_FLOAT_VEC2}, UniformSpec{"uMouse", GL_FLOAT_VEC2},
   UniformSpec{"uFrame", GL_INT},
-  // UniformSpec{"uProjection", GL_FLOAT_MAT4},
   UniformSpec{"uView", GL_FLOAT_MAT4}, UniformSpec{"uCameraPos", GL_FLOAT_VEC3},
   UniformSpec{"uZoom", GL_FLOAT}};
 
