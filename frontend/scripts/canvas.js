@@ -29,10 +29,17 @@ export function initCanvas() {
   });
 }
 
+// The shaders are pixel-art: everything is quantised to PIXEL-sized blocks and
+// scanlines are computed in device pixels. Rendering the WebGL backing store at
+// a phone's full devicePixelRatio (often 2.5-3.5) both shrinks the pixel-art
+// blocks below visibility (look breaks) and multiplies the per-fragment cost
+// (frame drops / heat). Cap it — extra device resolution is wasted by design.
+const MAX_DPR = 2;
+
 export function resize() {
   if (!canvas) return;
 
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
   const w = window.innerWidth;
   const h = window.innerHeight;
 

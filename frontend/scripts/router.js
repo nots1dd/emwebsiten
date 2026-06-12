@@ -1,33 +1,33 @@
 import { normalizePath } from "./utils.js";
 import { renderBlogPost } from "./components.js";
 import { pageTransition } from "./transition.js";
+import { renderHome, renderAbout, renderProjects, renderBlog } from "./pages.js";
+import { BLOG_POSTS } from "../content.js";
 
-// Top-level pages: route -> view template.
-const PAGES = {
-  "/": "/frontend/pages/home.html",
-  "/about": "/frontend/pages/about.html",
-  "/blog": "/frontend/pages/blogs.html",
-  "/projects": "/frontend/pages/projects.html",
+// Re-exported so existing importers (components.js) keep working unchanged.
+export { BLOG_POSTS };
+
+// Data-driven pages: route -> render function returning an HTML string.
+// Edit their text in frontend/content.js, not here.
+const RENDERERS = {
+  "/": renderHome,
+  "/about": renderAbout,
+  "/projects": renderProjects,
+  "/blog": renderBlog,
+};
+
+// Static template pages: route -> HTML file to fetch.
+const TEMPLATES = {
   "/resume": "/frontend/pages/resume.html",
 };
 
 // Every blog post renders through the same template.
 const BLOG_POST_VIEW = "/frontend/pages/blog-post.html";
 
-export const BLOG_POSTS = {
-  "/blog/test1": {
-    title: "world hello",
-    file: "/public/blogs/test.md",
-  },
-  "/blog/test2": {
-    title: "Hello world",
-    file: "/public/blogs/test2.md",
-  },
-};
-
-// Full route table: pages plus a view for each blog post.
+// Full route table: rendered pages, template pages, plus a view per blog post.
 export const ROUTES = {
-  ...PAGES,
+  ...RENDERERS,
+  ...TEMPLATES,
   ...Object.fromEntries(
     Object.keys(BLOG_POSTS).map((path) => [path, BLOG_POST_VIEW]),
   ),
@@ -57,9 +57,12 @@ export function themeFnFor(path) {
 
 function attachCardHandlers() {
   document.querySelectorAll('.card').forEach(card => {
+    const route = card.dataset.route;
+    if (!route) return;
     card.onclick = () => {
-      const route = card.dataset.route;
-      if (route) navigate(route);
+      // External links open in a new tab; internal routes navigate the SPA.
+      if (/^https?:\/\//.test(route)) window.open(route, "_blank", "noopener");
+      else navigate(route);
     };
   });
 }
@@ -96,9 +99,12 @@ export async function renderRoute(path) {
 
   const main = document.querySelector("main");
 
-  // Fetch + inject the view, then run its post-processing.
+  // Render (data pages) or fetch (template pages) the view, then post-process.
   const swap = async () => {
-    main.innerHTML = await fetch(ROUTES[resolved]).then(r => r.text());
+    const renderer = RENDERERS[resolved];
+    main.innerHTML = renderer
+      ? renderer()
+      : await fetch(ROUTES[resolved]).then(r => r.text());
 
     setActiveLink(resolved);
     routeToWasm(resolved);

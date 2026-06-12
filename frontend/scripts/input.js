@@ -4,7 +4,9 @@ export function initInput() {
   document.addEventListener("mousemove", (e) => {
     if (!canvas || !Module) return;
 
-    const dpr = window.devicePixelRatio || 1;
+    // Match the capped dpr used to size the canvas (see canvas.js MAX_DPR),
+    // so clientX/Y normalise against canvas.width/height consistently.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     const x = e.clientX * dpr;
     const y = e.clientY * dpr;

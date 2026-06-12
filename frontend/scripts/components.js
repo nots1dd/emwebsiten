@@ -16,6 +16,7 @@ export async function renderBlogPost(path) {
   const html = mdToHtml(md);
 
   document.getElementById("post-title").textContent = post.title;
+  document.getElementById("post-sub").textContent = post.blurb ?? "";
   document.getElementById("post-content").innerHTML = html;
 
   enhanceTables(document.getElementById("post-content"));

@@ -106,7 +106,7 @@ void drawRingedSystem(inout vec3 col, vec2 p, vec2 pos, float pr, vec3 c1, vec3 
   drawBody(col, p, mpos, pr * 0.42, vec3(0.35, 0.35, 0.42), vec3(0.85, 0.86, 0.95), ldir, 22.0, w);
 }
 
-/* orange-giant star tidally devoured, with an infalling stream */
+/* blue-giant star tidally devoured, with an infalling stream */
 void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol)
 {
   float sa     = uTime * 0.22 + 0.5;
@@ -207,8 +207,8 @@ void main()
   float arc = smoothstep(0.018, 0.0, abs(d - (RH + 0.045))) * step(0.0, p.y);
   col += vec3(1.0, 0.6, 0.25) * arc * (0.5 + 0.5 * turb);
 
-  /* ---- orange giant being devoured ---- */
-  drawStar(col, p, vec3(1.0, 0.5, 0.15), vec3(1.0, 0.55, 0.2));
+  /* ---- blue giant being devoured ---- */
+  drawStar(col, p, vec3(0.45, 0.65, 1.0), vec3(0.6, 0.8, 1.0));
 
   /* ---- bodies in front of the hole ---- */
   drawBody(col, p, q0, 0.05, pc0, pc0b, ldir, 16.0, 1.0 - b0);
