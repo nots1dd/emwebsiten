@@ -58,7 +58,10 @@ export const CONTENT = {
   //   link            — external URL (opens in a new tab) or internal route
   //   status          — small badge. Known colors: active, wip, stable,
   //                     archived, experimental (anything else = neutral grey)
+  //   lang            — language badge shown on the header (e.g. "C++")
+  //   date            — shown right-aligned on the header (e.g. "2024")
   //   about           — a few sentences shown inside the preview
+  //   tags            — pixel chips inside the preview (e.g. ["compiler", …])
   //   images          — array of pictures in the preview. Each entry is either
   //                     a local path ("/public/projects/foo.png") OR a full
   //                     URL ("https://…"). Use [] for none. GitHub "blob" links
@@ -74,7 +77,10 @@ export const CONTENT = {
         body: "Transpiler Infrastructure for C/C++ build systems",
         link: "https://github.com/nots1dd/tibs",
         status: "WIP",
+        lang: "C++",
+        date: "2024",
         about: "A few sentences about tibs go here — what it does, why you built it, and what makes it interesting. Replace this placeholder.",
+        tags: ["compiler", "CLI11", "nlohmann-json", "package-manager", "transpiler"],
         images: [],
       },
       {
@@ -82,7 +88,10 @@ export const CONTENT = {
         body: "Advanced audio library management and playback tool",
         link: "https://github.com/nots1dd/inLimbo",
         status: "active",
+        lang: "C++",
+        date: "2024",
         about: "A few sentences about inLimbo go here. Replace this placeholder.",
+        tags: ["audio", "TUI", "ncurses", "library", "playback"],
         images: [],
       },
       {
@@ -90,7 +99,10 @@ export const CONTENT = {
         body: "Simple Screen Locker for Wayland based Compositors",
         link: "https://github.com/muvilon/anvilock",
         status: "active",
+        lang: "C",
+        date: "2024",
         about: "A few sentences about Anvilock go here. Replace this placeholder.",
+        tags: ["wayland", "screen-locker", "PAM", "security", "OpenGL"],
         images: [],
       },
       {
@@ -98,7 +110,10 @@ export const CONTENT = {
         body: "Audio Streaming and Sharing Platform for popular audio formats",
         link: "https://github.com/Oinkognito/wavy",
         status: "WIP",
+        lang: "C++",
+        date: "2024",
         about: "A few sentences about Wavy go here. Replace this placeholder.",
+        tags: ["audio", "streaming", "networking", "FLAC", "server"],
         images: [],
       },
       {
@@ -106,7 +121,10 @@ export const CONTENT = {
         body: "Very obscene and primitive attempt at making a game engine in C using SDL and math.",
         link: "https://github.com/nots1dd/obzcene",
         status: "experimental",
+        lang: "C",
+        date: "2023",
         about: "A few sentences about obZcene go here. Replace this placeholder.",
+        tags: ["game-engine", "SDL", "math", "experimental"],
         images: ["https://github.com/nots1dd/obZcene/blob/dev/assets/example.png"],
       },
       {
@@ -114,7 +132,10 @@ export const CONTENT = {
         body: "Audio Visualizer written in Raylib that looks cool",
         link: "https://github.com/nots1dd/rAVen",
         status: "stable",
+        lang: "C",
+        date: "2023",
         about: "A few sentences about rAVen go here. Replace this placeholder.",
+        tags: ["raylib", "visualizer", "audio", "FFT", "graphics"],
         images: ["/public/images/rAVen-preview-1.png"],
       },
     ],

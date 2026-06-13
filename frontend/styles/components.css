@@ -101,7 +101,7 @@
 ========================= */
 .project {
   margin-bottom: 18px;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
 
   background: var(--glass-bg);
@@ -120,6 +120,14 @@
   box-shadow:
     0 14px 40px var(--shadow-strong),
     inset 0 0 24px var(--glass-highlight);
+}
+
+/* selected (keyboard) — a soft rounded glassy ring instead of a square outline */
+.project:focus-within {
+  box-shadow:
+    0 14px 44px var(--shadow-strong),
+    inset 0 0 26px var(--glass-highlight),
+    0 0 0 1.5px var(--pixel-accent);
 }
 
 /* clickable header (a real button for keyboard + a11y) */
@@ -203,9 +211,9 @@ body.light .project:focus-within .project-title-row h3 {
   100% { text-shadow: -1.5px 0 rgba(255, 0, 128, 0.7), 1.5px 0 rgba(0, 225, 220, 0.7); }
 }
 
+/* the rounded glassy ring on .project:focus-within is the focus indicator */
 .project-head:focus-visible {
-  outline: 2px solid var(--pixel-accent);
-  outline-offset: -2px;
+  outline: none;
 }
 
 .project-title-row {
@@ -246,6 +254,29 @@ body.light .project:focus-within .project-title-row h3 {
 .project-status.s-wip,
 .project-status.s-experimental { color: #e3b341; border-color: rgba(227,179,65,0.5); }
 .project-status.s-archived { color: #8b949e; border-color: rgba(139,148,158,0.5); }
+
+/* language pill — mirrors the status pill, accent-tinted */
+.project-lang {
+  font-family: var(--pixel-font);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  background: var(--glass-highlight);
+  border: 1px solid var(--pixel-accent);
+  color: var(--pixel-accent);
+}
+
+/* date — pushed to the rightmost edge of the header */
+.project-date {
+  margin-left: auto;
+  font-family: var(--pixel-font);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+}
 
 /* chevron, rotates when open */
 .project-chevron {
@@ -289,10 +320,62 @@ body.light .project:focus-within .project-title-row h3 {
 
 /* padded content wrapper (kept inside the clipped inner) */
 .project-about,
+.project-tags,
 .project-shots,
 .project-link {
   margin-left: 24px;
   margin-right: 24px;
+}
+
+/* pixel tag chips */
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.project-tag {
+  font-family: var(--pixel-font);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+
+  padding: 6px 9px;
+  border-radius: 7px;
+
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  cursor: default;
+
+  transition:
+    transform 0.18s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.project-tag::before {
+  content: "#";
+  opacity: 0.45;
+  margin-right: 2px;
+}
+
+.project-tag:hover {
+  transform: translateY(-2px);
+
+  background: var(--glass-highlight);
+  border-color: var(--pixel-accent);
+  color: var(--pixel-accent);
+
+  box-shadow:
+    0 5px 16px var(--shadow-soft),
+    inset 0 0 10px var(--glass-highlight);
+}
+
+.project-tag:hover::before {
+  opacity: 0.9;
 }
 
 .project-about {

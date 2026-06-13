@@ -28,11 +28,19 @@ function resolveImg(src) {
   return src;
 }
 
-// Expandable project card with a glass dropdown preview (status, about, images).
-const projectCard = ({ title, body, link, status, about, images }) => {
+// Expandable project card with a glass dropdown preview.
+const projectCard = ({ title, body, link, status, lang, date, about, tags, images }) => {
   const slug = (status || "").toLowerCase().replace(/\s+/g, "-");
-  const pill = status
+  const statusPill = status
     ? `<span class="project-status s-${escapeHtml(slug)}">${escapeHtml(status)}</span>`
+    : "";
+  const langPill = lang ? `<span class="project-lang">${escapeHtml(lang)}</span>` : "";
+  const dateEl = date ? `<span class="project-date">${escapeHtml(date)}</span>` : "";
+
+  const tagsEl = (tags && tags.length)
+    ? `<div class="project-tags">${tags
+        .map((t) => `<span class="project-tag">${escapeHtml(t)}</span>`)
+        .join("")}</div>`
     : "";
 
   const shots = (images && images.length)
@@ -51,7 +59,9 @@ const projectCard = ({ title, body, link, status, about, images }) => {
     <button class="project-head" type="button" aria-expanded="false">
       <span class="project-title-row">
         <h3>${escapeHtml(title)}</h3>
-        ${pill}
+        ${statusPill}
+        ${langPill}
+        ${dateEl}
       </span>
       <p class="project-blurb">${escapeHtml(body)}</p>
       <span class="project-chevron" aria-hidden="true">▾</span>
@@ -59,6 +69,7 @@ const projectCard = ({ title, body, link, status, about, images }) => {
     <div class="project-preview">
       <div class="project-preview-inner">
         ${aboutP}
+        ${tagsEl}
         ${shots}
         ${linkA}
       </div>
