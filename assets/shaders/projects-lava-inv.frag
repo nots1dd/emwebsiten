@@ -52,13 +52,13 @@ vec3 posterize(vec3 c, vec2 block)
   return floor(clamp(c + d, 0.0, 1.0) * (LEVELS - 1.0) + 0.5) / (LEVELS - 1.0);
 }
 
-/* bright frost: pale near the edge, deepening blue toward the set */
+/* high-contrast day palette: a vivid cosine cycle (warm gold -> magenta ->
+   indigo -> cyan) with an icy white lift at the very edge of the set */
 vec3 icePaletteDay(float t)
 {
   t = clamp(t, 0.0, 1.0);
-  vec3 c = mix(vec3(0.95, 0.97, 1.0), vec3(0.62, 0.82, 0.98), smoothstep(0.0, 0.40, t));
-  c = mix(c, vec3(0.32, 0.58, 0.90), smoothstep(0.40, 0.72, t));
-  c = mix(c, vec3(0.12, 0.34, 0.68), smoothstep(0.72, 1.0, t));
+  vec3 c = 0.60 + 0.40 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.62)));
+  c = mix(c, vec3(0.97, 0.99, 1.0), smoothstep(0.82, 1.0, t) * 0.55);  // frosted highlight
   return c;
 }
 
@@ -91,18 +91,18 @@ void main()
     float t  = clamp(sn / float(MAXI), 0.0, 1.0);
     col = icePaletteDay(pow(t, 0.55));
 
-    col *= 0.9 + 0.2 * detail(z * 6.0);                // crystalline grain
-    col += vec3(0.2, 0.4, 0.7) * smoothstep(0.6, 1.0, abs(sin(sn * 0.7))) * 0.10;  // frost layers
+    col *= 0.82 + 0.32 * detail(z * 6.0);              // stronger crystalline grain
+    col += vec3(1.0) * smoothstep(0.6, 1.0, abs(sin(sn * 0.7))) * 0.14;  // bright contour bands
 
     float frost = smoothstep(0.55, 1.0, t);
     float spk   = step(0.95, hash21(floor(z * 40.0) + floor(uTime * 3.0)));
-    col += vec3(1.0) * spk * frost * 0.45;             // ice sparkles
+    col += vec3(1.0) * spk * frost * 0.5;              // ice sparkles
   }
   else
   {
-    col = vec3(0.80, 0.90, 1.0);                       // frosted-glass core
-    col *= 0.92 + 0.12 * detail(z * 5.0);
-    col -= vec3(0.05, 0.04, 0.0) * (0.5 + 0.5 * sin(uTime * 0.5));
+    col = vec3(0.16, 0.22, 0.46);                      // deep indigo core (figure/ground)
+    col *= 0.85 + 0.3 * detail(z * 5.0);
+    col += vec3(0.10, 0.16, 0.30) * (0.5 + 0.5 * sin(uTime * 0.5));
   }
 
   col = posterize(col, block);

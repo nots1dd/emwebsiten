@@ -52,3 +52,53 @@
 @media (prefers-reduced-motion: reduce) {
   .page-fx.show::before { animation: none; opacity: 0; }
 }
+
+/* =========================================================
+   Theme switch transition — smooth light <-> dark recolor.
+   Two layers:
+     1. a gated color crossfade so every surface eases between
+        palettes instead of snapping (only active during the
+        ~0.55s switch window, via body.theme-transition);
+     2. a radial "ink ripple" that blooms from the toggle button.
+========================================================= */
+
+/* (1) ease the themed properties only while switching */
+body.theme-transition,
+body.theme-transition *,
+body.theme-transition *::before,
+body.theme-transition *::after {
+  transition:
+    background-color 0.5s ease,
+    color            0.5s ease,
+    border-color     0.5s ease,
+    box-shadow       0.5s ease,
+    fill             0.5s ease,
+    stroke           0.5s ease !important;
+}
+
+/* (2) the ripple — JS sets its origin (left/top), size, and tint */
+#theme-sweep {
+  position: fixed;
+  z-index: 9000;
+  pointer-events: none;
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(
+    circle at center,
+    var(--sweep-color, rgba(127, 127, 127, 0.5)) 0%,
+    var(--sweep-color, rgba(127, 127, 127, 0.5)) 55%,
+    transparent 72%
+  );
+  will-change: transform, opacity;
+}
+
+@keyframes themeSweep {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  15%  { opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  #theme-sweep.run { animation: themeSweep 0.55s ease-out forwards; }
+}

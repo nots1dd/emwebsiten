@@ -21,7 +21,7 @@ enum class ShaderID : std::size_t
   mosaic_dither_transition,
   spacetime_rip_transition,
   overgrowth_transition,
-  crystallize_transition,
+  fractal_bloom_transition,
   COUNT
 };
 
@@ -88,10 +88,10 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "overgrowth_transition",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/overgrowth.transition.glsl"},
-  {.id   = ShaderID::crystallize_transition,
-   .name = "crystallize_transition",
+  {.id   = ShaderID::fractal_bloom_transition,
+   .name = "fractal_bloom_transition",
    .vert = "/assets/shaders/fullscreen.vert",
-   .frag = "/assets/shaders/crystallize.transition.glsl"},
+   .frag = "/assets/shaders/fractal-bloom.transition.glsl"},
 });
 
 // ------------------------------------------------------------

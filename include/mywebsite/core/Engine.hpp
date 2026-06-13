@@ -58,7 +58,7 @@ public:
 
   void set_theme_projects(bool dark)
   {
-    set_theme<ShaderID::crystallize_transition>(Route::Projects, dark);
+    set_theme<ShaderID::fractal_bloom_transition>(Route::Projects, dark);
   }
 
   void set_theme_blog(bool dark) { set_theme<ShaderID::mosaic_dither_transition>(Route::Blog, dark); }
