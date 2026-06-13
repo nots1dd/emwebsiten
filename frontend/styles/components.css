@@ -97,6 +97,263 @@
 }
 
 /* =========================
+   PROJECT (expandable preview)
+========================= */
+.project {
+  margin-bottom: 18px;
+  border-radius: 16px;
+  overflow: hidden;
+
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+
+  transition:
+    border 0.3s ease,
+    box-shadow 0.35s ease,
+    background 0.4s ease;
+}
+
+.project:hover,
+.project:focus-within,
+.project[data-expanded="true"] {
+  border: 1px solid var(--glass-highlight);
+  box-shadow:
+    0 14px 40px var(--shadow-strong),
+    inset 0 0 24px var(--glass-highlight);
+}
+
+/* clickable header (a real button for keyboard + a11y) */
+.project-head {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+
+  margin: 0;
+  padding: 22px 52px 22px 24px;
+
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* datamosh glitch overlay — eases in on hover, then corrupts in pixel bands */
+.project-head::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background:
+    linear-gradient(90deg, rgba(255, 0, 128, 0.20), transparent 42%),
+    linear-gradient(270deg, rgba(0, 225, 220, 0.20), transparent 42%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 4px);
+  mix-blend-mode: screen;
+
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.project:hover .project-head::before,
+.project:focus-within .project-head::before {
+  opacity: 1;
+  animation: projGlitch 0.85s steps(5, end) infinite;
+}
+
+/* RGB split on the title while hovering / selected */
+.project:hover .project-title-row h3,
+.project:focus-within .project-title-row h3 {
+  animation: projRGB 0.5s steps(2, end) infinite;
+}
+
+/* Light mode: 'screen' blend washes out on a pale background, so darken the
+   bands with 'multiply' and stronger colors to keep the datamosh apparent. */
+body.light .project-head::before {
+  mix-blend-mode: multiply;
+  background:
+    linear-gradient(90deg, rgba(214, 0, 110, 0.55), transparent 42%),
+    linear-gradient(270deg, rgba(0, 150, 170, 0.55), transparent 42%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.07) 0 2px, transparent 2px 4px);
+}
+
+body.light .project:hover .project-title-row h3,
+body.light .project:focus-within .project-title-row h3 {
+  animation: projRGBLight 0.5s steps(2, end) infinite;
+}
+
+@keyframes projRGBLight {
+  0%   { text-shadow: -1.5px 0 rgba(214, 0, 110, 0.85), 1.5px 0 rgba(0, 150, 170, 0.85); }
+  50%  { text-shadow:  1.5px 0 rgba(214, 0, 110, 0.85), -1.5px 0 rgba(0, 150, 170, 0.85); }
+  100% { text-shadow: -1.5px 0 rgba(214, 0, 110, 0.85), 1.5px 0 rgba(0, 150, 170, 0.85); }
+}
+
+@keyframes projGlitch {
+  0%   { clip-path: inset(0 0 78% 0);  transform: translateX(-3px); }
+  25%  { clip-path: inset(40% 0 38% 0); transform: translateX(3px); }
+  50%  { clip-path: inset(66% 0 10% 0); transform: translateX(-2px); }
+  75%  { clip-path: inset(20% 0 60% 0); transform: translateX(2px); }
+  100% { clip-path: inset(0 0 0 0);     transform: translateX(0); }
+}
+
+@keyframes projRGB {
+  0%   { text-shadow: -1.5px 0 rgba(255, 0, 128, 0.7), 1.5px 0 rgba(0, 225, 220, 0.7); }
+  50%  { text-shadow:  1.5px 0 rgba(255, 0, 128, 0.7), -1.5px 0 rgba(0, 225, 220, 0.7); }
+  100% { text-shadow: -1.5px 0 rgba(255, 0, 128, 0.7), 1.5px 0 rgba(0, 225, 220, 0.7); }
+}
+
+.project-head:focus-visible {
+  outline: 2px solid var(--pixel-accent);
+  outline-offset: -2px;
+}
+
+.project-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.project-title-row h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.project-blurb {
+  margin: 6px 0 0;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+/* status pill — pixel font, color-coded by state */
+.project-status {
+  font-family: var(--pixel-font);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+
+  padding: 4px 8px;
+  border-radius: 6px;
+
+  background: var(--glass-highlight);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+
+.project-status.s-active,
+.project-status.s-stable   { color: #2ecf8f; border-color: rgba(46,207,143,0.5); }
+.project-status.s-wip,
+.project-status.s-experimental { color: #e3b341; border-color: rgba(227,179,65,0.5); }
+.project-status.s-archived { color: #8b949e; border-color: rgba(139,148,158,0.5); }
+
+/* chevron, rotates when open */
+.project-chevron {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  font-size: 14px;
+  opacity: 0.6;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.project[data-expanded="true"] .project-chevron {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* dropdown — grid-rows trick animates unknown content height smoothly */
+.project-preview {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease;
+}
+
+.project[data-expanded="true"] .project-preview {
+  grid-template-rows: 1fr;
+}
+
+.project-preview-inner {
+  overflow: hidden;
+  min-height: 0;
+
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.3s steps(4, end) 0.05s, transform 0.3s ease 0.05s;
+}
+
+.project[data-expanded="true"] .project-preview-inner {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* padded content wrapper (kept inside the clipped inner) */
+.project-about,
+.project-shots,
+.project-link {
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+.project-about {
+  margin-top: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.85;
+}
+
+.project-shots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.project-shot {
+  width: auto;
+  height: auto;
+  max-width: min(100%, 460px);   /* keep wide shots reasonable */
+  max-height: 240px;
+  object-fit: contain;
+
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 6px 20px var(--shadow-soft);
+}
+
+.project-link {
+  display: inline-block;
+  margin-top: 18px;
+  margin-bottom: 22px;
+  padding: 8px 14px;
+
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-highlight);
+  color: var(--text);
+
+  font-size: 14px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.project-link:hover {
+  transform: translateY(-1px);
+  background: var(--card-hover-bg);
+  color: var(--card-hover-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-preview,
+  .project-preview-inner,
+  .project-chevron { transition: none; }
+
+  .project:hover .project-head::before,
+  .project:focus-within .project-head::before,
+  .project:hover .project-title-row h3,
+  .project:focus-within .project-title-row h3 { animation: none; }
+}
+
+/* =========================
    CONTENT WRAPPER
 ========================= */
 .content {

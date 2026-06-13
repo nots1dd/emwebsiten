@@ -19,7 +19,7 @@ const BINDINGS = [
   { seq: "k",  label: "up",     cat: "Move", move: true, run: () => moveUp() },
   { seq: "gg", label: "top",    cat: "Move", move: true, run: () => { scrollPageTo(0); focusCard(0, false); } },
   { seq: "G",  label: "bottom", cat: "Move", move: true, run: () => { scrollPageTo(pageBottom()); focusCard(cardCount() - 1, false); } },
-  { seq: "Enter", label: "open focused card", cat: "Move", run: () => activateFocusedCard() },
+  { seq: "Enter", label: "open / expand item", cat: "Move", run: () => activateFocusedCard() },
 
   { seq: "H", label: "back",    cat: "History", run: () => history.back() },
   { seq: "L", label: "forward", cat: "History", run: () => history.forward() },
@@ -75,8 +75,9 @@ function scrollPageBy(dy) {
   scrollerEl().scrollBy({ top: dy, behavior: "smooth" });
 }
 
+// Selectable items: plain cards (about/blog) and expandable project heads.
 function getCards() {
-  return Array.from(document.querySelectorAll(".card"));
+  return Array.from(document.querySelectorAll(".card, .project-head"));
 }
 function cardCount() {
   return getCards().length;
@@ -102,8 +103,11 @@ function moveUp() {
 }
 
 function activateFocusedCard() {
-  const route = getCards()[focusedIndex]?.dataset.route;
-  if (route) navigate(route);
+  const el = getCards()[focusedIndex];
+  if (!el) return;
+  // Project heads toggle their dropdown; plain cards navigate their route.
+  if (el.classList.contains("project-head")) { el.click(); return; }
+  if (el.dataset.route) navigate(el.dataset.route);
 }
 
 function isPrefix(str) {

@@ -1,5 +1,5 @@
 import { BLOG_POSTS } from "./router.js";
-import { mdToHtml, enhanceMarkdown, enhanceTables, enhanceCodeBlocks } from "./markdown.js";
+import { mdToHtml, enhanceMarkdown, enhanceTables, enhanceCodeBlocks, enhanceImages } from "./markdown.js";
 
 export async function loadComponent(id, path) {
   const res = await fetch(path);
@@ -19,7 +19,11 @@ export async function renderBlogPost(path) {
   document.getElementById("post-sub").textContent = post.blurb ?? "";
   document.getElementById("post-content").innerHTML = html;
 
-  enhanceTables(document.getElementById("post-content"));
-  enhanceMarkdown(document.getElementById("post-content"));
-  enhanceCodeBlocks(document.getElementById("post-content"));
+  const content = document.getElementById("post-content");
+  const baseDir = post.file.slice(0, post.file.lastIndexOf("/") + 1);  // e.g. /public/blogs/
+
+  enhanceTables(content);
+  enhanceMarkdown(content);
+  enhanceCodeBlocks(content);
+  enhanceImages(content, baseDir);
 }

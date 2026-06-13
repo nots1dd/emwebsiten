@@ -69,6 +69,16 @@ function attachCardHandlers() {
 
 export function initRouter() {
   document.addEventListener("click", (e) => {
+    // Expandable project cards: toggle the preview dropdown.
+    const head = e.target.closest(".project-head");
+    if (head) {
+      const project = head.closest(".project");
+      const open = project.dataset.expanded !== "true";
+      project.dataset.expanded = open ? "true" : "false";
+      head.setAttribute("aria-expanded", open ? "true" : "false");
+      return;
+    }
+
     const link = e.target.closest("[data-link]");
     if (!link) return;
 
