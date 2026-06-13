@@ -115,7 +115,7 @@ export const CONTENT = {
         link: "https://github.com/nots1dd/rAVen",
         status: "stable",
         about: "A few sentences about rAVen go here. Replace this placeholder.",
-        images: ["https://private-user-images.githubusercontent.com/140317709/369522447-51a291b7-12d6-41b1-af3d-52759791a093.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3ODEzNTgyOTAsIm5iZiI6MTc4MTM1Nzk5MCwicGF0aCI6Ii8xNDAzMTc3MDkvMzY5NTIyNDQ3LTUxYTI5MWI3LTEyZDYtNDFiMS1hZjNkLTUyNzU5NzkxYTA5My5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwNjEzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDYxM1QxMzM5NTBaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1hN2VhMzFiNjZlNDVkNjI0MmJhNDU5M2ZiNDBhNGVjMDM1NzcwMWNmODQ4ZmUxOTFkMDJlMDk3NzJhZjEwOGZjJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.cB696AeKaN4W4XEIjytETy6uVxmYn6HKXf_pNAW6Jsc"],
+        images: ["/public/images/rAVen-preview-1.png"],
       },
     ],
   },

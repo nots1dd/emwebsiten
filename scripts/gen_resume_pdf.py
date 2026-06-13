@@ -16,7 +16,7 @@ def esc(s: str) -> str:
 
 # (text, font size, y) lines, top-down on a US-Letter page (612x792)
 LINES = [
-    ("Sid K", 28, 720),
+    ("Siddharth Karanam", 28, 720),
     ("placeholder resume", 13, 692),
     ("", 12, 676),
     ("This is a generated placeholder.", 12, 660),
