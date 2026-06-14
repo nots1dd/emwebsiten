@@ -3,6 +3,7 @@
 uniform float uTime;
 uniform vec2  uResolution;
 uniform vec2  uMouse;
+uniform vec3  uMouseTrail[16];   // recent cursor path: .xy = pos (0..1), .z = age (s)
 uniform vec3  uCameraPos;
 uniform float uZoom;
 
@@ -52,14 +53,34 @@ vec3 posterize(vec3 c, vec2 block)
   return floor(clamp(c + d, 0.0, 1.0) * (LEVELS - 1.0) + 0.5) / (LEVELS - 1.0);
 }
 
-/* high-contrast day palette: a vivid cosine cycle (warm gold -> magenta ->
-   indigo -> cyan) with an icy white lift at the very edge of the set */
+/* day palette: mostly white, easing through light gray to gray for contrast,
+   with the faintest cool tint so it doesn't read flat */
 vec3 icePaletteDay(float t)
 {
   t = clamp(t, 0.0, 1.0);
-  vec3 c = 0.60 + 0.40 * cos(6.28318 * (t + vec3(0.0, 0.33, 0.62)));
-  c = mix(c, vec3(0.97, 0.99, 1.0), smoothstep(0.82, 1.0, t) * 0.55);  // frosted highlight
+  vec3 white = vec3(0.98, 0.99, 1.00);
+  vec3 lgray = vec3(0.84, 0.85, 0.87);
+  vec3 gray  = vec3(0.55, 0.57, 0.60);
+  vec3 c = mix(white, lgray, smoothstep(0.0, 0.50, t));
+  c = mix(c, gray, smoothstep(0.50, 1.0, t));
   return c;
+}
+
+/* gentle snow trailing the cursor — small, soft flakes that drift down with age */
+void cursorTrail(inout vec3 col, vec2 scr, float aspect)
+{
+  vec2 sa = vec2(aspect, 1.0);
+  for (int i = 0; i < 16; i++)
+  {
+    vec3 s = uMouseTrail[i];
+    if (s.z > 1.30) continue;
+    float life = 1.0 - s.z / 1.30;
+    vec2  pos  = s.xy + vec2(0.012 * sin(s.x * 50.0 + uTime * 1.5), -0.05 * s.z);  // drift + fall
+    float r    = length((scr - pos) * sa);
+    float flake = smoothstep(0.013, 0.0, r);
+    float tw    = 0.7 + 0.3 * sin(uTime * 4.0 + float(i) * 1.7);
+    col = mix(col, vec3(0.62, 0.78, 0.96), flake * life * tw * 0.5);
+  }
 }
 
 void main()
@@ -100,10 +121,12 @@ void main()
   }
   else
   {
-    col = vec3(0.16, 0.22, 0.46);                      // deep indigo core (figure/ground)
+    col = vec3(0.40, 0.41, 0.43);                      // gray core (figure/ground)
     col *= 0.85 + 0.3 * detail(z * 5.0);
-    col += vec3(0.10, 0.16, 0.30) * (0.5 + 0.5 * sin(uTime * 0.5));
+    col += vec3(0.05, 0.05, 0.06) * (0.5 + 0.5 * sin(uTime * 0.5));
   }
+
+  cursorTrail(col, block / res, aspect);
 
   col = posterize(col, block);
   col *= 0.95 + 0.05 * sin(gl_FragCoord.y * 3.14159);

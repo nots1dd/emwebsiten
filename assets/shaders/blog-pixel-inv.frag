@@ -3,6 +3,7 @@
 uniform float uTime;
 uniform vec2  uResolution;
 uniform vec2  uMouse;
+uniform vec3  uMouseTrail[16];   // recent cursor path: .xy = pos (0..1), .z = age (s)
 
 uniform sampler2D iChannel0;
 uniform vec3      iChannelResolution[3];
@@ -57,6 +58,32 @@ float gradient(vec2 blockUv)
   return fract(g);
 }
 
+/* pixel '+' trail in a deep cool palette (cyan <-> violet) that contrasts the
+   blog's pale theme, with a dark core where the bars cross */
+void cursorTrail(inout vec3 col, vec2 scr, float aspect)
+{
+  vec2 sa = vec2(aspect, 1.0);
+  for (int i = 0; i < 16; i++)
+  {
+    vec3 s = uMouseTrail[i];
+    if (s.z > 1.10) continue;
+    float life  = 1.0 - s.z / 1.10;
+    float taper = 1.0 - float(i) / 16.0;
+
+    vec2  d    = abs((scr - s.xy) * sa);
+    float arm  = 0.024, th = 0.006;            // '+' half-length and bar thickness
+    float hbar = step(d.y, th) * step(d.x, arm);
+    float vbar = step(d.x, th) * step(d.y, arm);
+    float plus = max(hbar, vbar);
+    if (plus < 0.5) continue;
+
+    float m  = 0.5 + 0.5 * sin(uTime * 1.5 + float(i) * 0.7 + s.x * 3.0);
+    vec3  tc = mix(vec3(0.00, 0.55, 0.82), vec3(0.45, 0.18, 0.80), m);   // deep cyan <-> violet
+    tc = mix(tc, vec3(0.08, 0.10, 0.22), hbar * vbar * 0.7);             // dark core pops on pale
+    col = mix(col, tc, plus * life * taper * 0.95);
+  }
+}
+
 void main()
 {
   vec2 block   = floor(gl_FragCoord.xy / PIXEL);
@@ -68,6 +95,8 @@ void main()
   float level    = floor(clamp(dithered, 0.0, 1.0) * (LEVELS - 1.0) + 0.5);
 
   vec3 col = palette(1.0 - (level + 0.5) / LEVELS);
+
+  cursorTrail(col, blockUv, uResolution.x / uResolution.y);
 
   col = mix(col, vec3(1.0), 0.35);
   col *= 0.92 + 0.08 * sin(gl_FragCoord.y * 3.14159);

@@ -3,6 +3,7 @@
 uniform float uTime;
 uniform vec2  uResolution;
 uniform vec2  uMouse;
+uniform vec3  uMouseTrail[16];   // recent cursor path: .xy = pos (0..1), .z = age (s)
 uniform vec3  uCameraPos;
 uniform float uZoom;
 
@@ -137,6 +138,25 @@ void drawStar(inout vec3 col, vec2 p, vec3 star, vec3 streamCol, float life)
   col += star * exp(-pow((sd - R) / 0.016, 2.0)) * 1.3 * life;
 }
 
+/* warm light motes tracing where the cursor has been */
+void cursorTrail(inout vec3 col, vec2 scr, float aspect)
+{
+  vec2 sa = vec2(aspect, 1.0);
+  for (int i = 0; i < 16; i++)
+  {
+    vec3 s = uMouseTrail[i];
+    if (s.z > 1.10) continue;
+    float life  = 1.0 - s.z / 1.10;
+    float taper = 1.0 - float(i) / 16.0;
+    float r     = length((scr - s.xy) * sa);
+    float glow  = smoothstep(0.075, 0.0, r);
+    float core  = smoothstep(0.016, 0.0, r);
+    vec3  tc = mix(vec3(1.00, 0.78, 0.45), vec3(1.00, 0.62, 0.78),
+                   0.5 + 0.5 * sin(uTime * 3.0 + float(i)));
+    col = mix(col, tc, (glow * 0.45 + core) * life * taper * 0.7);
+  }
+}
+
 void main()
 {
   vec2  block  = floor(gl_FragCoord.xy / PIXEL);
@@ -235,6 +255,8 @@ void main()
     vec4 spr = textureLod(iChannel1, uvA, 0.0);
     col = mix(col, spr.rgb, spr.a);
   }
+
+  cursorTrail(col, block / res, aspect);
 
   col = posterize(col, block);
   col *= 0.94 + 0.06 * sin(gl_FragCoord.y * 3.14159);

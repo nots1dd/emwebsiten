@@ -32,6 +32,7 @@ void Program::resolve_uniforms()
   uniforms_.delta      = uniform("uDelta");
   uniforms_.resolution = uniform("uResolution");
   uniforms_.mouse      = uniform("uMouse");
+  uniforms_.mouseTrail = uniform("uMouseTrail[0]");   // optional; -1 when absent
   uniforms_.frame      = uniform("uFrame");
   uniforms_.projection = uniform("uProjection");
   uniforms_.view       = uniform("uView");

@@ -20,7 +20,7 @@ enum class ShaderID : std::size_t
   blog_pixel_inv,
   mosaic_dither_transition,
   spacetime_rip_transition,
-  overgrowth_transition,
+  sunrise_shift_transition,
   fractal_bloom_transition,
   COUNT
 };
@@ -84,10 +84,10 @@ constexpr auto shader_registry = std::to_array<ShaderDesc>({
    .name = "spacetime_rip_transition",
    .vert = "/assets/shaders/fullscreen.vert",
    .frag = "/assets/shaders/spacetime-rip.transition.glsl"},
-  {.id   = ShaderID::overgrowth_transition,
-   .name = "overgrowth_transition",
+  {.id   = ShaderID::sunrise_shift_transition,
+   .name = "sunrise_shift_transition",
    .vert = "/assets/shaders/fullscreen.vert",
-   .frag = "/assets/shaders/overgrowth.transition.glsl"},
+   .frag = "/assets/shaders/sunrise-shift.transition.glsl"},
   {.id   = ShaderID::fractal_bloom_transition,
    .name = "fractal_bloom_transition",
    .vert = "/assets/shaders/fullscreen.vert",

@@ -3,6 +3,7 @@
 uniform float uTime;
 uniform vec2  uResolution;
 uniform vec2  uMouse;
+uniform vec3  uMouseTrail[16];   // recent cursor path: .xy = pos (0..1), .z = age (s)
 uniform vec3  uCameraPos;
 uniform float uZoom;
 
@@ -100,6 +101,9 @@ vec3 upperScene(vec2 uv)
   float aspect = uResolution.x / uResolution.y;
   vec3 c = mix(vec3(0.62, 0.82, 0.97), vec3(0.32, 0.58, 0.88), smoothstep(HORIZON, 1.0, uv.y));
 
+  /* warm haze hugging the horizon */
+  c += vec3(1.0, 0.85, 0.6) * smoothstep(0.16, 0.0, abs(uv.y - HORIZON)) * 0.22;
+
   vec2  sc = vec2(0.74, 0.82);
   float sd = length((uv - sc) * vec2(aspect, 1.0));
   c += vec3(1.0, 0.95, 0.7) * exp(-sd * 5.0) * 0.7;
@@ -120,6 +124,8 @@ vec3 upperScene(vec2 uv)
      * (smoothstep(0.010, 0.0, length(dl + sdir * al)) * 0.7 + smoothstep(0.012, 0.0, length(dl)) * 1.3)
      * vis;
 
+  /* distant hazy ridge for depth, then the two nearer treelines */
+  treeline(c, uv, HORIZON + 0.02, 0.10, vec3(0.40, 0.56, 0.52), vec3(0.30, 0.48, 0.46), 31.0);
   treeline(c, uv, HORIZON, 0.18, vec3(0.12, 0.34, 0.16), vec3(0.05, 0.20, 0.10), 7.0);
   treeline(c, uv, HORIZON - 0.01, 0.13, vec3(0.22, 0.46, 0.22), vec3(0.10, 0.30, 0.14), 17.0);
   return c;
@@ -155,6 +161,33 @@ void drawCreeper(inout vec3 col, vec2 uv)
   {
     vec4 s = textureLod(iChannel1, t, 0.0);
     col = mix(col, s.rgb, s.a);
+  }
+}
+
+/* datamosh trail that fades along the cursor's recent path; each sample dims
+   with its age, so the trail vanishes when idle and is left behind on a jump */
+void cursorMosh(inout vec3 col, vec2 scr, float aspect)
+{
+  vec2 sa = vec2(aspect, 1.0);
+  for (int i = 0; i < 16; i++)
+  {
+    vec3  s   = uMouseTrail[i];
+    float age = s.z;
+    if (age > 1.10) continue;                     // gone (idle too long / moved away)
+    float life = 1.0 - age / 1.10;                // 1 -> 0 with age
+    float taper = 1.0 - float(i) / 16.0;          // head brighter than tail
+
+    float r    = length((scr - s.xy) * sa);
+    float spot = smoothstep(0.05, 0.0, r);
+    if (spot <= 0.0) continue;
+
+    vec2  cell = floor(scr * 90.0 + vec2(0.0, floor(uTime * 10.0)));
+    float n    = hash21(cell + float(i) * 7.0);
+    float band = step(0.5, fract(n + uTime * 0.9));
+    vec3  dm   = mix(vec3(1.0, 0.05, 0.55), vec3(0.05, 0.95, 0.95), fract(n * 3.0));
+    dm = mix(dm, vec3(0.95, 0.9, 0.15), step(0.80, fract(n * 5.0)));
+
+    col = mix(col, dm, spot * band * life * taper * 0.85);
   }
 }
 
@@ -194,6 +227,10 @@ void main()
     col *= 0.78 + 0.22 * (uv.y - BANK) / (HORIZON - BANK);
     float shimmer = smoothstep(0.6, 0.95, det(vec2(uv.x * 9.0, uv.y * 26.0 - uTime)));
     col += vec3(1.0) * shimmer * 0.22;
+    /* sunlight glittering in a column beneath the sun */
+    float glit = smoothstep(0.12, 0.0, abs(uv.x - 0.74))
+               * smoothstep(0.55, 1.0, det(vec2(uv.x * 28.0, uv.y * 70.0 - uTime * 1.6)));
+    col += vec3(1.0, 0.92, 0.7) * glit * 0.5;
   }
   else
   {
@@ -202,8 +239,15 @@ void main()
     col *= 0.78 + 0.4 * uv.y / BANK;
   }
 
+  /* drifting ground mist over the far water / shoreline */
+  float mist = smoothstep(0.10, 0.0, abs(uv.y - (HORIZON - 0.03)))
+             * smoothstep(0.40, 0.80, fbm(vec2(uv.x * 4.0 + uTime * 0.04, uv.y * 9.0)));
+  col = mix(col, vec3(0.85, 0.90, 0.92), mist * 0.40);
+
   drawGrass(col, uv, vec3(0.28, 0.55, 0.22), vec3(0.45, 0.72, 0.30));
   drawCreeper(col, uv);
+
+  cursorMosh(col, block / res, aspect);
 
   col = posterize(col, block);
   col *= 0.94 + 0.06 * sin(gl_FragCoord.y * 3.14159);

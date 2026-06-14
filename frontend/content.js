@@ -22,6 +22,18 @@ export const CONTENT = {
       "I build things (mostly devtools) for myself and sometimes for others. Also an avid open source contributor and an enthusiast in operating systems (linux), compiler design, multimedia and wayland. When am not procrastinating, I like to listen to music, travel and play games and watch shows. Yes I am a boring person.",
       "As for a formal introduction, I am a final year student at VIT Chennai who is well versed in systems level languages and aims to work in low level engineering.",
     ],
+
+    // Hover the "?" badge on the intro card to reveal one of these at random.
+    // Add website facts or any general trivia you like — one string each.
+    factoids: [
+      "This whole background is a live WebGL2 shader, written in C++ and compiled to WebAssembly.",
+      "Every route has its own shader and contrasting shader for dark and light themes.",
+      "Move your cursor slowly onto the canvas to see somethin special :)",
+      "Press '?' anytime to see every keyboard shortcut. Try 'gp' to jump to projects.",
+      "Toggling the theme fires a shader transition — a spacetime rip, a sunrise, or a frost bloom.",
+      "There's no UI framework here: just vanilla JS, hand-written CSS, and a lot of GLSL.",
+      "Press 'ct' to flip between day and night. The scene re-lights itself in real time.",
+    ],
   },
 
   // ---- ABOUT ( /about ) ----
@@ -32,23 +44,27 @@ export const CONTENT = {
     // opening paragraph
     intro: {
       heading: "Me",
-      body:    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      body:    "This is more of a general list about the things I like to be associated with.",
     },
 
     // a list of cards — add / remove { } blocks freely
     work: {
-      heading: "What I Do",
+      heading: "What I Do / Wanna do",
       items: [
-        { title: "thing 1", body: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium." },
-        { title: "thing 2", body: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam." },
-        { title: "thing 3", body: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum." },
+        { title: "Wannabe computer nerd", body: "Doing a bachelors in computer science often has this side effect" },
+        { title: "Play games", body: "Not very genre specific, started with paper toss from way back when, more into FPS games with lore and currently lovin minecraft" },
+        { title: "Listening to music", body: "Had a very weird phase of rap/R&B back in 2017 and didnt explore much till 2020 when I started listening to classical pieces (mostly Mozart, Chopin and Paganini) and was obsessed with Joji. Since 2023 however, after being introduced to rock and nu metal, gears shifted and am currently lovin Meshuggah, Opeth and Gojira." },
+        { title: "Watching shows/movies", body: "Never have enough time for this, but on the off chance I do, I prefer to watch thrillers/dramas, Sci-Fi, psychological horror, animation movies and some comfort sitcoms. Yes I also watch anime but not as much anymore (as is obvious by the website's favicon)" },
+        { title: "Travelling", body: "Not the thrifty kind, just small vacations along indian coastlines and islands, originally stemmed from that one europe trip that made me wanna travel and see more of the world"},
+        { title: "Play sports", body: "Although I am becoming incredibly lazy, I still enjoy playing table tennis, football, cricket and swimming. As a sidefact I used to be addicted to chess during lockdown which may or may not have affected my studies" },
+        { title: "Write", body: "I enjoy writing poems and writing plausible storyboards that will never be completed as a very reserved hobby, hopefully one day I will post some of my stuff here" },
       ],
     },
 
     // closing paragraph
     currently: {
       heading: "Currently",
-      body:    "lorem jipsum",
+      body:    "Working on writing more blog posts, learning about functional programming and kernel development",
     },
   },
 
@@ -78,8 +94,8 @@ export const CONTENT = {
         link: "https://github.com/nots1dd/tibs",
         status: "WIP",
         lang: "C++",
-        date: "2024",
-        about: "A few sentences about tibs go here — what it does, why you built it, and what makes it interesting. Replace this placeholder.",
+        date: "2026",
+        about: "tibs (Transpiler Infrastructure for Build Systems) aims to be an upcoming compiler infrastructure for existing C/C++ meta and core build systems like CMake, Make, Autoconf, Ninja, so on. It has an in-house transpiler shipped on top of a central package and project manager that handles the entire lifetime and build files of your project.",
         tags: ["compiler", "CLI11", "nlohmann-json", "package-manager", "transpiler"],
         images: [],
       },
@@ -89,20 +105,20 @@ export const CONTENT = {
         link: "https://github.com/nots1dd/inLimbo",
         status: "active",
         lang: "C++",
-        date: "2024",
-        about: "A few sentences about inLimbo go here. Replace this placeholder.",
-        tags: ["audio", "TUI", "ncurses", "library", "playback"],
+        date: "2025",
+        about: "The inLimbo project aims to be a new upcoming TUI music player for *NIX based operating systems that gives music lovers a clean and efficient environment to browse, play and interact with your favourite offline music.",
+        tags: ["music-player", "taglib", "TUI", "toml-config", "dbus", "openssl", "ftxui"],
         images: [],
       },
       {
         title: "Anvilock",
         body: "Simple Screen Locker for Wayland based Compositors",
         link: "https://github.com/muvilon/anvilock",
-        status: "active",
-        lang: "C",
-        date: "2024",
-        about: "A few sentences about Anvilock go here. Replace this placeholder.",
-        tags: ["wayland", "screen-locker", "PAM", "security", "OpenGL"],
+        status: "WIP",
+        lang: "C++",
+        date: "2025",
+        about: "An upcoming screen lock for Wayland compositors that abides by the ext-session-lock-v1 Wayland Protocol.",
+        tags: ["wayland", "screen-locker", "PAM", "wayland-egl", "xkb", "stb_image", "OpenGL-ES"],
         images: [],
       },
       {
@@ -111,7 +127,7 @@ export const CONTENT = {
         link: "https://github.com/Oinkognito/wavy",
         status: "WIP",
         lang: "C++",
-        date: "2024",
+        date: "2025",
         about: "A few sentences about Wavy go here. Replace this placeholder.",
         tags: ["audio", "streaming", "networking", "FLAC", "server"],
         images: [],
@@ -122,7 +138,7 @@ export const CONTENT = {
         link: "https://github.com/nots1dd/obzcene",
         status: "experimental",
         lang: "C",
-        date: "2023",
+        date: "2025",
         about: "A few sentences about obZcene go here. Replace this placeholder.",
         tags: ["game-engine", "SDL", "math", "experimental"],
         images: ["https://github.com/nots1dd/obZcene/blob/dev/assets/example.png"],
@@ -133,7 +149,7 @@ export const CONTENT = {
         link: "https://github.com/nots1dd/rAVen",
         status: "stable",
         lang: "C",
-        date: "2023",
+        date: "2024",
         about: "A few sentences about rAVen go here. Replace this placeholder.",
         tags: ["raylib", "visualizer", "audio", "FFT", "graphics"],
         images: ["/public/images/rAVen-preview-1.png"],

@@ -112,6 +112,19 @@ void Renderer::render(Program& program, const FrameUniforms& frame)
   if (u.mouse >= 0)
     glUniform2f(u.mouse, frame.mouseX, frame.mouseY);
 
+  // Cursor trail: pack newest-first positions + age (seconds) for uMouseTrail.
+  if (u.mouseTrail >= 0)
+  {
+    std::array<float, TRAIL_N * 3> packed{};
+    for (int i = 0; i < TRAIL_N; ++i)
+    {
+      packed[i * 3 + 0] = trail_[i].x;
+      packed[i * 3 + 1] = trail_[i].y;
+      packed[i * 3 + 2] = (trail_[i].t <= 0.0f) ? 1.0e3f : (frame.time - trail_[i].t);
+    }
+    glUniform3fv(u.mouseTrail, TRAIL_N, packed.data());
+  }
+
   if (u.frame >= 0)
     glUniform1i(u.frame, frame.frame);
 

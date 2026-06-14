@@ -6,6 +6,177 @@
   animation: fadeUp 0.8s ease;
 }
 
+/* =========================
+   INTRO CARD (home) — glassy, pixel-bordered, hover glow
+========================= */
+.intro-card {
+  position: relative;
+  padding: 32px 34px;
+  border-radius: 14px;
+
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 12px 44px var(--shadow-strong),
+    inset 0 1px 0 var(--glass-highlight);
+
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease,
+    border-color 0.3s ease;
+}
+
+/* animated multi-color gradient border (masked to just the ring) */
+.intro-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.6px;
+
+  background: linear-gradient(
+    90deg,
+    #6be0d0, #7aa2f7, #c792ea, #f78c6c, #ffd27a, #6be0d0
+  );
+  background-size: 320% 100%;
+
+  /* punch out the center so only the border ring shows */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+          mask-composite: exclude;
+
+  opacity: 0.6;
+  pointer-events: none;
+  animation: introFlow 9s linear infinite;
+  transition: opacity 0.3s ease;
+}
+
+.intro-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 56px var(--shadow-strong),
+    inset 0 0 30px var(--glass-highlight);
+}
+
+.intro-card:hover::before {
+  opacity: 1;
+  animation-duration: 4s;
+}
+
+@keyframes introFlow {
+  to { background-position: 320% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-card::before { animation: none; }
+}
+
+.intro-card p {
+  margin: 0 0 14px;
+  opacity: 0.85;
+  line-height: 1.7;
+}
+
+.intro-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* factoid badge + randomized tooltip (lives inline in the footer) */
+.factoid {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  cursor: help;
+}
+
+.factoid-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font-size: 9px;
+
+  color: var(--pixel-accent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.factoid-label {
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.factoid:hover .factoid-badge,
+.factoid:focus .factoid-badge {
+  transform: translateY(-1px) scale(1.08);
+  box-shadow: 0 0 0 2px var(--pixel-accent);
+}
+
+.factoid:hover .factoid-label,
+.factoid:focus .factoid-label {
+  opacity: 1;
+  color: var(--pixel-accent);
+}
+
+/* tooltip opens upward (footer sits at the bottom of the page) */
+.factoid-tip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  width: max-content;
+  max-width: 300px;
+  padding: 11px 13px;
+
+  font-size: 12px;
+  line-height: 1.55;
+
+  border-radius: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 10px 30px var(--shadow-strong),
+    inset 0 1px 0 var(--glass-highlight);
+  color: var(--text);
+
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.factoid:hover .factoid-tip,
+.factoid:focus .factoid-tip,
+.factoid:focus-within .factoid-tip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* downward arrow at the tooltip's bottom edge */
+.factoid-tip::before {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 16px;
+  width: 9px;
+  height: 9px;
+  background: var(--glass-bg);
+  border-right: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+  transform: rotate(45deg);
+}
+
 .section h2 {
   font-size: 28px;
   margin-bottom: 24px;

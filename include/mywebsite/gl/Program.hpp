@@ -16,6 +16,7 @@ public:
     GLint delta      = -1;
     GLint resolution = -1;
     GLint mouse      = -1;
+    GLint mouseTrail = -1;   // optional vec3[] cursor history (.xy pos, .z age)
     GLint frame      = -1;
     GLint projection = -1;
     GLint view       = -1;

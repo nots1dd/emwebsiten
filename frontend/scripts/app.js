@@ -5,6 +5,7 @@ import { initTheme } from "./theme.js";
 import { initRouter, renderRoute } from "./router.js";
 import { initKeys } from "./keys.js";
 import { toggleHelp } from "./help.js";
+import { initHome } from "./pages.js";
 
 // Navbar chrome buttons.
 const CONTROLS = {
@@ -32,6 +33,8 @@ async function init() {
   initControls();
 
   await loadComponent("footer", "/frontend/components/footer.html");
+
+  initHome();   // after the footer exists, so its factoid tooltip gets seeded
 
   await renderRoute(location.pathname);
 }
