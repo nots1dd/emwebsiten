@@ -77,11 +77,6 @@ const projectCard = ({ title, body, link, status, lang, date, about, tags, image
   </div>`;
 };
 
-function randomFactoid() {
-  const f = CONTENT.home.factoids || [];
-  return f.length ? f[Math.floor(Math.random() * f.length)] : "";
-}
-
 export function renderHome() {
   const { title, subtitle, paragraphs } = CONTENT.home;
   const paras = paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join("");
@@ -92,24 +87,6 @@ export function renderHome() {
         ${paras}
       </div>
     </section>`;
-}
-
-// Factoid tooltip (lives in the footer). Seed any present tooltip, then re-roll
-// it on each hover/focus. Delegated so it keeps working across route swaps.
-export function initHome() {
-  const reroll = (el) => {
-    const tip = el.querySelector(".factoid-tip");
-    if (tip) tip.textContent = randomFactoid();
-  };
-  document.querySelectorAll(".factoid").forEach(reroll);   // seed initial (footer)
-  document.addEventListener("mouseover", (e) => {
-    const f = e.target.closest?.(".factoid");
-    if (f && !f.contains(e.relatedTarget)) reroll(f);       // only on enter, not within
-  });
-  document.addEventListener("focusin", (e) => {
-    const f = e.target.closest?.(".factoid");
-    if (f) reroll(f);
-  });
 }
 
 export function renderAbout() {

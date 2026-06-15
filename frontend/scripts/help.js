@@ -1,5 +1,8 @@
 // Keybind help overlay — built from the shared BINDINGS table.
 
+import { CONTENT } from "../content.js";
+import { escapeHtml } from "./utils.js";
+
 const CAT_ORDER = ["Navigate", "Move", "History", "View", "Help"];
 
 // Split a binding sequence into individual keycap labels ("gh" -> [g,h]).
@@ -27,6 +30,10 @@ function buildPanel(bindings) {
     </div>`;
   }).join("");
 
+  const factoids = (CONTENT.home.factoids || [])
+    .map((fact) => `<li>${escapeHtml(fact)}</li>`)
+    .join("");
+
   const overlay = document.createElement("div");
   overlay.id = "help-overlay";
   overlay.className = "help-overlay";
@@ -36,7 +43,13 @@ function buildPanel(bindings) {
         <span class="help-title">KEYBINDS</span>
         <button class="help-close kbd" aria-label="Close">esc</button>
       </div>
-      <div class="help-groups">${groups}</div>
+      <div class="help-body">
+        <div class="help-groups">${groups}</div>
+        <aside class="help-factoids" aria-label="Website factoids">
+          <div class="help-cat">Did you know?</div>
+          <ul>${factoids}</ul>
+        </aside>
+      </div>
     </div>`;
   return overlay;
 }

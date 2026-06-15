@@ -1,10 +1,6 @@
 // ============================================================================
 //  SITE CONTENT — edit everything here.
 //
-//  This is the only file you need to touch to change page text. Every page and
-//  every list item below is a plain string. No HTML, no markup — just edit the
-//  quotes. Lines with `//` are comments and are ignored.
-//
 //  Tips:
 //   - Keep the quotes "" around each piece of text.
 //   - Keep the commas , at the end of each line.
