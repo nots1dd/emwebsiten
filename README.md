@@ -18,7 +18,17 @@ my website built with emscripten and plain html,css and javascript.
 
 - `public`: all public accessible files go here
 
-## Credits
+## Deployment
+
+Vercel deployment is documented in [`docs/vercel-deployment.md`](docs/vercel-deployment.md).
+The short version: build the Emscripten output first, assemble `dist/` with
+`./scripts/build-vercel-dist.sh`, then deploy that static bundle. The included
+GitHub Actions workflow handles this automatically when the Vercel secrets are
+configured.
+
+## Some shader inspirations
+
+These are pretty old inspirations as none of the current shaders match these but they did teach me a thing or two bout coding one.
 
 1. Alexander Alekseev aka **TDM** - `Seascape` shader [link](https://www.shadertoy.com/view/Ms2SD1)
 2. stduhpf - `another synthwave sunset thing` shader [link](https://www.shadertoy.com/view/tsScRK)
