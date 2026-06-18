@@ -33,6 +33,11 @@ These are pretty old inspirations as none of the current shaders match these but
 1. Alexander Alekseev aka **TDM** - `Seascape` shader [link](https://www.shadertoy.com/view/Ms2SD1)
 2. stduhpf - `another synthwave sunset thing` shader [link](https://www.shadertoy.com/view/tsScRK)
 
+> [!NOTE]
+> 
+> Will add more details on this soon
+> 
+
 ## License
 
 Certain shaders are licensed as per their original authors that I have modified (check credits section), the rest is under BSD 3 Clause.
