@@ -6,3 +6,5 @@ emsdk/
 *.log
 *.pid
 */**/__pycache__/
+.vercel
+.env*
