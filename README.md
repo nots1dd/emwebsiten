@@ -48,11 +48,9 @@ This project supports binding additional texture channels that your fragment sha
 
 Two ways to provide textures:
 
-1. From JavaScript (recommended for web-based assets): use `frontend/scripts/textures.js` which exposes `loadTexture(url, channelIndex)` — it creates a WebGL texture, registers it with Emscripten's GL bridge and calls into the WASM `set_channel` function. Example usage in your frontend code:
+1. From JavaScript (never gonna use this but...): use `frontend/scripts/textures.js` which exposes `loadTexture(url, channelIndex)` — it creates a WebGL texture, registers it with Emscripten's GL bridge and calls into the WASM `set_channel` function. Example:
 
    const { loadTexture } = await import('./scripts/textures.js');
    loadTexture('/assets/logo.jpg', 0).then(id => console.log('iChannel0 id', id));
 
-2. From C++: you can call `Renderer::set_channel(index, tex)` if you create the GL texture on the native side. There's an exported function `set_channel(int, unsigned int)` available to JS as `Module._set_channel`.
-
-In your GLSL fragment shader use `uniform sampler2D iChannel0;` and sample it via `texture(iChannel0, uv)`.
+2. From C++ (currently using this): you can call `Renderer::set_channel(index, tex)` if you create the GL texture on the native side. There's an exported function `set_channel(int, unsigned int)` available to JS as `Module._set_channel`.
