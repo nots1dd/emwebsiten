@@ -2,7 +2,7 @@ import { canvas, lastX, lastY, setLast } from "./state.js";
 
 export function initInput() {
   document.addEventListener("mousemove", (e) => {
-    if (!canvas || !Module) return;
+    if (!canvas || !window.Module) return;
 
     // Match the capped dpr used to size the canvas (see canvas.js MAX_DPR),
     // so clientX/Y normalise against canvas.width/height consistently.
@@ -14,12 +14,12 @@ export function initInput() {
     const nx = x / canvas.width;
     const ny = 1.0 - (y / canvas.height);
 
-    Module._set_mouse?.(nx, ny);
+    window.Module._set_mouse?.(nx, ny);
 
     const dx = (e.movementX || (x - lastX)) * dpr;
     const dy = (e.movementY || (y - lastY)) * dpr;
 
-    Module._accumulate_mouse_delta?.(dx, dy);
+    window.Module._accumulate_mouse_delta?.(dx, dy);
 
     setLast(x, y);
   }, { passive: true });

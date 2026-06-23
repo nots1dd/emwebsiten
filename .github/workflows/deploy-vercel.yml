@@ -23,6 +23,17 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Inject Last.fm env vars
+        run: |
+          echo "${LASTFM_API_KEY}" | vercel env add LASTFM_API_KEY production --token="${VERCEL_TOKEN}" --yes || echo "  (already set, skipping)"
+          echo "${LASTFM_USER}" | vercel env add LASTFM_USER production --token="${VERCEL_TOKEN}" --yes || echo "  (already set, skipping)"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_USER: ${{ secrets.LASTFM_USER }}
+
       - name: Pull Vercel project settings
         run: vercel pull --yes --environment=production --token="${VERCEL_TOKEN}"
         env:

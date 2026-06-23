@@ -199,3 +199,44 @@ a {
   background: var(--scrollbar-thumb-hover);
   background-clip: padding-box;
 }
+
+/* =========================================================
+   Minimal mode — shader canvas disabled, clean solid bg.
+   Disables GPU-heavy backdrop-filter so low-end / battery-
+   conscious devices stay cool without sacrificing looks.
+   The glass panels become solid-ish tinted cards with the
+   same feel, just no blur.
+========================================================= */
+body.minimal-mode {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(107, 224, 208, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(255, 0, 128, 0.03) 0%, transparent 50%);
+}
+
+body.minimal-mode #canvas {
+  display: none;
+}
+
+body.minimal-mode::before {
+  display: none;
+}
+
+body.minimal-mode .glass,
+body.minimal-mode .navbar,
+body.minimal-mode .content {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+body.minimal-mode .content {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 20px 60px var(--shadow-strong);
+}
+
+body.minimal-mode .navbar {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px var(--shadow-soft);
+}

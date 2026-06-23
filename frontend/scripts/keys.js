@@ -1,6 +1,7 @@
 import { navigate } from "./router.js";
 import { toggleTheme } from "./theme.js";
 import { toggleCanvasMode } from "./canvas.js";
+import { toggleMinimalMode } from "./performance.js";
 import { initHelp, toggleHelp } from "./help.js";
 
 /* =========================================================
@@ -24,8 +25,9 @@ const BINDINGS = [
   { seq: "H", label: "back",    cat: "History", run: () => history.back() },
   { seq: "L", label: "forward", cat: "History", run: () => history.forward() },
 
-  { seq: "ct", label: "toggle theme",  cat: "View", run: () => toggleTheme() },
-  { seq: "xx", label: "canvas mode",   cat: "View", run: () => toggleCanvasMode() },
+  { seq: "cm", label: "toggle minimal", cat: "View", run: () => toggleMinimalMode() },
+  { seq: "ct", label: "toggle theme",   cat: "View", run: () => toggleTheme() },
+  { seq: "xx", label: "canvas mode",    cat: "View", run: () => toggleCanvasMode() },
 
   { seq: "?",  label: "this help", cat: "Help", run: () => toggleHelp() },
 ];

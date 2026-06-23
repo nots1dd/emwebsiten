@@ -2,19 +2,31 @@
 # ============================================================
 # spa_server.py
 #
-# Static file server with single-page-app fallback.
+# Static file server with single-page-app fallback and Last.fm
+# API proxy for the now-playing widget.
 #
 # Real files (e.g. /build/site.wasm, /frontend/scripts/app.js,
 # /public/blogs/test.md) are served as-is. Any other path that
 # does not exist on disk and is not an asset request falls back
 # to index.html, so client-side routes such as /about or
 # /blog/test1 load correctly on direct navigation or refresh.
+#
+# The /api/now-playing endpoint is proxied to Last.fm's API so
+# the footer widget works in local dev without exposing the API
+# key to client-side code. Set LASTFM_API_KEY and LASTFM_USER
+# in the environment to activate.
 # ============================================================
 
 import argparse
+import json
 import os
+import urllib.request
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
+
+
+API_KEY = os.environ.get("LASTFM_API_KEY", "")
+API_USER = os.environ.get("LASTFM_USER", "nots1dd")
 
 
 class SPARequestHandler(SimpleHTTPRequestHandler):
@@ -29,6 +41,11 @@ class SPARequestHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):  # noqa: N802 (stdlib naming)
         url_path = urlsplit(self.path).path
+
+        # Proxy /api/now-playing to Last.fm (keeps API key server-side).
+        if url_path == "/api/now-playing":
+            return self._proxy_lastfm()
+
         fs_path = self.translate_path(self.path)
 
         # Serve directories and existing files normally.
@@ -44,6 +61,42 @@ class SPARequestHandler(SimpleHTTPRequestHandler):
         # Otherwise this is a client-side route: serve the SPA shell.
         self.path = "/index.html"
         return super().do_GET()
+
+    def _proxy_lastfm(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+
+        if not API_KEY:
+            self.wfile.write(json.dumps({"error": "not configured"}).encode())
+            return
+
+        url = (
+            f"https://ws.audioscrobbler.com/2.0/"
+            f"?method=user.getrecenttracks"
+            f"&user={API_USER}&api_key={API_KEY}&format=json&limit=1"
+        )
+        try:
+            with urllib.request.urlopen(url, timeout=5) as resp:
+                data = json.loads(resp.read())
+            track = (data or {}).get("recenttracks", {}).get("track", [None])[0]
+            if not track:
+                self.wfile.write(json.dumps({"error": "no tracks"}).encode())
+                return
+            result = {
+                "nowplaying": bool(track.get("@attr", {}).get("nowplaying")),
+                "artist": track.get("artist", {}).get("#text", ""),
+                "name": track.get("name", ""),
+                "album": track.get("album", {}).get("#text", ""),
+                "image": next(
+                    (i["#text"] for i in track.get("image", []) if i.get("size") == "small"),
+                    "",
+                ),
+            }
+            self.wfile.write(json.dumps(result).encode())
+        except Exception:
+            self.wfile.write(json.dumps({"error": "fetch failed"}).encode())
 
     def end_headers(self):
         # Dev server: never cache, so rebuilt WASM/JS is always picked up.

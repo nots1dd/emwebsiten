@@ -3,7 +3,11 @@
 <head>
   <meta charset="utf-8">
   <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
-  <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&family=Press+Start+2P&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet"></noscript>
   <title>nots1dd</title>
 
   <link rel="stylesheet" href="/frontend/styles/base.css">
@@ -36,30 +40,6 @@
 <div id="theme-sweep" aria-hidden="true"></div>
 
 <script type="module" src="/frontend/scripts/app.js"></script>
-
-<script>
-var Module = {
-  locateFile: function(path) {
-    if (path.endsWith(".data") || path.endsWith(".wasm")) {
-      return "/build/" + path;
-    }
-    return path;
-  },
-
-  onRuntimeInitialized: function () {
-    console.log("[WASM] ready");
-
-    wasmReady = true;
-
-    // resize after WASM is ready
-    if (typeof resize === "function") {
-      resize();
-    }
-  }
-};
-</script>
-
-<script src="/build/site.js"></script>
 
 </body>
 </html>

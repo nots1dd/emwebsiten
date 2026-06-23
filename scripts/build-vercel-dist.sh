@@ -36,6 +36,27 @@ mkdir -p "${DIST_DIR}/build"
 cp "${ROOT_DIR}/index.html" "${DIST_DIR}/"
 cp -R "${ROOT_DIR}/frontend" "${DIST_DIR}/frontend"
 cp -R "${ROOT_DIR}/public" "${DIST_DIR}/public"
+
+# Bundle all CSS into a single file (11 requests -> 1).
+# Order matters: base (vars) -> pixel (primitives) -> layout -> components -> pages.
+CSS_BUNDLE="${DIST_DIR}/frontend/styles/bundle.css"
+for f in \
+  base.css pixel.css layout.css navbar.css footer.css \
+  components.css vim-hints.css help.css transition.css \
+  resume.css markdown.css; do
+  cat "${ROOT_DIR}/frontend/styles/$f" >> "$CSS_BUNDLE"
+  echo "" >> "$CSS_BUNDLE"
+done
+
+# Rewrite dist/index.html: replace first CSS <link> with bundle, drop the rest.
+sed -i '0,/<link rel="stylesheet" href="\/frontend\/styles\/base\.css">/{
+  s|<link rel="stylesheet" href="/frontend/styles/base.css">|<link rel="stylesheet" href="/frontend/styles/bundle.css">|
+}' "${DIST_DIR}/index.html"
+
+# Remove all other individual CSS <link> lines (pixel through markdown).
+for sheet in pixel layout navbar footer components vim-hints help transition resume markdown; do
+  sed -i '\|<link rel="stylesheet" href="/frontend/styles/'"$sheet"'\.css">|d' "${DIST_DIR}/index.html"
+done
 cp "${BUILD_DIR}/site.js" "${DIST_DIR}/build/site.js"
 cp "${BUILD_DIR}/site.wasm" "${DIST_DIR}/build/site.wasm"
 cp "${BUILD_DIR}/site.data" "${DIST_DIR}/build/site.data"

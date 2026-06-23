@@ -20,7 +20,8 @@ export function initCanvas() {
   if (!c) return;
 
   setCanvas(c);
-  Module.canvas = c;
+  window.Module = window.Module || {};
+  window.Module.canvas = c;
 
   tryResize();
 
@@ -49,12 +50,7 @@ export function resize() {
   canvas.style.width  = w + "px";
   canvas.style.height = h + "px";
 
-  if (Module && Module._set_resolution) {
-    Module._set_resolution(canvas.width, canvas.height);
+  if (window.Module?._set_resolution) {
+    window.Module._set_resolution(canvas.width, canvas.height);
   }
-
-  console.log("[resize]", {
-    window: `${w}x${h}`,
-    canvas: `${canvas.width}x${canvas.height}`,
-  });
 }
