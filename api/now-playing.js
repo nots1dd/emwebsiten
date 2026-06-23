@@ -10,11 +10,13 @@ export default async function handler(req, res) {
     const r = await fetch(url);
     const data = await r.json();
     const track = data?.recenttracks?.track?.[0];
-    if (!track) return res.status(200).json({ error: "no tracks" });
+    if (!track || !track["@attr"]?.nowplaying) {
+      return res.status(200).json({ error: "nothing playing" });
+    }
 
     res.setHeader("Cache-Control", "public, max-age=30, s-maxage=30");
     res.status(200).json({
-      nowplaying: !!track["@attr"]?.nowplaying,
+      nowplaying: true,
       artist: track.artist?.["#text"] ?? "",
       name: track.name ?? "",
       album: track.album?.["#text"] ?? "",

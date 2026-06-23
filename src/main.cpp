@@ -64,7 +64,7 @@ extern "C"
       out->append(text, size);
     };
 
-    md_html(input, strlen(input), callback, &output, 0, 0);
+    md_html(input, strlen(input), callback, &output, MD_FLAG_NOHTML, 0);
 
     return output.c_str();
   }

@@ -81,11 +81,11 @@ class SPARequestHandler(SimpleHTTPRequestHandler):
             with urllib.request.urlopen(url, timeout=5) as resp:
                 data = json.loads(resp.read())
             track = (data or {}).get("recenttracks", {}).get("track", [None])[0]
-            if not track:
-                self.wfile.write(json.dumps({"error": "no tracks"}).encode())
+            if not track or not track.get("@attr", {}).get("nowplaying"):
+                self.wfile.write(json.dumps({"error": "nothing playing"}).encode())
                 return
             result = {
-                "nowplaying": bool(track.get("@attr", {}).get("nowplaying")),
+                "nowplaying": True,
                 "artist": track.get("artist", {}).get("#text", ""),
                 "name": track.get("name", ""),
                 "album": track.get("album", {}).get("#text", ""),
