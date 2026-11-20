@@ -15,7 +15,7 @@ export const CONTENT = {
 
     // 1 to 3 paragraphs. Each string becomes its own paragraph.
     paragraphs: [
-      "I build things (mostly devtools) for myself and sometimes for others. Also an avid open source contributor and an enthusiast in operating systems (linux), compiler design, multimedia and wayland. When am not procrastinating, I like to listen to music, travel and play games and watch shows. Yes I am a boring person.",
+      "I build things (mostly devtools) for myself and sometimes for others. Also an avid open source contributor and an enthusiast in operating systems (linux), compiler design, multimedia and wayland. When am not procrastinating, I like to listen to music, travel and play games and watch shows.",
       "As for a formal introduction, I am a final year student at VIT Chennai who is well versed in systems level languages and aims to work in low level engineering.",
     ],
 
@@ -48,11 +48,11 @@ export const CONTENT = {
       heading: "What I Do / Wanna do",
       items: [
         { title: "Wannabe computer nerd", body: "Doing a bachelors in computer science often has this side effect" },
-        { title: "Play games", body: "Not very genre specific, started with paper toss from way back when, more into FPS games with lore and currently lovin minecraft" },
         { title: "Listening to music", body: "Had a very weird phase of rap/R&B back in 2017 and didnt explore much till 2020 when I started listening to classical pieces (mostly Mozart, Chopin and Paganini) and was obsessed with Joji. Since 2023 however, after being introduced to rock and nu metal, gears shifted and am currently lovin Meshuggah, Opeth and Gojira." },
         { title: "Watching shows/movies", body: "Never have enough time for this, but on the off chance I do, I prefer to watch thrillers/dramas, Sci-Fi, psychological horror, animation movies and some comfort sitcoms. Yes I also watch anime but not as much anymore (as is obvious by the website's favicon)" },
         { title: "Travelling", body: "Not the thrifty kind, just small vacations along indian coastlines and islands, originally stemmed from that one europe trip that made me wanna travel and see more of the world"},
         { title: "Play sports", body: "Although I am becoming incredibly lazy, I still enjoy playing table tennis, football, cricket and swimming. As a sidefact I used to be addicted to chess during lockdown which may or may not have affected my studies" },
+        { title: "Play games", body: "Not very genre specific, anything that seems fun :]" },
         { title: "Write", body: "I enjoy writing poems and writing plausible storyboards that will never be completed as a very reserved hobby, hopefully one day I will post some of my stuff here" },
       ],
     },
