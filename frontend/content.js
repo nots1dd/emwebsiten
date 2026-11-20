@@ -181,4 +181,9 @@ export const BLOG_POSTS = {
     blurb: "Mar 9, 2025",
     file:  "/public/blogs/anvilock-blog.md",
   },
+  "/blog/terminal-redux": {
+    title: "Terminal Redux and my comeuppance",
+    blurb: "Nov 20, 2026",
+    file: "/public/blogs/terminal-redux.md"
+  },
 };
