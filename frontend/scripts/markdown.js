@@ -381,6 +381,108 @@ export function mdToHtml(md) {
 }
 
 /* =========================
+   MARKDOWN → HTML (JS fallback)
+   The WASM renderer only exists once the emscripten runtime initializes,
+   and in minimal mode it never does. This renderer covers the syntax the
+   blog posts use so /blog/... never stays empty while (or unless) WASM
+   becomes available. Output mirrors md4c's shapes so the enhance* passes
+   below work on either result.
+========================= */
+const FENCE_RE = /^```(\w*)\s*$/;
+const HR_RE = /^\s*(-{3,}|\*{3,}|_{3,})\s*$/;
+const HEADING_RE = /^#{1,6}\s/;
+const QUOTE_RE = /^\s*>/;
+const UL_ITEM_RE = /^\s*[-*+]\s+/;
+const OL_ITEM_RE = /^\s*\d+\.\s+/;
+
+const isBlockStart = (line) =>
+  FENCE_RE.test(line) || HEADING_RE.test(line) || HR_RE.test(line) ||
+  QUOTE_RE.test(line) || UL_ITEM_RE.test(line) || OL_ITEM_RE.test(line);
+
+function inlineMd(text) {
+  let out = escapeHtml(text);
+  out = out.replace(/`([^`]+)`/g, "<code>$1</code>");
+  out = out.replace(/!\[([^\]]*)\]\(([^)\s]+)[^)]*\)/g, '<img src="$2" alt="$1">');
+  out = out.replace(/\[([^\]]+)\]\(([^)\s]+)[^)]*\)/g,
+    '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  out = out.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+  out = out.replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+  out = out.replace(/(^|[^_\w])_([^_\n]+)_/g, "$1<em>$2</em>");
+  return out;
+}
+
+export function mdToHtmlFallback(md) {
+  const lines = md.replace(/\r\n?/g, "\n").split("\n");
+  let html = "";
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (/^\s*$/.test(line)) { i++; continue; }
+
+    const fence = line.match(FENCE_RE);
+    if (fence) {
+      const lang = fence[1] || "plain";
+      const buf = [];
+      i++;
+      while (i < lines.length && !FENCE_RE.test(lines[i])) { buf.push(lines[i]); i++; }
+      i++;  // closing fence (or EOF)
+      html += `<pre><code class="language-${escapeHtml(lang)}">${escapeHtml(buf.join("\n"))}</code></pre>`;
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,6})\s+(.*)$/);
+    if (heading) {
+      const level = heading[1].length;
+      html += `<h${level}>${inlineMd(heading[2])}</h${level}>`;
+      i++; continue;
+    }
+
+    if (HR_RE.test(line)) { html += "<hr>"; i++; continue; }
+
+    if (QUOTE_RE.test(line)) {
+      const buf = [];
+      while (i < lines.length && QUOTE_RE.test(lines[i])) {
+        buf.push(lines[i].replace(/^\s*>[ ]?/, ""));
+        i++;
+      }
+      html += `<blockquote>${mdToHtmlFallback(buf.join("\n"))}</blockquote>`;
+      continue;
+    }
+
+    if (UL_ITEM_RE.test(line)) {
+      const items = [];
+      while (i < lines.length && UL_ITEM_RE.test(lines[i])) {
+        items.push(lines[i].replace(UL_ITEM_RE, ""));
+        i++;
+      }
+      html += `<ul>${items.map((it) => `<li>${inlineMd(it)}</li>`).join("")}</ul>`;
+      continue;
+    }
+
+    if (OL_ITEM_RE.test(line)) {
+      const items = [];
+      while (i < lines.length && OL_ITEM_RE.test(lines[i])) {
+        items.push(lines[i].replace(OL_ITEM_RE, ""));
+        i++;
+      }
+      html += `<ol>${items.map((it) => `<li>${inlineMd(it)}</li>`).join("")}</ol>`;
+      continue;
+    }
+
+    const buf = [];
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !isBlockStart(lines[i])) {
+      buf.push(lines[i]); i++;
+    }
+    html += `<p>${inlineMd(buf.join("\n"))}</p>`;
+  }
+
+  return html;
+}
+
+/* =========================
    CALLOUTS (GitHub style)
 ========================= */
 export function enhanceMarkdown(container) {

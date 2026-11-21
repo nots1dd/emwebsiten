@@ -40,11 +40,13 @@ async function init() {
   await loadComponent("footer", "/frontend/components/footer.html");
   initLastfm(document.getElementById("now-playing"));
 
-  await renderRoute(location.pathname);
-
+  // Kick off the WASM download before the first render: blog posts need the
+  // runtime's markdown renderer, so the earlier it starts the less they wait.
   if (!minimalMode) {
     loadWasm().catch((err) => console.error("[WASM]", err));
   }
+
+  await renderRoute(location.pathname);
 }
 
 window.addEventListener("DOMContentLoaded", () => {

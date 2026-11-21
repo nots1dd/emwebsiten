@@ -5,6 +5,22 @@ import { routeToWasm, themeFnFor } from "./router.js";
 
 let wasmPromise = null;
 
+// Resolves once the emscripten runtime is initialized — i.e. exported
+// functions like md_to_html are actually callable. The script's onload fires
+// earlier (the wasm compile is still pending), so callers that need a ready
+// runtime must wait on this, not on loadWasm()'s return value.
+let resolveReady, rejectReady;
+const readyPromise = new Promise((resolve, reject) => {
+  resolveReady = resolve;
+  rejectReady = reject;
+});
+// Avoid unhandled-rejection noise on pages that never wait on the runtime.
+readyPromise.catch(() => {});
+
+export function whenWasmReady() {
+  return readyPromise;
+}
+
 export function loadWasm() {
   if (wasmReady) return Promise.resolve();
   if (wasmPromise) return wasmPromise;
@@ -22,6 +38,7 @@ export function loadWasm() {
     onRuntimeInitialized() {
       setWasmReady(true);
       setWasmLoading(false);
+      resolveReady();
       resize();
 
       const path = normalizePath(location.pathname);
@@ -39,7 +56,9 @@ export function loadWasm() {
     script.onload = () => resolve();
     script.onerror = () => {
       setWasmLoading(false);
-      reject(new Error("Failed to load /build/site.js"));
+      const err = new Error("Failed to load /build/site.js");
+      rejectReady(err);
+      reject(err);
     };
     document.head.appendChild(script);
   });
